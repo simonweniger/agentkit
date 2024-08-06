@@ -1,0 +1,195 @@
+[tool.poetry]
+name = "agentkit"
+version = "0.0.0"
+description = "Simple but powerful framework to build reliable agentic AI systems"
+authors = ["Simon Weniger <simon@aidentech.eu>"]
+maintainers = [
+    "Simon Weniger <simon@aidentech.eu>",
+]
+license = "MIT license"
+readme = "README.md"
+homepage = "https://github.com/simonweniger/agentkit"
+packages = [
+    {include = "agentkit"},
+    {include = "agentkit/**/*.py" },
+]
+include = [
+    { path = "agentkit/locale/**/*.po", format = "sdist" },
+    { path = "agentkit/locale/**/*.mo", format = ["sdist", "wheel"] }
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: AI :: AI Agents :: AI Frameworks :: LLMs",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+]
+
+[tool.poetry.extras]
+diagrams = ["pydot"]
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+
+[tool.poetry.group.dev.dependencies]
+pydot = "^2.0.0"
+ruff = "^0.4.8"
+pre-commit = "*"
+mypy = "*"
+
+[tool.poetry.group.tests.dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-sugar = "^1.0.0"
+pytest-mock = "^3.10.0"
+pytest-profiling = "^1.7.0"
+pytest-benchmark = "^4.0.0"
+pytest-asyncio = "*"
+django = { version = "^5.0.3", python = ">3.10" }
+pytest-django = { version = "^4.8.0", python = ">3.8" }
+
+[tool.poetry.group.docs.dependencies]
+Sphinx = { version = "*", python = ">3.8" }
+myst-parser = { version = "*", python = ">3.8" }
+sphinx-gallery = { version = "*", python = ">3.8" }
+pillow = { version ="*", python = ">3.8" }
+sphinx-autobuild = { version = "*", python = ">3.8" }
+furo = { version = "^2024.5.6", python = ">3.8" }
+sphinx-copybutton = { version = "^0.5.2", python = ">3.8" }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "--ignore=docs/conf.py --ignore=docs/auto_examples/ --ignore=docs/_build/ --ignore=tests/examples/ --cov --cov-config .coveragerc --doctest-glob='*.md' --doctest-modules --doctest-continue-on-failure --benchmark-autosave --benchmark-group-by=name"
+doctest_optionflags = "ELLIPSIS IGNORE_EXCEPTION_DETAIL NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL"
+asyncio_mode = "auto"
+markers = [
+    """slow: marks tests as slow (deselect with '-m "not slow"')""",
+]
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disable_error_code = "annotation-unchecked"
+mypy_path = "$MYPY_CONFIG_FILE_DIR/tests/django_project"
+
+[[tool.mypy.overrides]]
+module = [
+    'django.*',
+    'pytest.*',
+    'pydot.*',
+    'sphinx_gallery.*',
+]
+ignore_missing_imports = true
+
+[tool.flake8]
+ignore = [
+    "E231",
+    "W503",
+]
+max-line-length = 99
+
+[tool.ruff]
+src = ["statemachine"]
+
+line-length = 99
+target-version = "py312"
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "auto_examples",
+    "venv",
+]
+
+[tool.ruff.lint]
+
+# Enable Pyflakes and pycodestyle rules.
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "I", # isort
+    "UP", # pyupgrade
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "PT", # flake8-pytest-style
+]
+ignore = [
+    "UP006", # `use-pep585-annotation` Requires Python3.9+
+    "UP035", # `use-pep585-annotation` Requires Python3.9+
+    "UP038", # `use-pep585-annotation` Requires Python3.9+
+]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
+"__init__.py" = ["E402"]
+"path/to/file.py" = ["E402"]
+"tests/examples/**.py" = ["B018"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 6
+
+[tool.ruff.lint.isort]
+force-single-line = true
+
+[tool.ruff.lint.pydocstyle]
+# Use Google-style docstrings.
+convention = "google"
+
+[tool.coverage.run]
+branch = true
+relative_files = true
+data_file = ".coverage"
+source = [
+    "statemachine",
+]
+omit = [
+    "*test*.py",
+    "tmp/*",
+    "pytest_cov",
+]
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self.debug",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+   "if TYPE_CHECKING",
+]
+
+[tool.coverage.html]
+directory = "tmp/htmlcov"
