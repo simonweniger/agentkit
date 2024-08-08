@@ -15,6 +15,7 @@ except ImportError:  # pragma: no cover
 _initialized: bool = False
 _REGISTRY: Dict[str, Type[object]] = {}
 
+
 def register(cls):
     _REGISTRY[qualname(cls)] = cls
     _REGISTRY[cls.__name__] = cls

@@ -71,10 +71,12 @@ class AbstractPersistentModel(ABC):
         self._write_state(value)
 
     @abstractmethod
-    def _read_state(self): ...
+    def _read_state(self):
+        ...
 
     @abstractmethod
-    def _write_state(self, value): ...
+    def _write_state(self, value):
+        ...
 
 
 # %%

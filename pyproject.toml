@@ -35,12 +35,16 @@ diagrams = ["pydot"]
 
 [tool.poetry.dependencies]
 python = ">=3.9"
+pydantic = "^2.5.2"
+openai = "^1.5.0"
+litellm = "^1.43.0"
 
 [tool.poetry.group.dev.dependencies]
 pydot = "^2.0.0"
 ruff = "^0.4.8"
 pre-commit = "*"
 mypy = "*"
+ipykernel = "^6.29.5"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "*"
