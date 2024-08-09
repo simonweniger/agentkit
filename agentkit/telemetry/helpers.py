@@ -8,7 +8,6 @@ import uuid
 from typing import Any
 from typing import Callable
 from typing import Dict
-from typing import Optional
 
 _PARENT_RUN_ID = contextvars.ContextVar("_PARENT_RUN_ID", default=None)
 
@@ -39,7 +38,7 @@ def _get_inputs(signature: inspect.Signature, *args: Any, **kwargs: Any) -> Dict
 def traceable(
     name,
     logger,
-    metadata: Optional[Dict] = None,
+    metadata: None | dict = None,
     level=logging.INFO,
 ) -> Callable:
     original_metadata = metadata or {}
@@ -48,7 +47,7 @@ def traceable(
         @functools.wraps(func)
         def wrapper(
             *args: Any,
-            logging_extra: Optional[Dict] = None,
+            logging_extra: None | dict = None,
             **kwargs: Any,
         ) -> Any:
             parent_run_id = _PARENT_RUN_ID.get()

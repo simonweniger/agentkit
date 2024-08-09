@@ -44,7 +44,8 @@ class ActionProcessor:
             return (
                 None,
                 False,
-                f"Unable to extract a valid function from the input. Error encountered in extractor: {full_exception_string}",
+                f"""Unable to extract a valid function from the input.
+                Error encountered in extractor: {full_exception_string}""",
             )
 
         if function["name"] not in self.dict:
@@ -60,7 +61,9 @@ class ActionProcessor:
             return (
                 None,
                 False,
-                f"Unable to invoke valid function {function['name']}, parameters: {function['parameters']}. Error encountered: {full_exception_string}",
+                f"""Unable to invoke valid function {function['name']},
+                parameters: {function['parameters']}.
+                Error encountered: {full_exception_string}""",
             )
 
         return response, True, None

@@ -6,10 +6,7 @@ from typing import Callable
 from typing import Dict
 from typing import List
 
-from litellm import completion
-
 from agentkit.telemetry import traceable
-from agentkit.utils import DEFAULT_ACTION_SCOPE
 
 
 class ActionException(Exception):
@@ -63,26 +60,6 @@ class Action:
 
     def json_schema(self):
         return self.pydantic_model.model_json_schema()
-
-    def invoke(
-        self,
-        # client=None,
-        force=True,
-        logger=None,
-        token_usage_tracker=None,
-        *args,
-        **kwargs,
-    ):
-        response = completion(
-            *args,
-            actions=[self],
-            orch={DEFAULT_ACTION_SCOPE: self, self.name: None} if force else None,
-            logger=logger,
-            token_usage_tracker=token_usage_tracker,
-            **kwargs,
-        )
-
-        return response
 
     def get_function_details(self):
         return {

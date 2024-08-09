@@ -15,25 +15,21 @@ def merge_dicts(dict1, dict2):
     merged_dict = dict1.copy()
     for key, value in dict2.items():
         if key in merged_dict:
-            if value is None:
-                continue
-
-            if isinstance(value, ChatCompletionChunk):
-                value = value.model_dump()
-
-            if type(value) == dict:
-                merged_dict[key] = merge_dicts(merged_dict[key], value)
-            elif type(value) == str:
-                merged_dict[key] += value
-            elif type(value) == int:
-                merged_dict[key] += value
-            elif type(value) == list:
-                if merged_dict[key] is None:
-                    merged_dict[key] = []
-                merged_dict[key] += value
-            else:
-                raise Exception(f"Unsupported type {type(value)}")
-
+            merged_dict[key] = merge_values(merged_dict[key], value)
         else:
             merged_dict[key] = value
     return merged_dict
+
+
+def merge_values(v1, v2):
+    if v2 is None:
+        return v1
+    if isinstance(v2, ChatCompletionChunk):
+        v2 = v2.model_dump()
+    if isinstance(v2, dict):
+        return merge_dicts(v1, v2)
+    if isinstance(v2, str):
+        return v1 + v2
+    if isinstance(v2, int):
+        return (v1 or []) + v2
+    raise TypeError(f"Unsupported type {type(v2)}")

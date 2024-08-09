@@ -1,4 +1,3 @@
-# TODO: assume all actions are functions for now
 from agentkit.actions import Action
 
 

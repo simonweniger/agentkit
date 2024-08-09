@@ -7,21 +7,21 @@ import time
 from collections import defaultdict
 from typing import List
 
-from actions.action import Action
-from actions.action import ActionHandlers
+from agentkit.actions.action import Action
+from agentkit.actions.action import ActionHandlers
+from agentkit.llms.client.tools import Tools
+from agentkit.telemetry import traceable
+from agentkit.utils import DEFAULT_ACTION_SCOPE
+from agentkit.utils.stream import get_first_element_and_iterator
+from agentkit.utils.stream import merge_dicts
+from agentkit.utils.tokens import TokenUsageTracker
 from litellm import completion
-from llms.client.tools.tools import Tools
 from openai import Stream
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from openai.types.chat.chat_completion_message_tool_call import ChatCompletionMessageToolCall
-from telemetry import traceable
-from utils import DEFAULT_ACTION_SCOPE
-from utils.stream import get_first_element_and_iterator
-from utils.stream import merge_dicts
-from utils.tokens import TokenUsageTracker
 
 
-class OpenAIChatCompletionException(Exception):
+class AIChatCompletionException(Exception):
     def __init__(self, message="", extra_info=None):
         super().__init__(message)
         self.extra_info = extra_info or {}
@@ -32,7 +32,7 @@ class OpenAIChatCompletionException(Exception):
         return f"{super().__str__()} | Additional Info: [{extra_info_str}]"
 
 
-class OpenAIChatCompletion:
+class AIChatCompletion:
     def __init__(self, model, token_usage_tracker=None, logger=None):
         self.model = model
         self.logger = logger or logging.getLogger(__name__)
@@ -66,7 +66,7 @@ class OpenAIChatCompletion:
                 try:
                     arguments = json.loads(tool_call["function"]["arguments"])
                 except json.decoder.JSONDecodeError as e:
-                    raise OpenAIChatCompletionException(
+                    raise AIChatCompletionException(
                         e,
                         extra_info={
                             "message": "Parsing function call arguments from OpenAI response ",
@@ -96,7 +96,7 @@ class OpenAIChatCompletion:
                 unavailable_tool_msg = f"""{name} is not a valid tool name, use one of the following:
                 {', '.join([tool['function']['name'] for tool in tools.tools])}"""  # noqa: E501
 
-                raise OpenAIChatCompletionException(unavailable_tool_msg)
+                raise AIChatCompletionException(unavailable_tool_msg)
 
         if len(called_tools) == 1:
             # Update new functions for next OpenAI api call
@@ -154,9 +154,9 @@ class OpenAIChatCompletion:
     @staticmethod
     def build_orch(actions: List[Action] = None, orch=None):
         action_handler = ActionHandlers()
-        orch = OpenAIChatCompletion._initialize_orch(actions, orch)
-        OpenAIChatCompletion._populate_action_handler(action_handler, actions, orch)
-        OpenAIChatCompletion._set_default_orch(action_handler, orch)
+        orch = AIChatCompletion._initialize_orch(actions, orch)
+        AIChatCompletion._populate_action_handler(action_handler, actions, orch)
+        AIChatCompletion._set_default_orch(action_handler, orch)
         return action_handler, orch
 
     @staticmethod
@@ -192,7 +192,7 @@ class OpenAIChatCompletion:
             kwargs["model"] = self.model
         logging.info("Creating chat completion in tools")
 
-        return OpenAIChatCompletion.wrap_chat_completion_create(completion)(
+        return AIChatCompletion.wrap_chat_completion_create(completion)(
             *args,
             actions=actions,
             orch=orch,
@@ -206,7 +206,7 @@ class OpenAIChatCompletion:
         if orch is not None:
             for key in orch.keys():
                 if not isinstance(key, str):
-                    raise OpenAIChatCompletionException(
+                    raise AIChatCompletionException(
                         f"Orch keys must be action name (str), found {type(key)}"
                     )
 
@@ -222,8 +222,8 @@ class OpenAIChatCompletion:
         ):
             # DEFAULT_LOGGING_NAME = "actionweaver_initial_chat_completion"
             def new_create(actions=None, orch=None, token_usage_tracker=None, *args, **kwargs):
-                OpenAIChatCompletion.validate_orch(orch)
-                chat_completion_create_method = OpenAIChatCompletion._get_create_method(
+                AIChatCompletion.validate_orch(orch)
+                chat_completion_create_method = AIChatCompletion._get_create_method(
                     original_create_method,
                     logger,
                     logging_name,
@@ -231,9 +231,9 @@ class OpenAIChatCompletion:
                     logging_level,
                 )
                 token_usage_tracker = token_usage_tracker or TokenUsageTracker()
-                OpenAIChatCompletion._validate_required_args(kwargs)
-                action_handler, orch = OpenAIChatCompletion.build_orch(actions or [], orch)
-                return OpenAIChatCompletion._process_chat_completion(
+                AIChatCompletion._validate_required_args(kwargs)
+                action_handler, orch = AIChatCompletion.build_orch(actions or [], orch)
+                return AIChatCompletion._process_chat_completion(
                     chat_completion_create_method,
                     action_handler,
                     orch,
@@ -260,11 +260,11 @@ class OpenAIChatCompletion:
     @staticmethod
     def _validate_required_args(kwargs):
         if "messages" not in kwargs:
-            raise OpenAIChatCompletionException(
+            raise AIChatCompletionException(
                 "messages keyword argument is required for chat completion"
             )
         if "model" not in kwargs:
-            raise OpenAIChatCompletionException(
+            raise AIChatCompletionException(
                 "model keyword argument is required for chat completion"
             )
 
@@ -277,14 +277,12 @@ class OpenAIChatCompletion:
         tools = Tools.from_expr(orch[DEFAULT_ACTION_SCOPE])
 
         while True:
-            api_response = OpenAIChatCompletion._make_api_call(
-                create_method, tools, *args, **kwargs
-            )
+            api_response = AIChatCompletion._make_api_call(create_method, tools, *args, **kwargs)
             if isinstance(api_response, Stream):
-                return OpenAIChatCompletion._handle_stream_response(api_response)
+                return AIChatCompletion._handle_stream_response(api_response)
 
             token_usage_tracker.track_usage(api_response.usage)
-            response = OpenAIChatCompletion._process_api_response(
+            response = AIChatCompletion._process_api_response(
                 api_response, messages, model, tools, orch, action_handler
             )
 
@@ -297,14 +295,14 @@ class OpenAIChatCompletion:
         message = choice.message
 
         if message.tool_calls:
-            tools, (stop, resp) = OpenAIChatCompletion._invoke_tool(
+            tools, (stop, resp) = AIChatCompletion._invoke_tool(
                 messages, model, message, message.tool_calls, tools, orch, action_handler
             )
             return resp if stop else None
         elif message.content is not None:
             return api_response if choice.finish_reason == "stop" else None
         else:
-            raise OpenAIChatCompletionException(
+            raise AIChatCompletionException(
                 f"Unsupported response from OpenAI api: {api_response}"
             )
 
