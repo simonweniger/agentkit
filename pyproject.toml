@@ -34,7 +34,7 @@ classifiers = [
 diagrams = ["pydot"]
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.9,<4.0"
 pydantic = "^2.5.2"
 openai = "^1.5.0"
 litellm = "^1.43.0"
