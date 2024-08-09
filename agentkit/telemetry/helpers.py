@@ -17,9 +17,7 @@ def get_parent_run_id():
     return _PARENT_RUN_ID.get()
 
 
-def _get_inputs(
-    signature: inspect.Signature, *args: Any, **kwargs: Any
-) -> Dict[str, Any]:
+def _get_inputs(signature: inspect.Signature, *args: Any, **kwargs: Any) -> Dict[str, Any]:
     """Return a dictionary of inputs from the function signature."""
     bound = signature.bind_partial(*args, **kwargs)
     bound.apply_defaults()

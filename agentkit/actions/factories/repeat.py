@@ -5,9 +5,7 @@ from agentkit.actions.factories.function import action
 from agentkit.utils.pydantic_utils import create_pydantic_model_from_func
 
 
-def repeat(
-    act: Action, name: str = None, description: str = None, reducer=None
-) -> Action:
+def repeat(act: Action, name: str = None, description: str = None, reducer=None) -> Action:
     if reducer is None:
         reducer = lambda l: "\n".join([str(e) for e in l])
 

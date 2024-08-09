@@ -17,9 +17,7 @@ class Folium:
         try:
             import folium
         except ImportError:
-            raise ImportError(
-                "`folium` package not found, please run `pip install folium`"
-            )
+            raise ImportError("`folium` package not found, please run `pip install folium`")
 
     @action(name="ShowMap")
     def show_map(self, places: List[Place]) -> str:
@@ -44,9 +42,7 @@ class Folium:
 
         # Add markers for each place
         for place in places:
-            folium.Marker(
-                [place["lat"], place["lng"]], tooltip=place["description"]
-            ).add_to(m)
+            folium.Marker([place["lat"], place["lng"]], tooltip=place["description"]).add_to(m)
 
         # Display the map
         display(m)

@@ -17,12 +17,12 @@ def action_from_model(
     stop=True,
     name: str = None,
     description: str = None,
-    decorators: List[Callable[..., None]] = [],
+    decorators: List[Callable[..., None]] = None,
 ) -> Action:
     def func(*args, **kwargs):
         if args:
             raise ValueError(
-                f"Invalid input: The method should not have positional arguments and should only accept keyword arguments: {model.__name__.lower()} of type {model.__name__}",
+                f"Invalid input: The method should not have positional arguments and should only accept keyword arguments: {model.__name__.lower()} of type {model.__name__}",  # noqa: E501
                 f"args: {args}",
                 f"kwargs: {kwargs}",
             )
@@ -42,5 +42,5 @@ def action_from_model(
         name=name,
         pydantic_model=model,
         stop=stop,
-        decorators=decorators,
+        decorators=decorators or [],
     )(func)

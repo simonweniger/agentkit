@@ -13,7 +13,6 @@ class Tools:
 
     @classmethod
     def from_expr(cls, expr):
-
         if expr is None:
             return cls()
         elif isinstance(expr, Action):

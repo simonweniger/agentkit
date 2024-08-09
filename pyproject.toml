@@ -172,7 +172,7 @@ branch = true
 relative_files = true
 data_file = ".coverage"
 source = [
-    "statemachine",
+    "agentkit",
 ]
 omit = [
     "*test*.py",

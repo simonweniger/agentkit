@@ -11,7 +11,6 @@ def create_pydantic_model_from_function(
     function,
     override_params=None,  # override_params: Optional dictionary of parameters to override kwarg and non-kwarg of decorated method.
 ):
-
     return create_pydantic_model_from_func(
         function.__name__.title(),
         function,
@@ -29,7 +28,6 @@ def action(
     logging_metadata: dict | None = None,
     logging_level=logging.INFO,
 ):
-
     _logger = logger
 
     def create_action(function):

@@ -67,9 +67,7 @@ def create_pydantic_model_from_func_v0(
     defaults = (...,) * non_default_args + tuple(defaults)
 
     # Create a dictionary for keyword-only arguments with their defaults
-    keyword_only_params = {
-        param: kwonlydefaults.get(param, Any) for param in kwonlyargs
-    }
+    keyword_only_params = {param: kwonlydefaults.get(param, Any) for param in kwonlyargs}
 
     """ Create a dictionary for all arguments with their annotations and defaults
     e.g. 
@@ -95,13 +93,9 @@ def create_pydantic_model_from_func_v0(
 
     ## Remove ignored params
     if ignored_params:
-        params = {
-            key: value for key, value in params.items() if key not in ignored_params
-        }
+        params = {key: value for key, value in params.items() if key not in ignored_params}
         keyword_only_params = {
-            key: value
-            for key, value in keyword_only_params.items()
-            if key not in ignored_params
+            key: value for key, value in keyword_only_params.items() if key not in ignored_params
         }
 
     # # Configure the class to allow extra parameters if **kwargs is in the function signature
@@ -174,9 +168,7 @@ def create_pydantic_model_from_func(
 
     # Remove ignored params
     if ignored_params:
-        params = {
-            key: value for key, value in params.items() if key not in ignored_params
-        }
+        params = {key: value for key, value in params.items() if key not in ignored_params}
 
     # (Deprecated) Convert annotations to pydantic models if needed
     # if supporting_annotation_models:

@@ -57,8 +57,7 @@ class StateMachineMetaclass(type):
     if TYPE_CHECKING:
         """Makes mypy happy with dynamic created attributes"""
 
-        def __getattr__(self, attribute: str) -> Any:
-            ...
+        def __getattr__(self, attribute: str) -> Any: ...
 
     def _check(cls):
         has_states = bool(cls.states)

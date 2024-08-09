@@ -31,9 +31,7 @@ class FunctionCallingLoopException(Exception):
 
     def __str__(self):
         # Customize the string representation to include extra_info
-        extra_info_str = ", ".join(
-            f"{key}: {value}" for key, value in self.extra_info.items()
-        )
+        extra_info_str = ", ".join(f"{key}: {value}" for key, value in self.extra_info.items())
         return f"{super().__str__()} | Additional Info: [{extra_info_str}]"
 
 
@@ -64,7 +62,7 @@ def invoke_tool(
                 arguments = json.loads(tool_call["function"]["arguments"])
             except json.decoder.JSONDecodeError as e:
                 raise FunctionCallingLoopException(
-                    f"Failed to parse function call arguments from OpenAI response",
+                    "Failed to parse function call arguments from OpenAI response",
                     extra_info={
                         "arguments": tool_call["function"]["arguments"],
                         "timestamp": time.time(),
@@ -101,11 +99,7 @@ def invoke_tool(
         name = list(called_tools.keys())[0]
 
         # use tools in orch[DEFAULT_ACTION_SCOPE] if expr is DEFAULT_ACTION_SCOPE
-        expr = (
-            orch[name]
-            if orch[name] != DEFAULT_ACTION_SCOPE
-            else orch[DEFAULT_ACTION_SCOPE]
-        )
+        expr = orch[name] if orch[name] != DEFAULT_ACTION_SCOPE else orch[DEFAULT_ACTION_SCOPE]
         return (
             Tools.from_expr(
                 expr,
@@ -210,8 +204,7 @@ def create_chat_loop(original_create_method):
             chat_completion_create_method = original_create_method
             if logger:
                 chat_completion_create_method = traceable(
-                    name=(logging_name or DEFAULT_LOGGING_NAME)
-                    + ".chat.completions.create",
+                    name=(logging_name or DEFAULT_LOGGING_NAME) + ".chat.completions.create",
                     logger=logger,
                     metadata=logging_metadata,
                     level=logging_level,
@@ -231,7 +224,6 @@ def create_chat_loop(original_create_method):
             chat_loop_action = la.Unknown
 
             while True:
-
                 try:
                     if bool(tools):
                         tools_argument = tools.to_arguments()
@@ -330,7 +322,6 @@ def handle_response(
     action_handler,
     logger=None,
 ) -> la.LoopAction:
-
     # logic to handle streaming API response
     if isinstance(api_response, Stream):
         api_response = handle_stream_response(api_response)
@@ -359,7 +350,6 @@ def handle_response(
         else:
             return la.Continue(functions=tools)
     elif message.content is not None:
-
         # ignore last message in the function loop
         # messages += [{"role": "assistant", "content": message["content"]}]
         if choice.finish_reason == "stop":
@@ -373,6 +363,4 @@ def handle_response(
 
             return la.ReturnRightAway(content=api_response)
     else:
-        raise FunctionCallingLoopException(
-            f"Unsupported response from OpenAI api: {api_response}"
-        )
+        raise FunctionCallingLoopException(f"Unsupported response from OpenAI api: {api_response}")

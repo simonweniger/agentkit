@@ -16,9 +16,7 @@ def preserve_original_signature(decorator):
 
 def cache(func):
     wrapper = functools.cache(func)
-    wrapper.__signature__ = inspect.signature(
-        func
-    )  # Preserve the original function's signature
+    wrapper.__signature__ = inspect.signature(func)  # Preserve the original function's signature
     return wrapper
 
 

@@ -31,7 +31,7 @@ class OpenAIChatCompletion:
         self.client = OpenAI()
 
         print(
-            "\033[91mDeprecating soon. Please import the OpenAIChatCompletion class from llms.openai.tools.chat\033[0m"
+            "\033[91mDeprecating soon. Please import the OpenAIChatCompletion class from llms.openai.tools.chat\033[0m"  # noqa: E501
         )
 
     def _invoke_function(

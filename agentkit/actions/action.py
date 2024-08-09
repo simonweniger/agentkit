@@ -66,7 +66,7 @@ class Action:
 
     def invoke(
         self,
-        #client=None,
+        # client=None,
         force=True,
         logger=None,
         token_usage_tracker=None,
@@ -120,7 +120,7 @@ class Action:
             self.logger,
             self.stop,
             instance=instance,
-            decorators=self.decorators
+            decorators=self.decorators,
         )
 
     def __hash__(self) -> int:

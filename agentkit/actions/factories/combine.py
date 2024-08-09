@@ -1,4 +1,3 @@
-import collections
 from typing import List
 
 from agentkit.actions import Action
@@ -7,48 +6,35 @@ from agentkit.utils.pydantic_utils import create_pydantic_model_from_func
 
 
 def combine(
-    acts: List[Action], name: str = None, description: str = None, reducer=None
+    acts: List[Action | None], name: str = None, description: str = None, reducer=None
 ) -> Action:
-    # TODO: make action has a default of None, so the mode can choose to use it or not
-    if reducer is None:
-        def default_reducer(results):
-            return "\n".join(str(e) for e in results)
-        reducer = default_reducer
+    reducer = reducer
+    func = create_combined_function(acts, reducer)
+    name = name or generate_name(acts)
+    description = description or ""
+    return create_action(func, name, description, acts)
 
-    def func(*args, **kwargs):
-        value_list = list(kwargs.values())
-        if args:
-            raise ValueError(
-                "Invalid input: The method should not have positional arguments",
-                f"args: {args}",
-            )
 
-        ans = []
-        for a, i in zip(acts, value_list, strict=False):
-            try:
-                ans += [a(**i)]
-            except Exception as e:
-                raise ValueError(
-                    f"Failed to invoke {a.name} with the value of {i}: {e}",
-                )
+def create_combined_function(acts, reducer):
+    def func(**kwargs):
+        results = []
+        for act in acts:
+            if act is not None and act.name in kwargs:
+                results.append(act(**kwargs[act.name]))
+        return reducer(results)
 
-        return reducer(ans)
+    return func
 
-    # Build the name string using all action names from acts
-    action_names = "_".join(a.name.lower() for a in acts)
-    if name is None:
-        name = f"combine_{action_names}"
 
-    if description is None:
-        description = ""
+def generate_name(acts):
+    action_names = "_".join(a.name.lower() for a in acts if a is not None)
+    return f"combine_{action_names}"
 
+
+def create_action(func, name, description, acts):
     func.__doc__ = description
     func.__name__ = name
-
-    params = collections.OrderedDict()
-    for act in acts:
-        params[act.name] = (act.pydantic_model, ...)
-
+    params = {act.name: (act.pydantic_model | None) for act in acts if act is not None}
     return action(
         name=name.title(),
         pydantic_model=create_pydantic_model_from_func(
