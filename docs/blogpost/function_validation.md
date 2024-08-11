@@ -1,19 +1,19 @@
-# Enhancing Robustness: Using Pydantic Validation Decorator with ActionWeaver
+# Enhancing Robustness: Using Pydantic Validation Decorator with Agentkit
 
-In this post, we are going to showcase how we combine Pydantic validation decorator with ActionWeaver to create robust and self healing LLM function-calling applications.
+In this post, we are going to showcase how we combine Pydantic validation decorator with Agentkit to create robust and self healing LLM function-calling applications.
 
-- [ActionWeaver](https://github.com/TengHu/ActionWeaver) simplifies the development of LLM applications by providing straightforward tools for structured data parsing, function dispatching and orchestration.
+- [Agentkit](https://github.com/TengHu/Agentkit) simplifies the development of LLM applications by providing straightforward tools for structured data parsing, function dispatching and orchestration.
 - [Pydantic](https://docs.pydantic.dev/latest/) is the most widely used data validation library for Python. Its [@validate_call decorator](https://docs.pydantic.dev/latest/concepts/validation_decorator/) enables the validation of function arguments based on the function's annotations before the function is executed.
 
-By the end of this blog post, you will learn how to use Pydantic validation decorator with ActionWeaver to make your function calling more robust. For the complete working notebook, please refer to [here](https://actionweaver.readthedocs.io/en/latest/notebooks/cookbooks/function_validation_and_exception_handling.html).
+By the end of this blog post, you will learn how to use Pydantic validation decorator with Agentkit to make your function calling more robust. For the complete working notebook, please refer to [here](https://agentkit.readthedocs.io/en/latest/notebooks/cookbooks/function_validation_and_exception_handling.html).
 
-## Create OpenAI client, wrap with ActionWeaver.
+## Create OpenAI client, wrap with Agentkit.
 
-ActionWeaver wrapper will manage the function calling loop, which includes passing function descriptions, executing functions, and handling exceptions.
+Agentkit wrapper will manage the function calling loop, which includes passing function descriptions, executing functions, and handling exceptions.
 
 ```python
 from openai import OpenAI
-from actionweaver.llms import wrap
+from agentkit.llms import wrap
 
 llm = wrap(OpenAI())
 ```
@@ -59,9 +59,9 @@ class UserModel(BaseModel):
         return v
 ```
 ## Create an Action from function
-Now, let's use ActionWeaver `action` decorator to create an action `ingest_user_info`, which accepts list of Pydantic model `UserModel` as arguments. 
+Now, let's use Agentkit `action` decorator to create an action `ingest_user_info`, which accepts list of Pydantic model `UserModel` as arguments. 
 
-> **Note**: An `action` represents a tool that can be used by LLM. Each action comprises two main elements: a Pydantic model that is generated to facilitate structured prompting, and a conventional Python function. ActionWeaver will treat the function docstring as function description. Please refer to the [ActionWeaver documentation](https://github.com/TengHu/ActionWeaver) for more information and specifics.
+> **Note**: An `action` represents a tool that can be used by LLM. Each action comprises two main elements: a Pydantic model that is generated to facilitate structured prompting, and a conventional Python function. Agentkit will treat the function docstring as function description. Please refer to the [Agentkit documentation](https://github.com/TengHu/Agentkit) for more information and specifics.
 
 We want the LLM to extract user information from natural language and invoke `ingest_user_info`, which will then store the validated user information into `user_db`.
 
@@ -84,12 +84,12 @@ def ingest_user_info(users: List[UserModel]):
 
 Now what if the LLM invoke the function with invalid arguments? 
 
-Fortunately, ActionWeaver offers an ExceptionHandler feature. This handler allows users to define how to respond to exceptions within the function calling loop. 
+Fortunately, Agentkit offers an ExceptionHandler feature. This handler allows users to define how to respond to exceptions within the function calling loop. 
 
 For example, we can create a handler that takes the exception message as input for the LLM and permits a maximum number of retries. This setup enables the LLM to respond to error messages effectively.
 
 ```python
-from actionweaver.llms import ExceptionHandler, ExceptionAction, ChatLoopInfo, Continue, Return
+from agentkit.llms import ExceptionHandler, ExceptionAction, ChatLoopInfo, Continue, Return
 
 class ExceptionRetryHandler(ExceptionHandler):
     def __init__(self, max_retry=2):
@@ -121,7 +121,7 @@ class ExceptionRetryHandler(ExceptionHandler):
 
 Now, let's attempt to prompt the LLM to call `ingest_user_info`. As you'll notice, the input text below has a different format and may not pass the field validation.
 
-> **Note**: For details on how to force the LLM to execute function, please refer to [ActionWeaver Document](https://github.com/TengHu/ActionWeaver?tab=readme-ov-file#force-execution-of-an-action).
+> **Note**: For details on how to force the LLM to execute function, please refer to [Agentkit Document](https://github.com/TengHu/Agentkit?tab=readme-ov-file#force-execution-of-an-action).
 
 ```python
 input = """                Name       Phone Number
@@ -173,5 +173,5 @@ Eventually, the formatted data should be successfully inserted into the `user_db
   UserModel(name='MICHAEL JOHNSON', phone_number='+1 (758) 232-6153')]]
 ```
 
-For the complete working notebook, please refer to [here](https://actionweaver.readthedocs.io/en/latest/notebooks/cookbooks/function_validation_and_exception_handling.html).
+For the complete working notebook, please refer to [here](https://agentkit.readthedocs.io/en/latest/notebooks/cookbooks/function_validation_and_exception_handling.html).
 

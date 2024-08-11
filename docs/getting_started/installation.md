@@ -1,16 +1,16 @@
 # Installation
 ## Installation through pip
 
-To install ActionWeaver run:
+To install Agentkit run:
 
 ```bash
-pip install actionweaver
+pip install agentkit
 ```
 
 
 ## Environment setup
 
-ActionWeaver requires an OpenAI account and API key. Once we have a key we'll want to set it as an environment variable by running:
+Agentkit requires an OpenAI account and API key. Once we have a key we'll want to set it as an environment variable by running:
 
 ```bash
 export OPENAI_API_KEY="..."

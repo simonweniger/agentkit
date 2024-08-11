@@ -2,7 +2,7 @@
 
 # client = OpenAI()
 
-# from actionweaver import action
+# from agentkit import action
 
 
 # class OpenAIAPI:

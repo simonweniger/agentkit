@@ -5,57 +5,112 @@ import json
 import logging
 import time
 from collections import defaultdict
+from functools import wraps
 from typing import List
 
 import litellm
-from agentkit.actions.action import Action
-from agentkit.actions.action import ActionHandlers
+from agentkit.actions.action import Action, ActionHandlers
 from agentkit.llms.general.tools import Tools
 from agentkit.telemetry import traceable
 from agentkit.utils import DEFAULT_ACTION_SCOPE
-from agentkit.utils.stream import get_first_element_and_iterator
-from agentkit.utils.stream import merge_dicts
+from agentkit.utils.stream import get_first_element_and_iterator, merge_dicts
 from agentkit.utils.tokens import TokenUsageTracker
 from openai import Stream
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from openai.types.chat.chat_completion_message_tool_call import ChatCompletionMessageToolCall
 
 
-class AIChatCompletionException(Exception):
+class ChatCompletionException(Exception):
     def __init__(self, message="", extra_info=None):
         super().__init__(message)
         self.extra_info = extra_info or {}
 
     def __str__(self):
-        # Customize the string representation to include extra_info
-        extra_info_str = ", ".join(
-            f"{key}: {value}" for key, value in self.extra_info.items()
-        )
+        extra_info_str = ", ".join(f"{key}: {value}" for key, value in self.extra_info.items())
         return f"{super().__str__()} | Additional Info: [{extra_info_str}]"
 
 
-class AIChatCompletion:
-    def __init__(self, model, token_usage_tracker=None, logger=None):
-        self.model = model
-        self.logger = logger or logging.getLogger(__name__)
-        self.token_usage_tracker = token_usage_tracker or TokenUsageTracker()
+class ChatCompletion:
+    DEFAULT_LOGGING_NAME = "agentkit_chat_completion"
 
-    @staticmethod
-    def _invoke_tool(
-        messages,
-        model,
-        response_msg,
-        tool_calls,
-        tools,
-        orch,
-        action_handler: ActionHandlers,
+    def __init__(
+        self,
+        model=None,
+        token_usage_tracker=None,
+        logger: logging.Logger | None = None,
+        logging_name: str | None = None,
+        logging_metadata: dict | None = None,
+        logging_level=logging.INFO,
     ):
-        messages += [response_msg]
+        self.model = model
+        self.token_usage_tracker = token_usage_tracker or TokenUsageTracker()
+        self.logger = logger
+        self.logging_name = logging_name or self.DEFAULT_LOGGING_NAME
+        self.logging_metadata = logging_metadata
+        self.logging_level = logging_level
 
-        # if multiple type of functions are invoked, ignore orch and `stop` option
+    @classmethod
+    def create(cls, **kwargs):
+        instance = cls(**kwargs)
+        if instance.logger:
+            return traceable(
+                name=instance.logging_name,
+                logger=instance.logger,
+                metadata=instance.logging_metadata,
+                level=instance.logging_level,
+            )(instance)
+        return instance
+
+    def validate_orch(self, orch):
+        if orch is not None:
+            for key in orch.keys():
+                if not isinstance(key, str):
+                    raise ChatCompletionException(
+                        f"Orch keys must be action name (str), found {type(key)}"
+                    )
+
+    def build_orch(self, actions: List[Action], orch=None):
+        action_handler = ActionHandlers()
+
+        if orch is None:
+            orch = {}
+        if DEFAULT_ACTION_SCOPE not in orch:
+            orch[DEFAULT_ACTION_SCOPE] = actions
+
+        buf = actions + list(orch.values())
+        for element in buf:
+            if isinstance(element, list):
+                for e in element:
+                    action_handler.name_to_action[e.name] = e
+            elif isinstance(element, Action):
+                action_handler.name_to_action[element.name] = element
+
+        for _, action in action_handler.name_to_action.items():
+            if action.name not in orch:
+                orch[action.name] = DEFAULT_ACTION_SCOPE
+
+        return action_handler, orch
+
+    def argument_check(self, **kwargs):
+        if "messages" not in kwargs:
+            raise ChatCompletionException(
+                "messages keyword argument is required for chat completion"
+            )
+        if "model" not in kwargs and not self.model:
+            raise ChatCompletionException("model keyword argument is required for chat completion")
+        if "tools" in kwargs:
+            raise ChatCompletionException(
+                "tools keyword argument is not allowed for this method, use actions instead"
+            )
+        if "tool_choice" in kwargs:
+            raise ChatCompletionException(
+                "tool_choice keyword argument is not allowed for this method, use actions instead"
+            )
+
+    def invoke_tool(self, messages, model, response_msg, tool_calls, action_handler, orch, tools):
+        messages += [response_msg]
         called_tools = defaultdict(list)
 
-        # TODO: right now invoke all tools iteratively, implement async tool invocation
         for tool_call in tool_calls:
             if isinstance(tool_call, ChatCompletionMessageToolCall):
                 tool_call = tool_call.model_dump()
@@ -65,23 +120,19 @@ class AIChatCompletion:
 
             if action_handler.contains(name):
                 try:
-                    arguments = json.loads(tool_call["function"]["arguments"])
+                    arguments = json.loads(arguments)
                 except json.decoder.JSONDecodeError as e:
-                    raise AIChatCompletionException(
-                        e,
+                    raise ChatCompletionException(
+                        "Failed to parse function call arguments from OpenAI response",
                         extra_info={
-                            "message": "Parsing function call arguments from OpenAI response ",
-                            "arguments": tool_call["function"]["arguments"],
+                            "arguments": arguments,
                             "timestamp": time.time(),
                             "model": model,
                         },
                     ) from e
 
-                # Invoke action
                 tool_response = action_handler[name](**arguments)
-
                 called_tools[name].append(tool_response)
-
                 stop = action_handler[name].stop
                 messages += [
                     {
@@ -91,47 +142,26 @@ class AIChatCompletion:
                         "content": str(tool_response),
                     },
                 ]
-
             else:
-                # TODO: allow user to add callback for unavailable tool
-                unavailable_tool_msg = f"{name} is not a valid tool name, use one of the following: {', '.join([tool['function']['name'] for tool in tools.tools])}"
-
-                raise AIChatCompletionException(unavailable_tool_msg)
+                raise ChatCompletionException(
+                    f"{name} is not a valid function name",
+                    extra_info={"timestamp": time.time(), "model": model},
+                )
 
         if len(called_tools) == 1:
-            # Update new functions for next OpenAI api call
             name = list(called_tools.keys())[0]
-
-            # use tools in orch[DEFAULT_ACTION_SCOPE] if expr is DEFAULT_ACTION_SCOPE
-            expr = (
-                orch[name]
-                if orch[name] != DEFAULT_ACTION_SCOPE
-                else orch[DEFAULT_ACTION_SCOPE]
-            )
-            return (
-                Tools.from_expr(
-                    expr,
-                ),
-                (stop, called_tools[name]),
-            )
+            expr = orch[name] if orch[name] != DEFAULT_ACTION_SCOPE else orch[DEFAULT_ACTION_SCOPE]
+            return Tools.from_expr(expr), (stop, called_tools[name])
         else:
-            # if multiple type of functions are invoked, use the same set of tools next api call
-            return (
-                tools,
-                (False, list(called_tools.values())),
-            )
+            return tools, (False, list(called_tools.values()))
 
-    @staticmethod
-    def _handle_stream_response(api_response):
+    def handle_stream_response(self, api_response):
         first_element, iterator = get_first_element_and_iterator(api_response)
 
         if first_element.choices[0].delta.content is not None:
-            # if the first element is a message, return generator right away.
             return iterator
         else:
-            # if the first element is a tool call, merge all tool calls into first response and return it
             l = list(iterator)
-
             deltas = {}
             for element in l:
                 delta = element.choices[0].delta.model_dump()
@@ -147,187 +177,107 @@ class AIChatCompletion:
 
             deltas["tool_calls"] = list(chat_completion_message_tool_call.values())
 
-            # (HACK) Remove the 'function_call' field, otherwise calling the API will fail
             if "function_call" in deltas:
                 del deltas["function_call"]
 
             first_element.choices[0].message = ChatCompletionMessage(**deltas)
-
             return first_element
 
-    @staticmethod
-    def build_orch(actions: List[Action] = None, orch=None):
-        action_handler = ActionHandlers()
+    @wraps(litellm.completion)
+    def __call__(self, *args, **kwargs):
+        return self.create_chat_completion(*args, **kwargs)
 
-        if orch is None:
-            orch = {}
-        if DEFAULT_ACTION_SCOPE not in orch:
-            orch[DEFAULT_ACTION_SCOPE] = actions
+    def create_chat_completion(self, *args, **kwargs):
+        self.argument_check(**kwargs)
 
-        buf = actions + list(orch.values())
-        for element in buf:
-            if isinstance(element, list):
-                for e in element:
-                    action_handler.name_to_action[e.name] = e
-            elif isinstance(element, Action):
-                action_handler.name_to_action[element.name] = element
-        # default action scope if not following actions not specified
-        for _, action in action_handler.name_to_action.items():
-            if action.name not in orch:
-                orch[action.name] = DEFAULT_ACTION_SCOPE
-
-        return action_handler, orch
-
-    def create(
-        self,
-        orch=None,
-        actions: List[Action] = None,
-        *args,
-        **kwargs,
-    ):
-        if "model" not in kwargs:
+        if "model" not in kwargs and self.model:
             kwargs["model"] = self.model
 
-        return AIChatCompletion.wrap_chat_completion_create(
-            litellm.completion
-        )(
-            *args,
-            actions=actions or [],
-            orch=orch,
-            logger=self.logger,
-            token_usage_tracker=self.token_usage_tracker,
-            **kwargs,
-        )
+        actions = kwargs.pop("actions", None)
+        orch = kwargs.pop("orch", None)
 
-    @staticmethod
-    def validate_orch(orch):
-        if orch is not None:
-            for key in orch.keys():
-                if not isinstance(key, str):
-                    raise AIChatCompletionException(
-                        f"Orch keys must be action name (str), found {type(key)}"
-                    )
+        if actions is None:
+            raise ChatCompletionException("actions must be provided")
 
-    @staticmethod
-    def wrap_chat_completion_create(original_create_method):
-        def wrapper_for_logging(
-            *args,
-            logger: logging.Logger | None = None,
-            logging_name: str | None = None,
-            logging_metadata: dict | None = None,
-            logging_level=logging.INFO,
-            **kwargs,
-        ):
-            DEFAULT_LOGGING_NAME = "agentkit_initial_chat_completion"
+        self.validate_orch(orch)
+        action_handler, orch = self.build_orch(actions, orch)
+        tools = Tools.from_expr(orch[DEFAULT_ACTION_SCOPE])
 
-            def new_create(
-                actions: List[Action] = None,
-                orch=None,
-                token_usage_tracker=None,
+        messages = kwargs.get("messages")
+        model = kwargs.get("model")
+
+        chat_completion_create_method = self.get_chat_completion_method()
+
+        while True:
+            api_response = chat_completion_create_method(
                 *args,
                 **kwargs,
-            ):
-                AIChatCompletion.validate_orch(orch)
+                **(tools.to_arguments() if bool(tools) else {}),
+            )
 
-                chat_completion_create_method = original_create_method
-                if logger:
-                    chat_completion_create_method = traceable(
-                        name=(logging_name or DEFAULT_LOGGING_NAME)
-                        + ".chat.completions.create",
-                        logger=logger,
-                        metadata=logging_metadata,
-                        level=logging_level,
-                    )(original_create_method)
-
-                if token_usage_tracker is None:
-                    token_usage_tracker = TokenUsageTracker()
-
-                messages = kwargs.get("messages")
-                if messages is None:
-                    raise AIChatCompletionException(
-                        "messages keyword argument is required for chat completion"
-                    )
-                model = kwargs.get("model")
-                if model is None:
-                    raise AIChatCompletionException(
-                        "model keyword argument is required for chat completion"
-                    )
-
-                action_handler, orch = AIChatCompletion.build_orch(actions, orch)
-                response = None
-
-                tools = Tools.from_expr(orch[DEFAULT_ACTION_SCOPE])
-
-                while True:
-                    tools_argument = tools.to_arguments()
-                    if tools_argument["tools"]:
-                        api_response = chat_completion_create_method(
-                            *args,
-                            **kwargs,
-                            **tools_argument,
-                        )
-                    else:
-                        api_response = chat_completion_create_method(
-                            *args,
-                            **kwargs,
-                        )
-
-                    # logic to handle streaming API response
-                    if isinstance(api_response, Stream):
-                        api_response = AIChatCompletion._handle_stream_response(
-                            api_response
-                        )
-
-                        if isinstance(api_response, itertools._tee):
-                            # if it's a tee object, return right away
-                            return api_response
-                    else:
-                        token_usage_tracker.track_usage(api_response.usage)
-
-                    choice = api_response.choices[0]
-                    message = choice.message
-
-                    if message.tool_calls:
-                        tools, (stop, resp) = AIChatCompletion._invoke_tool(
-                            messages,
-                            model,
-                            message,
-                            message.tool_calls,
-                            tools,
-                            orch,
-                            action_handler,
-                        )
-                        if stop:
-                            return resp
-                    elif message.content is not None:
-                        response = api_response
-
-                        # ignore last message in the function loop
-                        # messages += [{"role": "assistant", "content": message["content"]}]
-                        if choice.finish_reason == "stop":
-                            """
-                            Stop Reasons:
-
-                            - Occurs when the API returns a message that is complete or is concluded by one of the stop sequences defined via the 'stop' parameter.
-
-                            See https://platform.openai.com/docs/guides/gpt/chat-completions-api for details.
-                            """
-
-                            break
-                    else:
-                        raise AIChatCompletionException(
-                            f"Unsupported response from OpenAI api: {api_response}"
-                        )
-                return response
-
-            if logger:
-                return traceable(
-                    name=logging_name or DEFAULT_LOGGING_NAME,
-                    logger=logger,
-                    metadata=logging_metadata,
-                    level=logging_level,
-                )(new_create)(*args, **kwargs)
+            if isinstance(api_response, Stream):
+                api_response = self.handle_stream_response(api_response)
+                if isinstance(api_response, itertools._tee):
+                    return api_response
             else:
-                return new_create(*args, **kwargs)
+               if hasattr(api_response, 'usage'):
+                    self.token_usage_tracker.track_usage(api_response.usage)
 
-        return wrapper_for_logging
+            choice = api_response.choices[0]
+            message = choice.message
+
+            if message.tool_calls:
+                tools, (stop, resp) = self.invoke_tool(
+                    messages, model, message, message.tool_calls, action_handler, orch, tools
+                )
+                if stop:
+                    return resp
+            elif message.content is not None:
+                if choice.finish_reason == "stop":
+                    return api_response
+            else:
+                raise ChatCompletionException(
+                    f"Unsupported response from OpenAI api: {api_response}"
+                )
+
+    def get_chat_completion_method(self):
+        if self.logger:
+            return traceable(
+                name=f"{self.logging_name}.chat.completions.create",
+                logger=self.logger,
+                metadata=self.logging_metadata,
+                level=self.logging_level,
+            )(litellm.completion)
+        else:
+            return litellm.completion
+
+
+def completion(*args, **kwargs):
+    """
+    A standalone function that creates a ChatCompletion instance and calls it.
+    This function supports both simple usage and usage with logging.
+    """
+    # Extract ChatCompletion-specific kwargs
+    completion_kwargs = {
+        k: kwargs.pop(k)
+        for k in [
+            "model",
+            "logger",
+            "logging_name",
+            "logging_metadata",
+            "logging_level",
+        ]
+        if k in kwargs
+    }
+
+
+    # Extract TokenUsageTracker
+    token_usage_tracker = kwargs.pop("token_usage_tracker", None)
+
+    # Create a ChatCompletion instance
+    chat_completion = ChatCompletion.create(
+        token_usage_tracker=token_usage_tracker, **completion_kwargs
+    )
+
+    # Call the instance with the remaining args and kwargs
+    return chat_completion(*args, **kwargs)

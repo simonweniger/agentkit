@@ -1,32 +1,32 @@
 # Traceable Action with LangSmith
 
-In this post, we are going to build a task planning agent with ActionWeaver and LangSmith for better debugging and tracing capabilities!
+In this post, we are going to build a task planning agent with Agentkit and LangSmith for better debugging and tracing capabilities!
 
 
-- [ActionWeaver](https://github.com/TengHu/ActionWeaver) simplifies the development of LLM applications by providing straightforward tools for structured data parsing, function dispatching and orchestration.
+- [Agentkit](https://github.com/TengHu/Agentkit) simplifies the development of LLM applications by providing straightforward tools for structured data parsing, function dispatching and orchestration.
 - [LangSmith](https://www.langchain.com/langsmith) is a popular platform for debug, trace, test and evaluation for intelligence agent applications, developed by LangChain.
 
-Because ActionWeaver's just a lightweight framework centered around functions calling with LLM, the integration between two is seamless and almost native! 
+Because Agentkit's just a lightweight framework centered around functions calling with LLM, the integration between two is seamless and almost native! 
 
 
-By the end of this blog post, you will learn how to effectively use the LangSmith tracing with ActionWeaver. For the complete working notebook, please refer to [here](https://actionweaver.readthedocs.io/en/latest/notebooks/cookbooks/langsmith.html).
+By the end of this blog post, you will learn how to effectively use the LangSmith tracing with Agentkit. For the complete working notebook, please refer to [here](https://agentkit.readthedocs.io/en/latest/notebooks/cookbooks/langsmith.html).
 
 
 Let's first explore some basic concepts.
 
-- `action`: A fundamental component in ActionWeaver, it represents a tool that can be used by LLM. Each action comprises two main elements: a Pydantic model that is generated to facilitate structured prompting, and a conventional Python function.
+- `action`: A fundamental component in Agentkit, it represents a tool that can be used by LLM. Each action comprises two main elements: a Pydantic model that is generated to facilitate structured prompting, and a conventional Python function.
 
 
-## Wrap the OpenAI client with ActionWeaver and LangSmith for traceability.
+## Wrap the OpenAI client with Agentkit and LangSmith for traceability.
 To start, let's
 
 - Import and LangSmith `traceable` to the OpenAI client's `client.chat.completions.create` method to enable OpenAI API call tracing.
-- Wrap the OpenAI client to leverage all ActionWeaver features. Through wrapping your LLM client with ActionWeaver, it takes charge of function/tool prompting and the function calling loop. Additionally, it provides control mechanisms such as 'orchestration' to manage the sequence of functions presented to the LLM.
-- Finally, Apply the `traceable` to ActionWeaver-wrapped client's `client.create` method to ensure tracing on top level `client.create` call.
+- Wrap the OpenAI client to leverage all Agentkit features. Through wrapping your LLM client with Agentkit, it takes charge of function/tool prompting and the function calling loop. Additionally, it provides control mechanisms such as 'orchestration' to manage the sequence of functions presented to the LLM.
+- Finally, Apply the `traceable` to Agentkit-wrapped client's `client.create` method to ensure tracing on top level `client.create` call.
 
 ```python
 from langsmith import traceable
-from actionweaver.llms import wrap
+from agentkit.llms import wrap
 from openai import OpenAI
 
 client = OpenAI()
@@ -35,10 +35,10 @@ client = OpenAI()
 # This allows for detailed tracking of API calls to OpenAI.
 client.chat.completions.create = traceable(name="llm_call", run_type="llm")(client.chat.completions.create)
 
-# Enhance the LLM client with ActionWeaver.
+# Enhance the LLM client with Agentkit.
 llm = wrap(client)
 
-# Track ActionWeaver wrapped create method with LangSmith tracing to monitor ActionWeaver calls.
+# Track Agentkit wrapped create method with LangSmith tracing to monitor Agentkit calls.
 llm.create = traceable(name="actionweaver_call", run_type="llm")(llm.create)
 ```
 
@@ -46,7 +46,7 @@ llm.create = traceable(name="actionweaver_call", run_type="llm")(llm.create)
  You can easily turn any python function into an action through `action` decorator. In addition, by applying LangSmith `traceable` function, you can convert it into a traceable action. That's all it takes to create a traceable action from a Python function!
  
 > **Note**:
-We pass the `traceable` parameter into the action decorators instead of using regular Python decoration because ActionWeaver generates a Pydantic model from the function signature, and we want to exclude `traceable` from the Pydantic model.
+We pass the `traceable` parameter into the action decorators instead of using regular Python decoration because Agentkit generates a Pydantic model from the function signature, and we want to exclude `traceable` from the Pydantic model.
 
 
 Example:
@@ -72,10 +72,10 @@ orch = {
 }
 ```
 
-This configuration instructs the LLM to first execute the plan_tasks_and_solve action, followed by the summarize_info action to condense the results and present them directly to the user. For further details on function orchestration, refer to [here](https://github.com/TengHu/ActionWeaver?tab=readme-ov-file#orchestration-of-actions-experimental)
+This configuration instructs the LLM to first execute the plan_tasks_and_solve action, followed by the summarize_info action to condense the results and present them directly to the user. For further details on function orchestration, refer to [here](https://github.com/TengHu/Agentkit?tab=readme-ov-file#orchestration-of-actions-experimental)
 
 
-For the complete working example, please refer to [here](https://actionweaver.readthedocs.io/en/latest/notebooks/cookbooks/langsmith.html).
+For the complete working example, please refer to [here](https://agentkit.readthedocs.io/en/latest/notebooks/cookbooks/langsmith.html).
 A sketch implementation of the TaskPlanner class is shown below:
 ```python 
 class TaskPlanner:

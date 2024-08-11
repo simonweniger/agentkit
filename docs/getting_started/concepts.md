@@ -4,11 +4,11 @@
 <img src="../../../figures/scale_tools.png">
 
 
-ActionWeaver helps you easily build LLM-powered agents that excel at dispatching and orchestrating external tools efficiently at scale. It currently leverages OpenAI functions behind the scenes.
+Agentkit helps you easily build LLM-powered agents that excel at dispatching and orchestrating external tools efficiently at scale. It currently leverages OpenAI functions behind the scenes.
 
 In this guide focusing on high-level concepts, you will gain insights into:
 
-The fundamental concepts and mental models that underpin the functioning of ActionWeaver, and some examples as well.
+The fundamental concepts and mental models that underpin the functioning of Agentkit, and some examples as well.
 
 ## Agent
 
@@ -18,9 +18,9 @@ Example:
 ```python
 import logging
 from typing import List
-from actionweaver import ActionHandlerMixin, action
-from actionweaver.llms.openai.chat import OpenAIChatCompletion
-from actionweaver.llms.openai.tokens import TokenUsageTracker
+from agentkit import ActionHandlerMixin, action
+from agentkit.llms.openai.chat import OpenAIChatCompletion
+from agentkit.llms.openai.tokens import TokenUsageTracker
 
 logger = logging.getLogger(__name__)
 
@@ -52,11 +52,11 @@ class AgentV0(ActionHandlerMixin):
 
 ## Action
 
-Action is a core concept in ActionWeaver, where each Action corresponds to a function within the OpenAI realm. In ActionWeaver, you have the capability to convert any Python function into an action that your agent can dispatch by merely adding an action decorator, as demonstrated in the example above. The agent will utilize the function's docstring as the description for the OpenAI API.
+Action is a core concept in Agentkit, where each Action corresponds to a function within the OpenAI realm. In Agentkit, you have the capability to convert any Python function into an action that your agent can dispatch by merely adding an action decorator, as demonstrated in the example above. The agent will utilize the function's docstring as the description for the OpenAI API.
 
 ### Grouping and Extending Actions Through Inheritance
 
-Users can also inherit actions from parent ActionWeaver agent class. In this example below, , creating a powerful and extensible design pattern. 
+Users can also inherit actions from parent Agentkit agent class. In this example below, , creating a powerful and extensible design pattern. 
 
 In the example below, we wrap the [LangChain Google search](https://python.langchain.com/docs/integrations/tools/google_search) as a method. With inheritance, the new agent can utilize the Google search tool method as well as any other actions defined in the parent classes. This structure makes it simple to compose agent upon existing code.
 
@@ -84,7 +84,7 @@ class AgentV1(AgentV0, LangChainTools):
 
 ## Orchestration
 
-One of ActionWeaver core feature is orchestration of actions. Each action has these two following attributes: 
+One of Agentkit core feature is orchestration of actions. Each action has these two following attributes: 
 
 **Scope**: Each action is confined to its own visibility scope.
 
