@@ -1,7 +1,6 @@
 import logging
 from typing import Callable
 from typing import List
-from typing import Optional
 
 from agentkit.actions.action import Action
 from agentkit.utils.pydantic_utils import create_pydantic_model_from_func

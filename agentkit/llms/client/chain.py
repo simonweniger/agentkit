@@ -9,9 +9,9 @@ import agentkit.llms.loop_action as la
 from agentkit.actions.action import Action
 from agentkit.llms.client.chat import AIChatCompletion
 from agentkit.llms.client.chat import AIChatCompletionException
-from agentkit.llms.client.tools import Tools
 from agentkit.llms.exception_handler import ChatLoopInfo
 from agentkit.llms.exception_handler import ExceptionHandler
+from agentkit.llms.general.tools import Tools
 from agentkit.telemetry import traceable
 from agentkit.utils import DEFAULT_ACTION_SCOPE
 from agentkit.utils.tokens import TokenUsageTracker
@@ -25,7 +25,7 @@ class FunctionCallingLoopException(AIChatCompletionException):
     pass
 
 
-class Agent(AIChatCompletion):
+class Chain(AIChatCompletion):
     def __init__(
         self,
         fallbacks: bool = False,
@@ -148,7 +148,7 @@ class Agent(AIChatCompletion):
 
         return wrapper_for_logging
 
-    def create(self, *args, **kwargs):
+    def invoke(self, *args, **kwargs):
         logging.info("Creating chat loop.")
         kwargs.update(model=self.model)
         if self.api_key:

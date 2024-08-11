@@ -7,6 +7,7 @@ from typing import Dict
 from typing import List
 
 from agentkit.telemetry import traceable
+from agentkit.utils import DEFAULT_ACTION_SCOPE
 
 
 class ActionException(Exception):
@@ -60,6 +61,26 @@ class Action:
 
     def json_schema(self):
         return self.pydantic_model.model_json_schema()
+
+    def invoke(
+        self,
+        agent,
+        force=True,
+        *args,
+        **kwargs,
+    ):
+        if agent is None:
+            raise ActionException(
+                f"Agent not found. Please provide an agent to invoke action {self.name}."
+            )
+        response = agent.create(
+            *args,
+            orch={DEFAULT_ACTION_SCOPE: self, self.name: None} if force else None,
+            actions=[self],
+            **kwargs,
+        )
+
+        return response
 
     def get_function_details(self):
         return {
