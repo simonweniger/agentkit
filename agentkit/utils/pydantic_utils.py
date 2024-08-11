@@ -35,7 +35,7 @@ def create_pydantic_model_from_func_v0(
 
     """
     Retrieve function signature details
-    
+
     - args is a list of the positional parameter names.
     - varargs is the name of the * parameter or None if arbitrary positional arguments are not accepted.
     - varkw is the name of the ** parameter or None if arbitrary keyword arguments are not accepted.
