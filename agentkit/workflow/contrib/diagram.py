@@ -5,7 +5,7 @@ from urllib.request import urlopen
 
 import pydot
 
-from ..statemachine import StateMachine
+from ..workflow import Workflow
 
 
 class DotGraphMachine:
@@ -67,7 +67,7 @@ class DotGraphMachine:
         )
 
     def _actions_getter(self):
-        if isinstance(self.machine, StateMachine):
+        if isinstance(self.machine, Workflow):
 
             def getter(grouper):
                 return self.machine._get_callbacks(grouper.key)
@@ -154,7 +154,7 @@ class DotGraphMachine:
         return self.get_graph()
 
 
-def quickchart_write_svg(sm: StateMachine, path: str):
+def quickchart_write_svg(sm: Workflow, path: str):
     """
     If the default dependency of GraphViz installed locally doesn't work for you. As an option,
     you can generate the image online from the output of the `dot` language,
@@ -201,19 +201,19 @@ def import_sm(qualname):
     module_name, class_name = qualname.rsplit(".", 1)
     module = importlib.import_module(module_name)
     smclass = getattr(module, class_name, None)
-    if not smclass or not issubclass(smclass, StateMachine):
-        raise ValueError(f"{class_name} is not a subclass of StateMachine")
+    if not smclass or not issubclass(smclass, Workflow):
+        raise ValueError(f"{class_name} is not a subclass of Workflow")
 
     return smclass
 
 
 def write_image(qualname, out):
     """
-    Given a `qualname`, that is the fully qualified dotted path to a StateMachine
+    Given a `qualname`, that is the fully qualified dotted path to a Workflow
     classes, imports the class and generates a dot graph using the `pydot` lib.
     Writes the graph representation to the filename 'out' that will
     open/create and truncate such file and write on it a representation of
-    the graph defined by the statemachine, in the format specified by
+    the graph defined by the workflow, in the format specified by
     the extension contained in the out path (out.ext).
     """
     smclass = import_sm(qualname)
@@ -228,10 +228,10 @@ def main(argv=None):
 
     parser = argparse.ArgumentParser(
         usage="%(prog)s [OPTION] <class_path> <out>",
-        description="Generate diagrams for StateMachine classes.",
+        description="Generate diagrams for Workflow classes.",
     )
     parser.add_argument(
-        "class_path", help="A fully-qualified dotted path to the StateMachine class."
+        "class_path", help="A fully-qualified dotted path to the Workflow class."
     )
     parser.add_argument(
         "out",

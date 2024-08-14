@@ -2,7 +2,7 @@ import inspect
 
 import pytest
 
-from statemachine.signature import SignatureAdapter
+from workflow.signature import SignatureAdapter
 
 
 class TestSignatureAdapter:

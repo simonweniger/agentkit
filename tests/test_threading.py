@@ -1,16 +1,16 @@
 import threading
 import time
 
-from statemachine.state import State
-from statemachine.statemachine import StateMachine
+from workflow.state import State
+from workflow.workflow import Workflow
 
 
 def test_machine_should_allow_multi_thread_event_changes():
     """
-    Test for https://github.com/fgmacedo/python-statemachine/issues/443
+    Test for https://github.com/fgmacedo/python-workflow/issues/443
     """
 
-    class CampaignMachine(StateMachine):
+    class CampaignMachine(Workflow):
         "A workflow machine"
 
         draft = State(initial=True)
@@ -32,13 +32,13 @@ def test_machine_should_allow_multi_thread_event_changes():
 
 def test_regression_443():
     """
-    Test for https://github.com/fgmacedo/python-statemachine/issues/443
+    Test for https://github.com/fgmacedo/python-workflow/issues/443
     """
     time_collecting = 0.2
     time_to_send = 0.125
     time_sampling_current_state = 0.05
 
-    class TrafficLightMachine(StateMachine):
+    class TrafficLightMachine(Workflow):
         "A traffic light machine"
 
         green = State(initial=True)
@@ -77,13 +77,13 @@ def test_regression_443():
 
 def test_regression_443_with_modifications():
     """
-    Test for https://github.com/fgmacedo/python-statemachine/issues/443
+    Test for https://github.com/fgmacedo/python-workflow/issues/443
     """
     time_collecting = 0.2
     time_to_send = 0.125
     time_sampling_current_state = 0.05
 
-    class TrafficLightMachine(StateMachine):
+    class TrafficLightMachine(Workflow):
         "A traffic light machine"
 
         green = State(initial=True)
@@ -129,13 +129,13 @@ def test_regression_443_with_modifications():
 
 async def test_regression_443_with_modifications_for_async_engine():  # noqa: C901
     """
-    Test for https://github.com/fgmacedo/python-statemachine/issues/443
+    Test for https://github.com/fgmacedo/python-workflow/issues/443
     """
     time_collecting = 0.2
     time_to_send = 0.125
     time_sampling_current_state = 0.05
 
-    class TrafficLightMachine(StateMachine):
+    class TrafficLightMachine(Workflow):
         "A traffic light machine"
 
         green = State(initial=True)

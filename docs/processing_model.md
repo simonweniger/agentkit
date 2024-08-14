@@ -27,9 +27,9 @@ queue before processing. You can also configure your state machine to run in
 Consider this state machine:
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class ServerConnection(StateMachine):
+>>> class ServerConnection(Workflow):
 ...     disconnected = State(initial=True)
 ...     connecting = State()
 ...     connected = State(final=True)
@@ -92,7 +92,7 @@ Note that the events `connect` and `connection_succeed` are executed sequentiall
 ## Non-RTC model
 
 ```{deprecated} 2.3.2
-`StateMachine.rtc` option is deprecated. We'll keep only the **run-to-completion** (RTC) model.
+`Workflow.rtc` option is deprecated. We'll keep only the **run-to-completion** (RTC) model.
 ```
 
 In contrast, in a non-RTC (synchronous) processing model, the state machine starts executing nested events

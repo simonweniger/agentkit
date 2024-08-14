@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import Dict  # deprecated since 3.9: https://peps.python.org/pep-0585/
+from typing import Dict
 from typing import Type
 
-from .state import State
-from .utils import ensure_iterable
+from agentkit.workflow.state import State
+from agentkit.utils.workflow import ensure_iterable
 
 EnumType = Type[Enum]
 
@@ -12,13 +12,13 @@ class States:
     """
     A class representing a collection of :ref:`State` objects.
 
-    Helps creating :ref:`StateMachine`'s :ref:`state` definitions from other
+    Helps creating :ref:`Workflow`'s :ref:`state` definitions from other
     sources, like an ``Enum`` class, using :meth:`States.from_enum`.
 
     >>> states_def = [('open', {'initial': True}), ('closed', {'final': True})]
 
-    >>> from statemachine import StateMachine
-    >>> class SM(StateMachine):
+    >>> from workflow import Workflow
+    >>> class SM(Workflow):
     ...
     ...     states = States({
     ...         name: State(**params) for name, params in states_def
@@ -90,10 +90,10 @@ class States:
         ...     pending = 1
         ...     completed = 2
 
-        A :ref:`StateMachine` that uses this enum can be declared as follows:
+        A :ref:`Workflow` that uses this enum can be declared as follows:
 
-        >>> from statemachine import StateMachine
-        >>> class ApprovalMachine(StateMachine):
+        >>> from workflow import Workflow
+        >>> class ApprovalMachine(Workflow):
         ...
         ...     _ = States.from_enum(Status, initial=Status.pending, final=Status.completed)
         ...
@@ -104,7 +104,7 @@ class States:
 
         .. tip::
             When you assign the result of ``States.from_enum`` to a class-level variable in your
-            :ref:`StateMachine`, you're all set. You can use any name for this variable. In this
+            :ref:`Workflow`, you're all set. You can use any name for this variable. In this
             example, we used ``_`` to show that the name doesn't matter. The metaclass will inspect
             the variable of type :ref:`States (class)` and automatically assign the inner
             :ref:`State` instances to the state machine.

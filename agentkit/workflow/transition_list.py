@@ -2,8 +2,8 @@ from typing import Callable
 from typing import Iterable
 from typing import List
 
-from .transition import Transition
-from .utils import ensure_iterable
+from agentkit.workflow.transition import Transition
+from agentkit.utils.workflow import ensure_iterable
 
 
 class TransitionList:

@@ -2,13 +2,13 @@
 Order control machine (rich model)
 ==================================
 
-An StateMachine that demonstrates :ref:`Actions` being used on a rich model.
+An Workflow that demonstrates :ref:`Actions` being used on a rich model.
 
 """
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine.exceptions import InvalidDefinition
+from workflow import State
+from workflow import Workflow
+from workflow.exceptions import InvalidDefinition
 
 
 class Order:
@@ -35,7 +35,7 @@ class Order:
         self.payment_received = False
 
 
-class OrderControl(StateMachine):
+class OrderControl(Workflow):
     waiting_for_payment = State(initial=True, enter="wait_for_payment")
     processing = State()
     shipping = State()
@@ -53,7 +53,7 @@ class OrderControl(StateMachine):
 # Testing OrderControl
 # --------------------
 #
-# Let's first try to create a statemachine instance, using the default dummy model that doesn't
+# Let's first try to create a workflow instance, using the default dummy model that doesn't
 # have the needed methods to complete the state machine. Since the required methods will not be
 # found either in the state machine or in the model, an exception ``AttrNotFound`` will be raised.
 
@@ -64,7 +64,7 @@ except InvalidDefinition as e:
         str(e)
         == (
             "Error on transition process_order from Processing to Shipping when resolving "
-            "callbacks: Did not found name 'payment_received' from model or statemachine"
+            "callbacks: Did not found name 'payment_received' from model or workflow"
         )
     )
 
@@ -90,7 +90,7 @@ control.send("receive_payment", 4)
 # Since there's still $6 left to fulfill the payment, we cannot process the order.
 try:
     control.send("process_order")
-except StateMachine.TransitionNotAllowed as err:
+except Workflow.TransitionNotAllowed as err:
     print(err)
 
 # %%

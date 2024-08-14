@@ -1,8 +1,8 @@
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine import exceptions
+from workflow import State
+from workflow import Workflow
+from workflow import exceptions
 from tests.models import MyModel
 
 
@@ -37,7 +37,7 @@ def test_machine_should_be_at_start_state(campaign_machine):
 def test_machine_should_only_allow_only_one_initial_state():
     with pytest.raises(exceptions.InvalidDefinition):
 
-        class CampaignMachine(StateMachine):
+        class CampaignMachine(Workflow):
             "A workflow machine"
 
             draft = State(initial=True)
@@ -54,7 +54,7 @@ def test_machine_should_only_allow_only_one_initial_state():
 def test_machine_should_activate_initial_state(mocker):
     spy = mocker.Mock()
 
-    class CampaignMachine(StateMachine):
+    class CampaignMachine(Workflow):
         "A workflow machine"
 
         draft = State(initial=True)
@@ -87,7 +87,7 @@ def test_machine_should_activate_initial_state(mocker):
 def test_machine_should_not_allow_transitions_from_final_state():
     with pytest.raises(exceptions.InvalidDefinition):
 
-        class CampaignMachine(StateMachine):
+        class CampaignMachine(Workflow):
             "A workflow machine"
 
             draft = State(initial=True)
@@ -338,7 +338,7 @@ def test_state_machine_with_a_invalid_model_state_value(request, campaign_machin
 
 
 def test_should_not_create_instance_of_abstract_machine():
-    class EmptyMachine(StateMachine):
+    class EmptyMachine(Workflow):
         "An empty machine"
 
         pass
@@ -351,14 +351,14 @@ def test_should_not_create_instance_of_machine_without_states():
     s1 = State()
     with pytest.raises(exceptions.InvalidDefinition):
 
-        class OnlyTransitionMachine(StateMachine):
+        class OnlyTransitionMachine(Workflow):
             t1 = s1.to.itself()
 
 
 def test_should_not_create_instance_of_machine_without_transitions():
     with pytest.raises(exceptions.InvalidDefinition):
 
-        class NoTransitionsMachine(StateMachine):
+        class NoTransitionsMachine(Workflow):
             "A machine without transitions"
 
             initial = State(initial=True)
@@ -366,12 +366,12 @@ def test_should_not_create_instance_of_machine_without_transitions():
 
 def test_should_not_create_disconnected_machine():
     expected = (
-        r"There are unreachable states. The statemachine graph should have a single component. "
+        r"There are unreachable states. The workflow graph should have a single component. "
         r"Disconnected states: \['blue'\]"
     )
     with pytest.raises(exceptions.InvalidDefinition, match=expected):
 
-        class BrokenTrafficLightMachine(StateMachine):
+        class BrokenTrafficLightMachine(Workflow):
             "A broken traffic light machine"
 
             green = State(initial=True)
@@ -383,12 +383,12 @@ def test_should_not_create_disconnected_machine():
 
 def test_should_not_create_big_disconnected_machine():
     expected = (
-        r"There are unreachable states. The statemachine graph should have a single component. "
+        r"There are unreachable states. The workflow graph should have a single component. "
         r"Disconnected states: \[.*\]$"
     )
     with pytest.raises(exceptions.InvalidDefinition, match=expected):
 
-        class BrokenTrafficLightMachine(StateMachine):
+        class BrokenTrafficLightMachine(Workflow):
             "A broken traffic light machine"
 
             green = State(initial=True)
@@ -407,7 +407,7 @@ def test_state_value_is_correct():
     STATE_NEW = 0
     STATE_DRAFT = 1
 
-    class ValueTestModel(StateMachine, strict_states=False):
+    class ValueTestModel(Workflow, strict_states=False):
         new = State(STATE_NEW, value=STATE_NEW, initial=True)
         draft = State(STATE_DRAFT, value=STATE_DRAFT, final=True)
 
@@ -428,7 +428,7 @@ def test_final_states(campaign_machine_with_final_state):
 
 def test_should_not_override_states_properties(campaign_machine):
     machine = campaign_machine()
-    with pytest.raises(exceptions.StateMachineError) as e:
+    with pytest.raises(exceptions.WorkflowError) as e:
         machine.draft = "something else"
 
     assert "State overriding is not allowed. Trying to add 'something else' to draft" in str(e)
@@ -468,7 +468,7 @@ class TestWarnings:
             match=r"have no outgoing transition: \['state_without_outgoing_transition'\]",
         ):
 
-            class TrapStateMachine(StateMachine):
+            class TrapWorkflow(Workflow):
                 initial = State(initial=True)
                 state_without_outgoing_transition = State()
 
@@ -480,7 +480,7 @@ class TestWarnings:
             match=r"have no path to a final state: \['producing'\]",
         ):
 
-            class TrapStateMachine(StateMachine):
+            class TrapWorkflow(Workflow):
                 started = State(initial=True)
                 closed = State(final=True)
                 producing = State()

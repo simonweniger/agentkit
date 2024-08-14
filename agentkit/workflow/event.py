@@ -1,12 +1,12 @@
 from inspect import isawaitable
 from typing import TYPE_CHECKING
 
-from statemachine.utils import run_async_from_sync
+from workflow.utils import run_async_from_sync
 
 from .event_data import TriggerData
 
 if TYPE_CHECKING:
-    from .statemachine import StateMachine
+    from .workflow import Workflow
 
 
 class Event:
@@ -16,7 +16,7 @@ class Event:
     def __repr__(self):
         return f"{type(self).__name__}({self.name!r})"
 
-    def trigger(self, machine: "StateMachine", *args, **kwargs):
+    def trigger(self, machine: "Workflow", *args, **kwargs):
         trigger_data = TriggerData(
             machine=machine,
             event=self.name,

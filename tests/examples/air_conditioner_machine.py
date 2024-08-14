@@ -2,15 +2,15 @@
 Air Conditioner machine
 =======================
 
-A StateMachine that exercises reading from a stream of events.
+A Workflow that exercises reading from a stream of events.
 
 """
 
 import random
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine.utils import run_async_from_sync
+from workflow import State
+from workflow import Workflow
+from workflow.utils import run_async_from_sync
 
 
 def sensor_temperature_reader(seed: int, lower: int = 15, higher: int = 35):
@@ -20,7 +20,7 @@ def sensor_temperature_reader(seed: int, lower: int = 15, higher: int = 35):
         yield random.randint(lower, higher)
 
 
-class AirConditioner(StateMachine):
+class AirConditioner(Workflow):
     off = State(initial=True)
     cooling = State()
     standby = State()

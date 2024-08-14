@@ -1,9 +1,9 @@
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
 def test_assign_events_on_transitions():
-    class TrafficLightMachine(StateMachine):
+    class TrafficLightMachine(Workflow):
         "A traffic light machine"
 
         green = State(initial=True)

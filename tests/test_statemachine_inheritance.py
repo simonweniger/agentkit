@@ -1,14 +1,14 @@
 import pytest
 
-from statemachine import exceptions
+from workflow import exceptions
 
 
 @pytest.fixture()
 def BaseMachine():
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class BaseMachine(StateMachine, strict_states=False):
+    class BaseMachine(Workflow, strict_states=False):
         state_1 = State(initial=True)
         state_2 = State()
         trans_1_2 = state_1.to(state_2)
@@ -27,7 +27,7 @@ def InheritedClass(BaseMachine):
 
 @pytest.fixture()
 def ExtendedClass(BaseMachine):
-    from statemachine import State
+    from workflow import State
 
     class ExtendedClass(BaseMachine):
         state_3 = State()
@@ -39,7 +39,7 @@ def ExtendedClass(BaseMachine):
 
 @pytest.fixture()
 def OverridedClass(BaseMachine):
-    from statemachine import State
+    from workflow import State
 
     class OverridedClass(BaseMachine):
         state_2 = State()
@@ -52,7 +52,7 @@ def OverridedClass(BaseMachine):
 
 @pytest.fixture()
 def OverridedTransitionClass(BaseMachine):
-    from statemachine import State
+    from workflow import State
 
     class OverridedTransitionClass(BaseMachine):
         state_3 = State()

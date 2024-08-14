@@ -6,11 +6,11 @@ if TYPE_CHECKING:
     from .state import State
 
 
-class StateMachineError(Exception):
+class WorkflowError(Exception):
     "Base exception for this project, all exceptions that can be raised inherit from this class."
 
 
-class InvalidDefinition(StateMachineError):
+class InvalidDefinition(WorkflowError):
     "The state machine has a definition error"
 
 
@@ -28,7 +28,7 @@ class AttrNotFound(InvalidDefinition):
     "There's no method or property with the given name"
 
 
-class TransitionNotAllowed(StateMachineError):
+class TransitionNotAllowed(WorkflowError):
     "Raised when there's no transition that can run from the current :ref:`state`."
 
     def __init__(self, event: str, state: "State"):

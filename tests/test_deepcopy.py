@@ -3,15 +3,15 @@ from copy import deepcopy
 
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine.exceptions import TransitionNotAllowed
+from workflow import State
+from workflow import Workflow
+from workflow.exceptions import TransitionNotAllowed
 
 logger = logging.getLogger(__name__)
 DEBUG = logging.DEBUG
 
 
-class MySM(StateMachine):
+class MySM(Workflow):
     draft = State("Draft", initial=True, value="draft")
     published = State("Published", value="published", final=True)
 

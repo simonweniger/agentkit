@@ -1,5 +1,5 @@
-from statemachine.callbacks import CallbackGroup
-from statemachine.callbacks import CallbackSpec
+from workflow.callbacks import CallbackGroup
+from workflow.callbacks import CallbackSpec
 
 
 class TestActions:

@@ -1,7 +1,7 @@
 Examples
 --------
 
-Below is a gallery of ``StateMachine`` examples.
+Below is a gallery of ``Workflow`` examples.
 
 .. only:: comment
 

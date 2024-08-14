@@ -179,9 +179,9 @@ class CallbackSpecList:
 
         The implemented solution is to resolve the collision giving the func a reference method.
         To update It's callback when the name is resolved on the
-        :func:`StateMachineMetaclass.add_from_attributes`.
+        :func:`WorkflowMetaclass.add_from_attributes`.
         If the ``func`` is bounded It will be used directly, if not, it's ref will be replaced
-        by the given attr name and on `statemachine._setup()` the dynamic name will be resolved
+        by the given attr name and on `workflow._setup()` the dynamic name will be resolved
         properly.
 
         Args:
@@ -357,7 +357,7 @@ class CallbacksRegistry:
             ):
                 continue
             raise AttrNotFound(
-                _("Did not found name '{}' from model or statemachine").format(meta.func)
+                _("Did not found name '{}' from model or workflow").format(meta.func)
             )
 
     def async_or_sync(self):

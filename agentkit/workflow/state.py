@@ -3,21 +3,21 @@ from typing import Any
 from typing import Dict
 from weakref import ref
 
-from .callbacks import CallbackGroup
-from .callbacks import CallbackPriority
-from .callbacks import CallbackSpecList
-from .exceptions import StateMachineError
-from .i18n import _
-from .transition import Transition
-from .transition_list import TransitionList
+from agentkit.workflow.callbacks import CallbackGroup
+from agentkit.workflow.callbacks import CallbackPriority
+from agentkit.workflow.callbacks import CallbackSpecList
+from agentkit.workflow.exceptions import WorkflowError
+from agentkit.utils.i18n import _
+from agentkit.workflow.transition import Transition
+from agentkit.workflow.transition_list import TransitionList
 
 if TYPE_CHECKING:
-    from .statemachine import StateMachine
+    from .workflow import Workflow
 
 
 class State:
     """
-    A State in a :ref:`StateMachine` describes a particular behavior of the machine.
+    A State in a :ref:`Workflow` describes a particular behavior of the machine.
     When we say that a machine is “in” a state, it means that the machine behaves
     in the way that state describes.
 
@@ -32,7 +32,7 @@ class State:
             If specified, you can use It to map a more friendly representation to a low-level
             value.
         initial: Set ``True`` if the ``State`` is the initial one. There must be one and only
-            one initial state in a statemachine. Defaults to ``False``.
+            one initial state in a workflow. Defaults to ``False``.
         final: Set ``True`` if represents a final state. A machine can have
             optionally many final states. Final states have no :ref:`transition` starting from It.
             Defaults to ``False``.
@@ -42,9 +42,9 @@ class State:
             See :ref:`actions`.
 
     State is a core component on how this library implements an expressive API to declare
-    StateMachines.
+    Workflows.
 
-    >>> from statemachine import State
+    >>> from workflow import State
 
     Given a few states...
 
@@ -144,11 +144,11 @@ class State:
         return self.for_instance(machine=machine, cache=machine._states_for_instance)
 
     def __set__(self, instance, value):
-        raise StateMachineError(
+        raise WorkflowError(
             _("State overriding is not allowed. Trying to add '{}' to {}").format(value, self.id)
         )
 
-    def for_instance(self, machine: "StateMachine", cache: Dict["State", "State"]) -> "State":
+    def for_instance(self, machine: "Workflow", cache: Dict["State", "State"]) -> "State":
         if self not in cache:
             cache[self] = InstanceState(self, machine)
 
@@ -213,7 +213,7 @@ class InstanceState(State):
     def __init__(
         self,
         state: State,
-        machine: "StateMachine",
+        machine: "Workflow",
     ):
         self._state = ref(state)
         self._machine = ref(machine)

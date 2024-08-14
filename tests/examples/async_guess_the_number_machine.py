@@ -2,7 +2,7 @@
 Async guess the number machine
 ==============================
 
-An async example of StateMachine for the well know game.
+An async example of Workflow for the well know game.
 
 In order to pay the game, run this script and type a number between 1 and 5.
 The command line should include an extra param to run the script in interactive mode:
@@ -22,11 +22,11 @@ import asyncio
 import random
 import sys
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class GuessTheNumberMachine(StateMachine):
+class GuessTheNumberMachine(Workflow):
     """
     Guess the number machine.
 

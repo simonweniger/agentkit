@@ -1,7 +1,7 @@
 import re
 
-from statemachine.contrib.diagram import DotGraphMachine
-from statemachine.factory import StateMachineMetaclass
+from workflow.contrib.diagram import DotGraphMachine
+from workflow.factory import WorkflowMetaclass
 
 from .helpers import import_module_by_path
 
@@ -50,7 +50,7 @@ class MachineScraper:
             if (
                 key.startswith("__")
                 or unique_key in self.seen
-                or not isinstance(value, StateMachineMetaclass)
+                or not isinstance(value, WorkflowMetaclass)
                 or value._abstract
             ):
                 continue

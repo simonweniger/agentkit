@@ -1,14 +1,14 @@
 ### Issue 308
 
-A StateMachine that exercises the example given on issue
+A Workflow that exercises the example given on issue
 #[308](https://github.com/fgmacedo/python-statemachine/issues/308).
 
 In this example, we share the transition list between events.
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class TestSM(StateMachine):
+>>> class TestSM(Workflow):
 ...     state1 = State('s1', initial=True)
 ...     state2 = State('s2')
 ...     state3 = State('s3')

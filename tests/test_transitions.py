@@ -1,9 +1,9 @@
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine.exceptions import InvalidDefinition
-from statemachine.transition import Transition
+from workflow import State
+from workflow import Workflow
+from workflow.exceptions import InvalidDefinition
+from workflow.transition import Transition
 
 from .models import MyModel
 
@@ -75,7 +75,7 @@ def test_transition_call_can_only_be_used_as_decorator():
 def transition_callback_machine(request):
     if request.param == "bounded":
 
-        class ApprovalMachine(StateMachine):
+        class ApprovalMachine(Workflow):
             "A workflow"
 
             requested = State(initial=True)
@@ -89,7 +89,7 @@ def transition_callback_machine(request):
 
     elif request.param == "unbounded":
 
-        class ApprovalMachine(StateMachine):
+        class ApprovalMachine(Workflow):
             "A workflow"
 
             requested = State(initial=True)
@@ -114,7 +114,7 @@ def test_statemachine_transition_callback(transition_callback_machine):
 
 
 def test_can_run_combined_transitions():
-    class CampaignMachine(StateMachine):
+    class CampaignMachine(Workflow):
         "A workflow machine"
 
         draft = State(initial=True)
@@ -137,7 +137,7 @@ def test_can_detect_stuck_states():
         match="All non-final states should have at least one outgoing transition.",
     ):
 
-        class CampaignMachine(StateMachine, strict_states=True):
+        class CampaignMachine(Workflow, strict_states=True):
             "A workflow machine"
 
             draft = State(initial=True)
@@ -156,7 +156,7 @@ def test_can_detect_unreachable_final_states():
         match="All non-final states should have at least one path to a final state.",
     ):
 
-        class CampaignMachine(StateMachine, strict_states=True):
+        class CampaignMachine(Workflow, strict_states=True):
             "A workflow machine"
 
             draft = State(initial=True)
@@ -170,7 +170,7 @@ def test_can_detect_unreachable_final_states():
 
 
 def test_transitions_to_the_same_estate_as_itself():
-    class CampaignMachine(StateMachine):
+    class CampaignMachine(Workflow):
         "A workflow machine"
 
         draft = State(initial=True)
@@ -215,7 +215,7 @@ def test_should_transition_with_a_dict_as_return():
         "c": 3,
     }
 
-    class ApprovalMachine(StateMachine):
+    class ApprovalMachine(Workflow):
         "A workflow"
 
         requested = State(initial=True)
@@ -247,7 +247,7 @@ class TestInternalTransition:
     ):
         calls = []
 
-        class TestStateMachine(StateMachine):
+        class TestWorkflow(Workflow):
             initial = State(initial=True)
 
             loop = initial.to.itself(internal=internal)
@@ -261,7 +261,7 @@ class TestInternalTransition:
             def on_enter_initial(self):
                 calls.append("on_enter_initial")
 
-        sm = TestStateMachine()
+        sm = TestWorkflow()
         sm.activate_initial_state()
 
         calls.clear()
@@ -273,7 +273,7 @@ class TestInternalTransition:
             InvalidDefinition, match="Internal transitions should be self-transitions."
         ):
 
-            class TestStateMachine(StateMachine):
+            class TestWorkflow(Workflow):
                 initial = State(initial=True)
                 final = State(final=True)
 

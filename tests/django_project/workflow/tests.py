@@ -1,8 +1,8 @@
 import pytest
 
-from statemachine.exceptions import TransitionNotAllowed
+from workflow.exceptions import TransitionNotAllowed
 from workflow.models import WorkflowSteps
-from workflow.statemachines import WorfklowStateMachine
+from workflow.statemachines import WorfklowWorkflow
 
 pytestmark = [
     pytest.mark.django_db,
@@ -36,24 +36,24 @@ class TestWorkflow:
     def test_two(self, one):
         # Managing this instance works if I call it like this instead.
         # So this test works
-        wf = WorfklowStateMachine(one)
+        wf = WorfklowWorkflow(one)
         with pytest.raises(TransitionNotAllowed):
             wf.send("publish")
 
     def test_async_with_db_operation(self, one, User, Workflow):
-        """Regression test for https://github.com/fgmacedo/python-statemachine/issues/446"""
+        """Regression test for https://github.com/fgmacedo/python-workflow/issues/446"""
 
         user = User.objects.create_user("user")
         one.user = user
         one.save()
 
-        wf = WorfklowStateMachine(one)
+        wf = WorfklowWorkflow(one)
         wf.send("notify_user")
 
         # And clear model cache, casing user to be loaded later on
         one = Workflow.objects.get(pk=one.pk)
 
-        wf = WorfklowStateMachine(one)
+        wf = WorfklowWorkflow(one)
         wf.send("notify_user")
 
     def test_should_publish(self, one):

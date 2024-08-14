@@ -19,10 +19,10 @@ def current_time():
 @pytest.fixture()
 def campaign_machine():
     "Define a new class for each test"
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class CampaignMachine(StateMachine):
+    class CampaignMachine(Workflow):
         "A workflow machine"
 
         draft = State(initial=True)
@@ -39,10 +39,10 @@ def campaign_machine():
 @pytest.fixture()
 def campaign_machine_with_validator():
     "Define a new class for each test"
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class CampaignMachine(StateMachine):
+    class CampaignMachine(Workflow):
         "A workflow machine"
 
         draft = State(initial=True)
@@ -63,10 +63,10 @@ def campaign_machine_with_validator():
 @pytest.fixture()
 def campaign_machine_with_final_state():
     "Define a new class for each test"
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class CampaignMachine(StateMachine):
+    class CampaignMachine(Workflow):
         "A workflow machine"
 
         draft = State(initial=True)
@@ -83,10 +83,10 @@ def campaign_machine_with_final_state():
 @pytest.fixture()
 def campaign_machine_with_values():
     "Define a new class for each test"
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class CampaignMachineWithKeys(StateMachine):
+    class CampaignMachineWithKeys(Workflow):
         "A workflow machine"
 
         draft = State(initial=True, value=1)
@@ -123,10 +123,10 @@ def AllActionsMachine():
 
 @pytest.fixture()
 def classic_traffic_light_machine(engine):
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class TrafficLightMachine(StateMachine):
+    class TrafficLightMachine(Workflow):
         green = State(initial=True)
         yellow = State()
         red = State()
@@ -143,10 +143,10 @@ def classic_traffic_light_machine(engine):
 
 @pytest.fixture()
 def reverse_traffic_light_machine():
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class ReverseTrafficLightMachine(StateMachine):
+    class ReverseTrafficLightMachine(Workflow):
         "A traffic light machine"
 
         green = State(initial=True)
@@ -161,10 +161,10 @@ def reverse_traffic_light_machine():
 
 @pytest.fixture()
 def approval_machine(current_time):  # noqa: C901
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class ApprovalMachine(StateMachine):
+    class ApprovalMachine(Workflow):
         "A workflow machine"
 
         requested = State(initial=True)
@@ -204,8 +204,8 @@ def approval_machine(current_time):  # noqa: C901
 
 @pytest.fixture(params=["sync", "async"])
 def engine(request):
-    from statemachine.engines.async_ import AsyncEngine
-    from statemachine.engines.sync import SyncEngine
+    from workflow.engines.async_ import AsyncEngine
+    from workflow.engines.sync import SyncEngine
 
     if request.param == "sync":
         return SyncEngine

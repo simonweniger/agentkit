@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from statemachine.mixins import MachineMixin
+from workflow.mixins import MachineMixin
 
 User = get_user_model()
 
@@ -12,7 +12,7 @@ class WorkflowSteps(models.TextChoices):
 
 
 class Workflow(models.Model, MachineMixin):
-    state_machine_name = "workflow.statemachines.WorfklowStateMachine"
+    state_machine_name = "workflow.statemachines.WorfklowWorkflow"
     state_machine_attr = "wf"
     bind_events_as_methods = True
 

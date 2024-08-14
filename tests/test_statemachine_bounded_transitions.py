@@ -2,8 +2,8 @@ from unittest import mock
 
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 from .models import MyModel
 
@@ -15,7 +15,7 @@ def event_mock():
 
 @pytest.fixture()
 def state_machine(event_mock):
-    class CampaignMachine(StateMachine):
+    class CampaignMachine(Workflow):
         draft = State(initial=True)
         producing = State()
         closed = State(final=True)

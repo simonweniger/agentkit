@@ -2,7 +2,7 @@
 Guess the number machine
 ========================
 
-An StateMachine for the well know game.
+An Workflow for the well know game.
 
 Well leave the machine imagine a number and also play the game. Why not?
 
@@ -10,11 +10,11 @@ Well leave the machine imagine a number and also play the game. Why not?
 
 import random
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class GuessTheNumberMachine(StateMachine):
+class GuessTheNumberMachine(Workflow):
     start = State(initial=True)
     low = State()
     high = State()

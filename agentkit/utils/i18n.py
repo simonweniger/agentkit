@@ -6,9 +6,9 @@ locale_dir = script_dir / "locale"
 
 
 def setup_i18n():
-    translate = gettext.translation("statemachine", locale_dir, fallback=True)
-    gettext.bindtextdomain("statemachine", locale_dir)
-    gettext.textdomain("statemachine")
+    translate = gettext.translation("workflow", locale_dir, fallback=True)
+    gettext.bindtextdomain("workflow", locale_dir)
+    gettext.textdomain("workflow")
     return translate.gettext
 
 

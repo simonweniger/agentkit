@@ -19,8 +19,8 @@ from .transition import Transition
 from .transition_list import TransitionList
 
 
-class StateMachineMetaclass(type):
-    "Metaclass for constructing StateMachine classes"
+class WorkflowMetaclass(type):
+    "Metaclass for constructing Workflow classes"
 
     def __init__(
         cls,
@@ -146,7 +146,7 @@ class StateMachineMetaclass(type):
             raise InvalidDefinition(
                 _(
                     "There are unreachable states. "
-                    "The statemachine graph should have a single component. "
+                    "The workflow graph should have a single component. "
                     "Disconnected states: {}"
                 ).format([s.id for s in disconnected_states])
             )

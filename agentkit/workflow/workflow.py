@@ -9,31 +9,31 @@ from typing import Any
 from typing import Dict
 from typing import List
 
-from .callbacks import SPECS_ALL
-from .callbacks import SPECS_SAFE
-from .callbacks import CallbacksExecutor
-from .callbacks import CallbacksRegistry
-from .callbacks import SpecReference
-from .dispatcher import Listener
-from .dispatcher import Listeners
-from .engines.async_ import AsyncEngine
-from .engines.sync import SyncEngine
-from .event import Event
-from .event_data import TriggerData
-from .exceptions import InvalidDefinition
-from .exceptions import InvalidStateValue
-from .exceptions import TransitionNotAllowed
-from .factory import StateMachineMetaclass
-from .graph import iterate_states_and_transitions
-from .i18n import _
-from .model import Model
-from .utils import run_async_from_sync
+from agentkit.workflow.callbacks import SPECS_ALL
+from agentkit.workflow.callbacks import SPECS_SAFE
+from agentkit.workflow.callbacks import CallbacksExecutor
+from agentkit.workflow.callbacks import CallbacksRegistry
+from agentkit.workflow.callbacks import SpecReference
+from agentkit.workflow.dispatcher import Listener
+from agentkit.workflow.dispatcher import Listeners
+from agentkit.workflow.engines.async_ import AsyncEngine
+from agentkit.workflow.engines.sync import SyncEngine
+from agentkit.workflow.event import Event
+from agentkit.workflow.event_data import TriggerData
+from agentkit.workflow.exceptions import InvalidDefinition
+from agentkit.workflow.exceptions import InvalidStateValue
+from agentkit.workflow.exceptions import TransitionNotAllowed
+from agentkit.workflow.factory import WorkflowMetaclass
+from agentkit.workflow.graph import iterate_states_and_transitions
+from agentkit.utils.i18n import _
+from agentkit.workflow.model import Model
+from agentkit.utils.workflow import run_async_from_sync
 
 if TYPE_CHECKING:
     from .state import State
 
 
-class StateMachine(metaclass=StateMachineMetaclass):
+class Workflow(metaclass=WorkflowMetaclass):
     """
 
     Args:
@@ -225,7 +225,7 @@ class StateMachine(metaclass=StateMachineMetaclass):
     def add_listener(self, *listeners):
         """Add a listener.
 
-        Listener are a way to generically add behavior to a :ref:`StateMachine` without changing
+        Listener are a way to generically add behavior to a :ref:`Workflow` without changing
         its internal implementation.
 
         .. seealso::
@@ -239,7 +239,7 @@ class StateMachine(metaclass=StateMachineMetaclass):
         )
 
     def _repr_html_(self):
-        return f'<div class="statemachine">{self._repr_svg_()}</div>'
+        return f'<div class="workflow">{self._repr_svg_()}</div>'
 
     def _repr_svg_(self):
         return self._graph().create_svg().decode()

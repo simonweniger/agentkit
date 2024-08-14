@@ -2,15 +2,15 @@
 Enum campaign machine
 =====================
 
-A :ref:`StateMachine` that demonstrates declaring :ref:`States from Enum types` as source for
+A :ref:`Workflow` that demonstrates declaring :ref:`States from Enum types` as source for
 ``States`` definition.
 
 """
 
 from enum import Enum
 
-from statemachine import StateMachine
-from statemachine.states import States
+from workflow import Workflow
+from workflow.states import States
 
 
 class CampaignStatus(Enum):
@@ -19,7 +19,7 @@ class CampaignStatus(Enum):
     CLOSED = 3
 
 
-class CampaignMachine(StateMachine):
+class CampaignMachine(Workflow):
     "A workflow machine"
 
     states = States.from_enum(

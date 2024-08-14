@@ -36,7 +36,7 @@ def get_machine_cls(name):
 def init_registry():
     global _initialized
     if not _initialized:
-        load_modules(["statemachine", "statemachines"])
+        load_modules(["workflow", "statemachines"])
         _initialized = True
 
 

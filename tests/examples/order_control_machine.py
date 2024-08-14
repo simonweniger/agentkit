@@ -2,15 +2,15 @@
 Order control machine
 ---------------------
 
-An StateMachine that demonstrates :ref:`Guards` being used to control the state flow.
+An Workflow that demonstrates :ref:`Guards` being used to control the state flow.
 
 """
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class OrderControl(StateMachine):
+class OrderControl(Workflow):
     waiting_for_payment = State(initial=True)
     processing = State()
     shipping = State()

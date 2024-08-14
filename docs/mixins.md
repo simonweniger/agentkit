@@ -1,13 +1,13 @@
 
 # Mixins
 
-Your {ref}`domain models` can be inherited from a custom mixin to auto-instantiate a {ref}`statemachine`.
+Your {ref}`domain models` can be inherited from a custom mixin to auto-instantiate a {ref}`workflow`.
 
 ## MachineMixin
 
 
 ```{eval-rst}
-.. autoclass:: statemachine.mixins.MachineMixin
+.. autoclass:: workflow.mixins.MachineMixin
     :members:
     :undoc-members:
 ```
@@ -17,11 +17,11 @@ Your {ref}`domain models` can be inherited from a custom mixin to auto-instantia
 Given a state machine definition:
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> from statemachine.mixins import MachineMixin
+>>> from workflow.mixins import MachineMixin
 
->>> class CampaignMachineWithKeys(StateMachine):
+>>> class CampaignMachineWithKeys(Workflow):
 ...     "A workflow machine"
 ...     draft = State('Draft', initial=True, value=1)
 ...     producing = State('Being produced', value=2)
@@ -85,7 +85,7 @@ On this example the `state_machine_name` is receiving a `__main__` module due
 to the way `autodoc` works so we can have automated tests on the docs
 examples.
 
-On your code, use the fully qualified path to the statemachine class.
+On your code, use the fully qualified path to the workflow class.
 ```
 
 ```{seealso}

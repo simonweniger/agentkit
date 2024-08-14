@@ -1,15 +1,15 @@
 
 ### Issue 449
 
-A StateMachine that exercises the example given on issue
+A Workflow that exercises the example given on issue
 #[449](https://github.com/fgmacedo/python-statemachine/issues/449).
 
 
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     initial = State(initial=True)
 ...     second = State()
 ...     third = State()
@@ -37,7 +37,7 @@ Exercise:
 
 
 ```py
->>> example = ExampleStateMachine()
+>>> example = ExampleWorkflow()
 Entering state initial. Event: __initial__
 
 >>> print(example.current_state)

@@ -1,12 +1,12 @@
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
 @pytest.fixture()
 def sm_class():
-    class SM(StateMachine):
+    class SM(Workflow):
         pending = State(initial=True)
         waiting_approval = State()
         approved = State(final=True)

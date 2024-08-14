@@ -7,11 +7,11 @@ is synchronous.
 
 """
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class AsyncStateMachine(StateMachine):
+class AsyncWorkflow(Workflow):
     initial = State("Initial", initial=True)
     processing = State()
     final = State("Final", final=True)
@@ -32,7 +32,7 @@ class AsyncStateMachine(StateMachine):
 
 
 def sync_main():
-    sm = AsyncStateMachine()
+    sm = AsyncWorkflow()
     result = sm.start()
     print(f"Start result is {result}")
     result = sm.send("finish")

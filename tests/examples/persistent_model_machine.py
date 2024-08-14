@@ -7,7 +7,7 @@ implement this, but you can get an insight of one possibility. This example impl
 domain model that persists it's state using a generic strategy that can be extended to any storage
 format.
 
-Original `issue <https://github.com/fgmacedo/python-statemachine/issues/358>`_.
+Original `issue <https://github.com/fgmacedo/python-workflow/issues/358>`_.
 
 
 Resource management state machine
@@ -21,11 +21,11 @@ import tempfile
 from abc import ABC
 from abc import abstractmethod
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class ResourceManagement(StateMachine):
+class ResourceManagement(Workflow):
     power_off = State(initial=True)
     power_on = State()
 

@@ -2,14 +2,14 @@ import re
 
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine.exceptions import InvalidStateValue
+from workflow import State
+from workflow import Workflow
+from workflow.exceptions import InvalidStateValue
 
 
 @pytest.fixture()
 def async_order_control_machine():  # noqa: C901
-    class OrderControl(StateMachine):
+    class OrderControl(Workflow):
         waiting_for_payment = State(initial=True)
         processing = State()
         shipping = State()
@@ -100,7 +100,7 @@ async def test_async_state_should_be_initialized(async_order_control_machine):
     """Test that the state machine is initialized before any event is triggered
 
     Given how async works on python, there's no built-in way to activate the initial state that
-    may depend on async code from the StateMachine.__init__ method.
+    may depend on async code from the Workflow.__init__ method.
 
     We do a `_ensure_is_initialized()` check before each event, but to check the current state
     just before the state machine is created, the user must await the activation of the initial

@@ -3,9 +3,9 @@ from unittest import mock
 
 import pytest
 
-from statemachine.contrib.diagram import DotGraphMachine
-from statemachine.contrib.diagram import main
-from statemachine.contrib.diagram import quickchart_write_svg
+from workflow.contrib.diagram import DotGraphMachine
+from workflow.contrib.diagram import main
+from workflow.contrib.diagram import quickchart_write_svg
 
 
 @pytest.fixture(
@@ -16,7 +16,7 @@ from statemachine.contrib.diagram import quickchart_write_svg
         ),
         (
             "_repr_html_",
-            '<div class="statemachine"><?xml version="1.0" encoding="UTF-8" standalone=',
+            '<div class="workflow"><?xml version="1.0" encoding="UTF-8" standalone=',
         ),
     ]
 )
@@ -63,7 +63,7 @@ class TestDiagramCmdLine:
     def test_generate_complain_about_bad_sm_path(self, capsys, tmp_path):
         out = tmp_path / "sm.svg"
 
-        expected_error = "TrafficLightMachineXXX is not a subclass of StateMachine"
+        expected_error = "TrafficLightMachineXXX is not a subclass of Workflow"
         with pytest.raises(ValueError, match=expected_error):
             main(
                 [
@@ -79,7 +79,7 @@ class TestQuickChart:
         with open(origin_img_path) as f:
             expected_image = f.read()
 
-        with mock.patch("statemachine.contrib.diagram.urlopen", spec=True) as p:
+        with mock.patch("workflow.contrib.diagram.urlopen", spec=True) as p:
             p().read.side_effect = lambda: expected_image.encode()
             yield p
 

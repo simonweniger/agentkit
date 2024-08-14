@@ -4,7 +4,7 @@
 Support for async code was added!
 ```
 
-The {ref}`StateMachine` fully supports asynchronous code. You can write async {ref}`actions`, {ref}`guards`, and {ref}`event` triggers, while maintaining the same external API for both synchronous and asynchronous codebases.
+The {ref}`Workflow` fully supports asynchronous code. You can write async {ref}`actions`, {ref}`guards`, and {ref}`event` triggers, while maintaining the same external API for both synchronous and asynchronous codebases.
 
 This is achieved through a new concept called "engine," an internal strategy pattern abstraction that manages transitions and callbacks.
 
@@ -72,7 +72,7 @@ async code with a state machine.
 
 
 ```py
->>> class AsyncStateMachine(StateMachine):
+>>> class AsyncWorkflow(Workflow):
 ...     initial = State('Initial', initial=True)
 ...     final = State('Final', final=True)
 ...
@@ -83,7 +83,7 @@ async code with a state machine.
 ...         return 42
 
 >>> async def run_sm():
-...     sm = AsyncStateMachine()
+...     sm = AsyncWorkflow()
 ...     result = await sm.advance()
 ...     print(f"Result is {result}")
 ...     print(sm.current_state)
@@ -103,7 +103,7 @@ If needed, the state machine will create a loop using `asyncio.new_event_loop()`
 
 
 ```py
->>> sm = AsyncStateMachine()
+>>> sm = AsyncWorkflow()
 >>> result = sm.advance()
 >>> print(f"Result is {result}")
 Result is 42
@@ -118,7 +118,7 @@ Final
 
 
 If **on async code** you perform checks against the `current_state`, like a loop `while sm.current_state.is_final:`, then you must manually
-await for the  [activate initial state](statemachine.StateMachine.activate_initial_state) to be able to check the current state.
+await for the  [activate initial state](workflow.Workflow.activate_initial_state) to be able to check the current state.
 
 ```{hint}
 This manual initial state activation on async is because Python don't allow awaiting at class initalization time and the initial state activation may contain async callbacks that must be awaited.
@@ -130,7 +130,7 @@ You get an error checking the current state before the initial state activation:
 
 ```py
 >>> async def initialize_sm():
-...     sm = AsyncStateMachine()
+...     sm = AsyncWorkflow()
 ...     print(sm.current_state)
 
 >>> asyncio.run(initialize_sm())
@@ -145,7 +145,7 @@ You can activate the initial state explicitly:
 
 ```py
 >>> async def initialize_sm():
-...     sm = AsyncStateMachine()
+...     sm = AsyncWorkflow()
 ...     await sm.activate_initial_state()
 ...     print(sm.current_state)
 
@@ -159,7 +159,7 @@ before the event is handled:
 
 ```py
 >>> async def initialize_sm():
-...     sm = AsyncStateMachine()
+...     sm = AsyncWorkflow()
 ...     await sm.keep()  # first event activates the initial state before the event is handled
 ...     print(sm.current_state)
 

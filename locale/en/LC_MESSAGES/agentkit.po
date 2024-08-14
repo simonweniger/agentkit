@@ -13,67 +13,67 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.12.1\n"
 
-#: statemachine/callbacks.py:289
-msgid "Did not found name '{}' from model or statemachine"
+#: workflow/callbacks.py:289
+msgid "Did not found name '{}' from model or workflow"
 msgstr ""
 
-#: statemachine/exceptions.py:23
+#: workflow/exceptions.py:23
 msgid "{!r} is not a valid state value."
 msgstr ""
 
-#: statemachine/exceptions.py:37
+#: workflow/exceptions.py:37
 msgid "Can't {} when in {}."
 msgstr ""
 
-#: statemachine/factory.py:73
+#: workflow/factory.py:73
 msgid "There are no states."
 msgstr ""
 
-#: statemachine/factory.py:76
+#: workflow/factory.py:76
 msgid "There are no events."
 msgstr ""
 
-#: statemachine/factory.py:88
+#: workflow/factory.py:88
 msgid ""
 "There should be one and only one initial state. You currently have these:"
 " {!r}"
 msgstr ""
 
-#: statemachine/factory.py:101
+#: workflow/factory.py:101
 msgid "Cannot declare transitions from final state. Invalid state(s): {}"
 msgstr ""
 
-#: statemachine/factory.py:109
+#: workflow/factory.py:109
 msgid ""
 "All non-final states should have at least one outgoing transition. These "
 "states have no outgoing transition: {!r}"
 msgstr ""
 
-#: statemachine/factory.py:123
+#: workflow/factory.py:123
 msgid ""
 "All non-final states should have at least one path to a final state. "
 "These states have no path to a final state: {!r}"
 msgstr ""
 
-#: statemachine/factory.py:147
+#: workflow/factory.py:147
 msgid ""
-"There are unreachable states. The statemachine graph should have a single"
+"There are unreachable states. The workflow graph should have a single"
 " component. Disconnected states: {}"
 msgstr ""
 
-#: statemachine/mixins.py:23
+#: workflow/mixins.py:23
 msgid "{!r} is not a valid state machine name."
 msgstr ""
 
-#: statemachine/state.py:152
+#: workflow/state.py:152
 msgid "State overriding is not allowed. Trying to add '{}' to {}"
 msgstr ""
 
-#: statemachine/statemachine.py:86
+#: workflow/workflow.py:86
 msgid "There are no states or transitions."
 msgstr ""
 
-#: statemachine/statemachine.py:249
+#: workflow/workflow.py:249
 msgid ""
 "There's no current state set. In async code, did you activate the initial"
 " state? (e.g., `await sm.activate_initial_state()`)"

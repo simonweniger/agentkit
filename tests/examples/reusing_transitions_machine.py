@@ -22,11 +22,11 @@ TrafficLightIsolatedTransitions
 
 """
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class TrafficLightMachine(StateMachine):
+class TrafficLightMachine(Workflow):
     "A traffic light machine"
 
     green = State(initial=True)
@@ -63,7 +63,7 @@ sm.send("cycle")
 # %%
 
 
-class TrafficLightIsolatedTransitions(StateMachine):
+class TrafficLightIsolatedTransitions(Workflow):
     "A traffic light machine"
 
     green = State(initial=True)

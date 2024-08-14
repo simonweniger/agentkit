@@ -2,11 +2,11 @@ import weakref
 
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class OrderControl(StateMachine):
+class OrderControl(Workflow):
     waiting_for_payment = State(initial=True)
     processing = State()
     shipping = State()

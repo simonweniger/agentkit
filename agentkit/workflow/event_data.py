@@ -5,13 +5,13 @@ from typing import Any
 
 if TYPE_CHECKING:
     from .state import State
-    from .statemachine import StateMachine
+    from .workflow import Workflow
     from .transition import Transition
 
 
 @dataclass
 class TriggerData:
-    machine: "StateMachine"
+    machine: "Workflow"
 
     event: str
     """The Event that was triggered."""
@@ -38,10 +38,10 @@ class EventData:
     """The :ref:`Transition` instance that was activated by the :ref:`Event`."""
 
     state: "State" = field(init=False)
-    """The current :ref:`State` of the :ref:`statemachine`."""
+    """The current :ref:`State` of the :ref:`workflow`."""
 
     source: "State" = field(init=False)
-    """The :ref:`State` which :ref:`statemachine` was in when the Event started."""
+    """The :ref:`State` which :ref:`workflow` was in when the Event started."""
 
     target: "State" = field(init=False)
     """The destination :ref:`State` of the :ref:`transition`."""

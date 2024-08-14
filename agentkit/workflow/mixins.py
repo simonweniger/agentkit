@@ -4,7 +4,7 @@ from .i18n import _
 
 class MachineMixin:
     """This mixing allows a model to automatically instantiate and assign an
-    ``StateMachine``.
+    ``Workflow``.
     """
 
     state_field_name: str = "state"
@@ -13,7 +13,7 @@ class MachineMixin:
     state_machine_name: "str | None" = None
     """A fully qualified name of the class, where it can be imported."""
 
-    state_machine_attr: str = "statemachine"
+    state_machine_attr: str = "workflow"
     """Name of the model's attribute that will hold the machine instance."""
 
     bind_events_as_methods: bool = False

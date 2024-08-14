@@ -1,7 +1,7 @@
 import pytest
 
-from statemachine.state import State
-from statemachine.statemachine import StateMachine
+from workflow.state import State
+from workflow.workflow import Workflow
 
 EXPECTED_LOG_ADD = """Frodo on: draft--(add_job)-->draft
 Frodo enter: draft from add_job
@@ -88,7 +88,7 @@ def test_regression_456():
         def __init__(self):
             pass
 
-    class MyMachine(StateMachine):
+    class MyMachine(Workflow):
         first = State("FIRST", initial=True)
 
         second = State("SECOND")

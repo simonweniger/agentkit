@@ -49,9 +49,9 @@ our docs for more details.
 Define your state machine:
 
 ```py
-  >>> from statemachine import StateMachine, State
+  >>> from workflow import Workflow, State
 
-  >>> class TrafficLightMachine(StateMachine):
+  >>> class TrafficLightMachine(Workflow):
   ...     "A traffic light machine"
   ...     green = State(initial=True)
   ...     yellow = State()
@@ -215,7 +215,7 @@ raise a `TransitionNotAllowed` exception:
 ```py
 >>> sm.send("go")
 Traceback (most recent call last):
-statemachine.exceptions.TransitionNotAllowed: Can't go when in Yellow.
+workflow.exceptions.TransitionNotAllowed: Can't go when in Yellow.
 
 ```
 
@@ -242,7 +242,7 @@ We support native coroutine using `asyncio`, enabling seamless integration with 
 There's no change on the public API of the library to work on async codebases.
 
 ```py
->>> class AsyncStateMachine(StateMachine):
+>>> class AsyncWorkflow(Workflow):
 ...     initial = State('Initial', initial=True)
 ...     final = State('Final', final=True)
 ...
@@ -252,7 +252,7 @@ There's no change on the public API of the library to work on async codebases.
 ...         return 42
 
 >>> async def run_sm():
-...     sm = AsyncStateMachine()
+...     sm = AsyncWorkflow()
 ...     result = await sm.advance()
 ...     print(f"Result is {result}")
 ...     print(sm.current_state)
@@ -268,7 +268,7 @@ Final
 A simple didactic state machine for controlling an `Order`:
 
 ```py
->>> class OrderControl(StateMachine):
+>>> class OrderControl(Workflow):
 ...     waiting_for_payment = State(initial=True)
 ...     processing = State()
 ...     shipping = State()
@@ -330,7 +330,7 @@ You can use this machine as follows.
 >>> control.process_order()
 Traceback (most recent call last):
 ...
-statemachine.exceptions.TransitionNotAllowed: Can't process_order when in Waiting for payment.
+workflow.exceptions.TransitionNotAllowed: Can't process_order when in Waiting for payment.
 
 >>> control.receive_payment(6)
 [4, 6]

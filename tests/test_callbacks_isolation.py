@@ -1,12 +1,12 @@
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
 @pytest.fixture()
 def simple_sm_cls():
-    class TestStateMachine(StateMachine):
+    class TestWorkflow(Workflow):
         # States
         initial = State(initial=True)
         final = State(final=True, enter="do_enter_final")
@@ -25,7 +25,7 @@ def simple_sm_cls():
         def do_enter_final(self):
             self.finalized = True
 
-    return TestStateMachine
+    return TestWorkflow
 
 
 class TestCallbacksIsolation:

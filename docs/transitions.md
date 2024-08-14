@@ -2,7 +2,7 @@
 
 ```{testsetup}
 
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
 >>> from tests.examples.traffic_light_machine import TrafficLightMachine
 
@@ -14,7 +14,7 @@ A state machine is typically composed of a set of {ref}`state`, {ref}`transition
 and {ref}`actions`. A state is a representation of the system's current condition or behavior.
 A transition represents the change in the system's state in response to an event or condition.
 An event is a trigger that causes the system to transition from one state to another, and action
-is any side-effect, which is the way a StateMachine can cause things to happen in the
+is any side-effect, which is the way a Workflow can cause things to happen in the
 outside world.
 
 
@@ -33,7 +33,7 @@ This state machine could be expressed in `python-statemachine` as:
 :language: python
 :linenos:
 :emphasize-lines: 12
-:start-at: from statemachine
+:start-at: from workflow
 :end-before: "# %%"
 ```
 
@@ -47,13 +47,13 @@ And these transitions are assigned to the {ref}`event` `cycle` defined at the cl
 
 ```{note}
 
-In fact, before the full class body is evaluated, the assigments of transitions are instances of [](statemachine.transition_list.TransitionList). When the state machine is evaluated by our custom [metaclass](https://docs.python.org/3/reference/datamodel.html#metaclasses), these names will be transformed into a method that triggers an {ref}`Event`.
+In fact, before the full class body is evaluated, the assigments of transitions are instances of [](workflow.transition_list.TransitionList). When the state machine is evaluated by our custom [metaclass](https://docs.python.org/3/reference/datamodel.html#metaclasses), these names will be transformed into a method that triggers an {ref}`Event`.
 
 ```
 
 ## Transitions
 
-In an executing state machine, a {ref}`transition` is a transfer from one state to another. In a {ref}`statemachine`, a {ref}`transition` tells us what happens when an {ref}`event` occurs.
+In an executing state machine, a {ref}`transition` is a transfer from one state to another. In a {ref}`workflow`, a {ref}`transition` tells us what happens when an {ref}`event` occurs.
 
 
 A transition can define {ref}`actions` that will be executed whenever that transition
@@ -108,7 +108,7 @@ TransitionList([Transition(State('Draft', ...
 Example:
 
 ```py
->>> class TestStateMachine(StateMachine):
+>>> class TestWorkflow(Workflow):
 ...     initial = State(initial=True)
 ...
 ...     external_loop = initial.to.itself(on="do_something")
@@ -131,7 +131,7 @@ Example:
 Usage:
 
 ```py
->>> sm = TestStateMachine()
+>>> sm = TestWorkflow()
 
 >>> sm._graph().write_png("docs/images/test_state_machine_internal.png")
 
@@ -151,7 +151,7 @@ Usage:
 
 ```
 
-![TestStateMachine](images/test_state_machine_internal.png)
+![TestWorkflow](images/test_state_machine_internal.png)
 
 ```{note}
 

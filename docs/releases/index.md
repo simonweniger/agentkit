@@ -8,7 +8,7 @@ with advance notice in the **Deprecations** section of releases.
 
 ## Releases
 
-Below are release notes through StateMachine and its patch releases.
+Below are release notes through Workflow and its patch releases.
 
 ###  2.0 releases
 

@@ -1,10 +1,10 @@
-from statemachine import StateMachine
-from statemachine.states import States
+from workflow import Workflow
+from workflow.states import States
 
 from .models import WorkflowSteps
 
 
-class WorfklowStateMachine(StateMachine):
+class WorfklowWorkflow(Workflow):
     _ = States.from_enum(WorkflowSteps, initial=WorkflowSteps.DRAFT, final=WorkflowSteps.PUBLISHED)
 
     publish = _.DRAFT.to(_.PUBLISHED, cond="is_active")

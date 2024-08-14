@@ -8,11 +8,11 @@ from ..exceptions import TransitionNotAllowed
 from ..transition import Transition
 
 if TYPE_CHECKING:
-    from ..statemachine import StateMachine
+    from ..workflow import Workflow
 
 
 class SyncEngine:
-    def __init__(self, sm: "StateMachine", rtc: bool = True):
+    def __init__(self, sm: "Workflow", rtc: bool = True):
         self.sm = proxy(sm)
         self._sentinel = object()
         self._rtc = rtc
@@ -27,7 +27,7 @@ class SyncEngine:
         async code, the user must call this method explicitly.
 
         Given how async works on python, there's no built-in way to activate the initial state that
-        may depend on async code from the StateMachine.__init__ method.
+        may depend on async code from the Workflow.__init__ method.
         """
         return self.processing_loop()
 

@@ -1,13 +1,13 @@
 import pytest
 
-from statemachine.callbacks import CallbackGroup
-from statemachine.callbacks import CallbackSpec
-from statemachine.dispatcher import Listener
-from statemachine.dispatcher import Listeners
-from statemachine.dispatcher import resolver_factory_from_objects
-from statemachine.exceptions import InvalidDefinition
-from statemachine.state import State
-from statemachine.statemachine import StateMachine
+from workflow.callbacks import CallbackGroup
+from workflow.callbacks import CallbackSpec
+from workflow.dispatcher import Listener
+from workflow.dispatcher import Listeners
+from workflow.dispatcher import resolver_factory_from_objects
+from workflow.exceptions import InvalidDefinition
+from workflow.state import State
+from workflow.workflow import Workflow
 
 
 class Person:
@@ -140,7 +140,7 @@ class TestSearchProperty:
             def can_change_to_start(self):
                 return False
 
-        class StartMachine(StateMachine):
+        class StartMachine(Workflow):
             created = State(initial=True)
             started = State(final=True)
 
