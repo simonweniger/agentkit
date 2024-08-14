@@ -2,7 +2,7 @@ import warnings
 from typing import Dict
 from typing import Type
 
-from .utils import qualname
+from agentkit.utils.workflow import qualname
 
 try:
     from django.utils.module_loading import autodiscover_modules
@@ -26,7 +26,7 @@ def get_machine_cls(name):
     init_registry()
     if "." not in name:
         warnings.warn(
-            """Use fully qualified names (<module>.<class>) for state machine mixins.""",
+            """Use fully qualified names (<module>.<class>) for state flow mixins.""",
             DeprecationWarning,
             stacklevel=2,
         )

@@ -10,7 +10,7 @@
 
 # Transitions and events
 
-A state machine is typically composed of a set of {ref}`state`, {ref}`transition`, {ref}`event`,
+A state flow is typically composed of a set of {ref}`state`, {ref}`transition`, {ref}`event`,
 and {ref}`actions`. A state is a representation of the system's current condition or behavior.
 A transition represents the change in the system's state in response to an event or condition.
 An event is a trigger that causes the system to transition from one state to another, and action
@@ -18,7 +18,7 @@ is any side-effect, which is the way a Workflow can cause things to happen in th
 outside world.
 
 
-Consider this traffic light machine as an example:
+Consider this traffic light flow as an example:
 
 ![TrafficLightMachine](images/traffic_light_machine.png)
 
@@ -27,7 +27,7 @@ There're three transitions, one starting from green to yellow, another from
 yellow to red, and another from red back to green. All these transitions
 are triggered by the same {ref}`event` called `cycle`.
 
-This state machine could be expressed in `python-statemachine` as:
+This state flow could be expressed in `python-statemachine` as:
 
 ```{literalinclude} ../tests/examples/traffic_light_machine.py
 :language: python
@@ -47,13 +47,13 @@ And these transitions are assigned to the {ref}`event` `cycle` defined at the cl
 
 ```{note}
 
-In fact, before the full class body is evaluated, the assigments of transitions are instances of [](workflow.transition_list.TransitionList). When the state machine is evaluated by our custom [metaclass](https://docs.python.org/3/reference/datamodel.html#metaclasses), these names will be transformed into a method that triggers an {ref}`Event`.
+In fact, before the full class body is evaluated, the assigments of transitions are instances of [](workflow.transition_list.TransitionList). When the state flow is evaluated by our custom [metaclass](https://docs.python.org/3/reference/datamodel.html#metaclasses), these names will be transformed into a method that triggers an {ref}`Event`.
 
 ```
 
 ## Transitions
 
-In an executing state machine, a {ref}`transition` is a transfer from one state to another. In a {ref}`workflow`, a {ref}`transition` tells us what happens when an {ref}`event` occurs.
+In an executing state flow, a {ref}`transition` is a transfer from one state to another. In a {ref}`workflow`, a {ref}`transition` tells us what happens when an {ref}`event` occurs.
 
 
 A transition can define {ref}`actions` that will be executed whenever that transition
@@ -131,22 +131,22 @@ Example:
 Usage:
 
 ```py
->>> sm = TestWorkflow()
+>>> workflow = TestWorkflow()
 
->>> sm._graph().write_png("docs/images/test_state_machine_internal.png")
+>>> workflow._graph().write_png("docs/images/test_state_machine_internal.png")
 
->>> sm.calls.clear()
+>>> workflow.calls.clear()
 
->>> sm.external_loop()
+>>> workflow.external_loop()
 
->>> sm.calls
+>>> workflow.calls
 ['on_exit_initial', 'do_something', 'on_enter_initial']
 
->>> sm.calls.clear()
+>>> workflow.calls.clear()
 
->>> sm.internal_loop()
+>>> workflow.internal_loop()
 
->>> sm.calls
+>>> workflow.calls
 ['do_something']
 
 ```
@@ -164,16 +164,16 @@ the event name is used to describe the transition.
 ## Event
 
 An event is an external signal that something has happened.
-They are send to a state machine and allow the state machine to react.
+They are send to a state flow and allow the state flow to react.
 
 An event starts a {ref}`transition`, which can be thought of as a "cause" that
 initiates a change in the state of the system.
 
-In `python-statemachine`, an event is specified as an attribute of the state machine class declaration or directly on the {ref}`event` parameter on a {ref}`transition`.
+In `python-statemachine`, an event is specified as an attribute of the state flow class declaration or directly on the {ref}`event` parameter on a {ref}`transition`.
 
 ### Triggering events
 
-Triggering an event on a state machine means invoking or sending a signal, initiating the
+Triggering an event on a state flow means invoking or sending a signal, initiating the
 process that may result in executing a transition.
 
 This process usually involves
@@ -192,12 +192,12 @@ See {ref}`actions` and {ref}`validators and guards`.
 You can invoke the event in an imperative syntax:
 
 ```py
->>> machine = TrafficLightMachine()
+>>> flow = TrafficLightMachine()
 
->>> machine.cycle()
+>>> flow.cycle()
 Running cycle from green to yellow
 
->>> machine.current_state.id
+>>> flow.current_state.id
 'yellow'
 
 ```
@@ -205,10 +205,10 @@ Running cycle from green to yellow
 Or in an event-oriented style, events are `send`:
 
 ```py
->>> machine.send("cycle")
+>>> flow.send("cycle")
 Running cycle from yellow to red
 
->>> machine.current_state.id
+>>> flow.current_state.id
 'red'
 
 ```
@@ -229,13 +229,13 @@ This action is executed before the transition associated with `cycle` event is a
 You can raise an exception at this point to stop a transition from completing.
 
 ```py
->>> machine.current_state.id
+>>> flow.current_state.id
 'red'
 
->>> machine.cycle()
+>>> flow.cycle()
 Running cycle from red to green
 
->>> machine.current_state.id
+>>> flow.current_state.id
 'green'
 
 ```

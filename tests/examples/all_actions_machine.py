@@ -1,5 +1,5 @@
 """
-All actions machine
+All actions flow
 ===================
 
 A Workflow that exercises all possible :ref:`Actions` and :ref:`Guards`.
@@ -144,14 +144,14 @@ class AllActionsMachine(Workflow):
 # Testing
 # -------
 
-machine = AllActionsMachine()
-spy = machine.spy
+flow = AllActionsMachine()
+spy = flow.spy
 
 
 # %%
 # Only before/on actions have their result collected.
 
-result = machine.go()
+result = flow.go()
 assert result == [
     "before_transition",
     "before_go_inline_1",

@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from workflow.mixins import MachineMixin
+from agentkit.mixins import MachineMixin
 
 User = get_user_model()
 

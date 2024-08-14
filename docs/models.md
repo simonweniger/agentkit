@@ -2,7 +2,7 @@
 # Domain models
 
 If you need to use any other object to persist the current state, or you're using the
-state machine to control the flow of another object, you can pass this object
+state flow to control the flow of another object, you can pass this object
 to the `Workflow` constructor.
 
 If you don't pass an explicit model instance, this simple `Model` will be used:

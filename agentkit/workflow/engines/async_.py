@@ -2,20 +2,20 @@ from threading import Lock
 from typing import TYPE_CHECKING
 from weakref import proxy
 
-from ..event_data import EventData
-from ..event_data import TriggerData
-from ..exceptions import InvalidDefinition
-from ..exceptions import TransitionNotAllowed
-from ..i18n import _
-from ..transition import Transition
+from agentkit.workflow.event import EventData
+from agentkit.workflow.event import TriggerData
+from agentkit.workflow.exceptions import InvalidDefinition
+from agentkit.workflow.exceptions import TransitionNotAllowed
+from agentkit.utils.i18n import _
+from agentkit import Transition
 
 if TYPE_CHECKING:
-    from ..workflow import Workflow
+    from agentkit import Workflow
 
 
 class AsyncEngine:
-    def __init__(self, sm: "Workflow", rtc: bool = True):
-        self.sm = proxy(sm)
+    def __init__(self, workflow: "Workflow", rtc: bool = True):
+        self.workflow = proxy(workflow)
         self._sentinel = object()
         if not rtc:
             raise InvalidDefinition(_("Only RTC is supported on async engine"))
@@ -25,7 +25,7 @@ class AsyncEngine:
         """
         Activate the initial state.
 
-        Called automatically on state machine creation from sync code, but in
+        Called automatically on state flow creation from sync code, but in
         async code, the user must call this method explicitly.
 
         Given how async works on python, there's no built-in way to activate the initial state that
@@ -44,7 +44,7 @@ class AsyncEngine:
             While processing the trigger, if others events are generated, they
             will also be processed immediately, so a "nested" behavior happens.
 
-        If the machine is on ``rtc`` model (queued), the event is put on a queue, and only the
+        If the flow is on ``rtc`` model (queued), the event is put on a queue, and only the
         first event will have the result collected.
 
         .. note::
@@ -63,8 +63,8 @@ class AsyncEngine:
         first_result = self._sentinel
         try:
             # Execute the triggers in the queue in FIFO order until the queue is empty
-            while self.sm._external_queue:
-                trigger_data = self.sm._external_queue.popleft()
+            while self.workflow._external_queue:
+                trigger_data = self.workflow._external_queue.popleft()
                 try:
                     result = await self._trigger(trigger_data)
                     if first_result is self._sentinel:
@@ -72,7 +72,7 @@ class AsyncEngine:
                 except Exception:
                     # Whe clear the queue as we don't have an expected behavior
                     # and cannot keep processing
-                    self.sm._external_queue.clear()
+                    self.workflow._external_queue.clear()
                     raise
         finally:
             self._processing.release()
@@ -81,21 +81,21 @@ class AsyncEngine:
     async def _trigger(self, trigger_data: TriggerData):
         event_data = None
         if trigger_data.event == "__initial__":
-            transition = Transition(None, self.sm._get_initial_state(), event="__initial__")
+            transition = Transition(None, self.workflow._get_initial_state(), event="__initial__")
             transition._specs.clear()
             event_data = EventData(trigger_data=trigger_data, transition=transition)
             await self._activate(event_data)
             return self._sentinel
 
-        state = self.sm.current_state
+        state = self.workflow.current_state
         for transition in state.transitions:
             if not transition.match(trigger_data.event):
                 continue
 
             event_data = EventData(trigger_data=trigger_data, transition=transition)
             args, kwargs = event_data.args, event_data.extended_kwargs
-            await self.sm._get_callbacks(transition.validators.key).async_call(*args, **kwargs)
-            if not await self.sm._get_callbacks(transition.cond.key).async_all(*args, **kwargs):
+            await self.workflow._get_callbacks(transition.validators.key).async_call(*args, **kwargs)
+            if not await self.workflow._get_callbacks(transition.cond.key).async_all(*args, **kwargs):
                 continue
 
             result = await self._activate(event_data)
@@ -103,7 +103,7 @@ class AsyncEngine:
             event_data.executed = True
             break
         else:
-            if not self.sm.allow_event_without_transition:
+            if not self.workflow.allow_event_without_transition:
                 raise TransitionNotAllowed(trigger_data.event, state)
 
         return event_data.result if event_data else None
@@ -114,19 +114,19 @@ class AsyncEngine:
         source = event_data.state
         target = transition.target
 
-        result = await self.sm._get_callbacks(transition.before.key).async_call(*args, **kwargs)
+        result = await self.workflow._get_callbacks(transition.before.key).async_call(*args, **kwargs)
         if source is not None and not transition.internal:
-            await self.sm._get_callbacks(source.exit.key).async_call(*args, **kwargs)
+            await self.workflow._get_callbacks(source.exit.key).async_call(*args, **kwargs)
 
-        result += await self.sm._get_callbacks(transition.on.key).async_call(*args, **kwargs)
+        result += await self.workflow._get_callbacks(transition.on.key).async_call(*args, **kwargs)
 
-        self.sm.current_state = target
+        self.workflow.current_state = target
         event_data.state = target
         kwargs["state"] = target
 
         if not transition.internal:
-            await self.sm._get_callbacks(target.enter.key).async_call(*args, **kwargs)
-        await self.sm._get_callbacks(transition.after.key).async_call(*args, **kwargs)
+            await self.workflow._get_callbacks(target.enter.key).async_call(*args, **kwargs)
+        await self.workflow._get_callbacks(transition.after.key).async_call(*args, **kwargs)
 
         if len(result) == 0:
             result = None

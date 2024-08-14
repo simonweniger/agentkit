@@ -6,17 +6,17 @@ from typing import List
 from typing import Tuple
 from uuid import uuid4
 
-from . import registry
-from .event import Event
-from .event import trigger_event_factory
-from .exceptions import InvalidDefinition
-from .graph import iterate_states_and_transitions
-from .graph import visit_connected_states
-from .i18n import _
-from .state import State
-from .states import States
-from .transition import Transition
-from .transition_list import TransitionList
+from agentkit.workflow import registry
+from agentkit.workflow.event import Event
+from agentkit.workflow.event import trigger_event_factory
+from agentkit.workflow.exceptions import InvalidDefinition
+from agentkit.workflow.graph import iterate_states_and_transitions
+from agentkit.workflow.graph import visit_connected_states
+from agentkit.utils.i18n import _
+from agentkit.workflow.state import State
+from agentkit.workflow.states import States
+from agentkit.workflow.transition import Transition
+from agentkit.workflow.transition_list import TransitionList
 
 
 class WorkflowMetaclass(type):
@@ -47,7 +47,7 @@ class WorkflowMetaclass(type):
         try:
             cls.initial_state: State = next(s for s in cls.states if s.initial)
         except StopIteration:
-            cls.initial_state = None  # Abstract SM still don't have states
+            cls.initial_state = None  # Abstract WF still don't have states
 
         cls.final_states: List[State] = [state for state in cls.states if state.final]
 

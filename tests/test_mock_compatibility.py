@@ -9,7 +9,7 @@ def test_minimal(mocker):
     obs = Observer()
     on_enter_state = mocker.spy(obs, "on_enter_state")
 
-    class Machine(Workflow):
+    class Flow(Workflow):
         a = State("Init", initial=True)
         b = State("Fin")
 

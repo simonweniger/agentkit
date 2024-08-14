@@ -11,23 +11,23 @@ def test_machine_should_allow_multi_thread_event_changes():
     """
 
     class CampaignMachine(Workflow):
-        "A workflow machine"
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State()
         closed = State(final=True)
         add_job = draft.to(producing) | producing.to(closed)
 
-    machine = CampaignMachine()
+    flow = CampaignMachine()
 
     def off_thread_change_state():
         time.sleep(0.01)
-        machine.add_job()
+        flow.add_job()
 
     thread = threading.Thread(target=off_thread_change_state)
     thread.start()
     thread.join()
-    assert machine.current_state.id == "producing"
+    assert flow.current_state.id == "producing"
 
 
 def test_regression_443():
@@ -39,7 +39,7 @@ def test_regression_443():
     time_sampling_current_state = 0.05
 
     class TrafficLightMachine(Workflow):
-        "A traffic light machine"
+        "A traffic light flow"
 
         green = State(initial=True)
         yellow = State()
@@ -84,7 +84,7 @@ def test_regression_443_with_modifications():
     time_sampling_current_state = 0.05
 
     class TrafficLightMachine(Workflow):
-        "A traffic light machine"
+        "A traffic light flow"
 
         green = State(initial=True)
         yellow = State()
@@ -136,7 +136,7 @@ async def test_regression_443_with_modifications_for_async_engine():  # noqa: C9
     time_sampling_current_state = 0.05
 
     class TrafficLightMachine(Workflow):
-        "A traffic light machine"
+        "A traffic light flow"
 
         green = State(initial=True)
         yellow = State()

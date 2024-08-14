@@ -3,7 +3,7 @@
 
 ## Latest release
 
-To install Python State Machine using [poetry](https://python-poetry.org/):
+To install Agentkit Workflow using [poetry](https://python-poetry.org/):
 
 ```shell
 poetry add python-statemachine
@@ -27,7 +27,7 @@ python3 -m pip install "python-statemachine[diagrams]"
 
 ## From sources
 
-The sources for Python State Machine can be downloaded from the [Github repo](https://github.com/fgmacedo/python-statemachine).
+The sources for Agentkit Workflow can be downloaded from the [Github repo](https://github.com/fgmacedo/python-statemachine).
 
 You can either clone the public repository:
 

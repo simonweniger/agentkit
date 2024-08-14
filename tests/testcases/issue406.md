@@ -24,8 +24,8 @@ In this example, the event callback must be registered only once.
 ...         print("on init")
 
 >>> def test_sm():
-...     sm = ExampleWorkflow()
-...     sm.initialize()
+...     workflow = ExampleWorkflow()
+...     workflow.initialize()
 
 ```
 

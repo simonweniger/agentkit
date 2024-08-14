@@ -8,16 +8,16 @@ from tests.models import MyModel
 
 def test_machine_repr(campaign_machine):
     model = MyModel()
-    machine = campaign_machine(model)
+    flow = campaign_machine(model)
     assert (
-        repr(machine) == "CampaignMachine(model=MyModel({'state': 'draft'}), "
+        repr(flow) == "CampaignMachine(model=MyModel({'state': 'draft'}), "
         "state_field='state', current_state='draft')"
     )
 
 
 def test_machine_should_be_at_start_state(campaign_machine):
     model = MyModel()
-    machine = campaign_machine(model)
+    flow = campaign_machine(model)
 
     assert [s.value for s in campaign_machine.states] == [
         "closed",
@@ -31,14 +31,14 @@ def test_machine_should_be_at_start_state(campaign_machine):
     ]
 
     assert model.state == "draft"
-    assert machine.current_state == machine.draft
+    assert flow.current_state == flow.draft
 
 
 def test_machine_should_only_allow_only_one_initial_state():
     with pytest.raises(exceptions.InvalidDefinition):
 
         class CampaignMachine(Workflow):
-            "A workflow machine"
+            "A workflow flow"
 
             draft = State(initial=True)
             producing = State()
@@ -55,7 +55,7 @@ def test_machine_should_activate_initial_state(mocker):
     spy = mocker.Mock()
 
     class CampaignMachine(Workflow):
-        "A workflow machine"
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State()
@@ -69,26 +69,26 @@ def test_machine_should_activate_initial_state(mocker):
             spy("draft")
             return "draft"
 
-    sm = CampaignMachine()
+    workflow = CampaignMachine()
 
     spy.assert_called_once_with("draft")
-    assert sm.current_state == sm.draft
-    assert sm.draft.is_active
+    assert workflow.current_state == workflow.draft
+    assert workflow.draft.is_active
 
     spy.reset_mock()
     # trying to activate the initial state again should does nothing
-    assert sm.activate_initial_state() is None
+    assert workflow.activate_initial_state() is None
 
     spy.assert_not_called()
-    assert sm.current_state == sm.draft
-    assert sm.draft.is_active
+    assert workflow.current_state == workflow.draft
+    assert workflow.draft.is_active
 
 
 def test_machine_should_not_allow_transitions_from_final_state():
     with pytest.raises(exceptions.InvalidDefinition):
 
         class CampaignMachine(Workflow):
-            "A workflow machine"
+            "A workflow flow"
 
             draft = State(initial=True)
             producing = State()
@@ -101,35 +101,35 @@ def test_machine_should_not_allow_transitions_from_final_state():
 
 def test_should_change_state(campaign_machine):
     model = MyModel()
-    machine = campaign_machine(model)
+    flow = campaign_machine(model)
 
     assert model.state == "draft"
-    assert machine.current_state == machine.draft
+    assert flow.current_state == flow.draft
 
-    machine.produce()
+    flow.produce()
 
     assert model.state == "producing"
-    assert machine.current_state == machine.producing
+    assert flow.current_state == flow.producing
 
 
 def test_should_run_a_transition_that_keeps_the_state(campaign_machine):
     model = MyModel()
-    machine = campaign_machine(model)
+    flow = campaign_machine(model)
 
     assert model.state == "draft"
-    assert machine.current_state == machine.draft
+    assert flow.current_state == flow.draft
 
-    machine.add_job()
+    flow.add_job()
     assert model.state == "draft"
-    assert machine.current_state == machine.draft
+    assert flow.current_state == flow.draft
 
-    machine.produce()
+    flow.produce()
     assert model.state == "producing"
-    assert machine.current_state == machine.producing
+    assert flow.current_state == flow.producing
 
-    machine.add_job()
+    flow.add_job()
     assert model.state == "producing"
-    assert machine.current_state == machine.producing
+    assert flow.current_state == flow.producing
 
 
 def test_should_change_state_with_multiple_machine_instances(campaign_machine):
@@ -164,134 +164,134 @@ def test_call_to_transition_that_is_not_in_the_current_state_should_raise_except
     campaign_machine, current_state, transition
 ):
     model = MyModel(state=current_state)
-    machine = campaign_machine(model)
+    flow = campaign_machine(model)
 
-    assert machine.current_state.value == current_state
+    assert flow.current_state.value == current_state
 
     with pytest.raises(exceptions.TransitionNotAllowed):
-        machine.send(transition)
+        flow.send(transition)
 
 
 def test_machine_should_list_allowed_events_in_the_current_state(campaign_machine):
     model = MyModel()
-    machine = campaign_machine(model)
+    flow = campaign_machine(model)
 
     assert model.state == "draft"
-    assert [t.name for t in machine.allowed_events] == ["add_job", "produce"]
+    assert [t.name for t in flow.allowed_events] == ["add_job", "produce"]
 
-    machine.produce()
+    flow.produce()
     assert model.state == "producing"
-    assert [t.name for t in machine.allowed_events] == ["add_job", "deliver"]
+    assert [t.name for t in flow.allowed_events] == ["add_job", "deliver"]
 
-    deliver = machine.allowed_events[1]
+    deliver = flow.allowed_events[1]
 
     deliver()
     assert model.state == "closed"
-    assert machine.allowed_events == []
+    assert flow.allowed_events == []
 
 
 def test_machine_should_run_a_transition_by_his_key(campaign_machine):
     model = MyModel()
-    machine = campaign_machine(model)
+    flow = campaign_machine(model)
 
     assert model.state == "draft"
 
-    machine.send("add_job")
+    flow.send("add_job")
     assert model.state == "draft"
-    assert machine.current_state == machine.draft
+    assert flow.current_state == flow.draft
 
-    machine.send("produce")
+    flow.send("produce")
     assert model.state == "producing"
-    assert machine.current_state == machine.producing
+    assert flow.current_state == flow.producing
 
 
 def test_machine_should_raise_an_exception_if_a_transition_by_his_key_is_not_found(
     campaign_machine,
 ):
     model = MyModel()
-    machine = campaign_machine(model)
+    flow = campaign_machine(model)
 
     assert model.state == "draft"
 
     with pytest.raises(exceptions.TransitionNotAllowed):
-        machine.send("go_horse")
+        flow.send("go_horse")
 
 
 def test_machine_should_use_and_model_attr_other_than_state(campaign_machine):
     model = MyModel(status="producing")
-    machine = campaign_machine(model, state_field="status")
+    flow = campaign_machine(model, state_field="status")
 
     assert getattr(model, "state", None) is None
     assert model.status == "producing"
-    assert machine.current_state == machine.producing
+    assert flow.current_state == flow.producing
 
-    machine.deliver()
+    flow.deliver()
 
     assert model.status == "closed"
-    assert machine.current_state == machine.closed
+    assert flow.current_state == flow.closed
 
 
 def test_cant_assign_an_invalid_state_directly(campaign_machine):
-    machine = campaign_machine()
+    flow = campaign_machine()
     with pytest.raises(exceptions.InvalidStateValue):
-        machine.current_state_value = "non existing state"
+        flow.current_state_value = "non existing state"
 
 
 def test_should_allow_validate_data_for_transition(campaign_machine_with_validator):
     model = MyModel()
-    machine = campaign_machine_with_validator(model)
+    flow = campaign_machine_with_validator(model)
 
     with pytest.raises(LookupError):
-        machine.produce()
+        flow.produce()
 
-    machine.produce(goods="something")
+    flow.produce(goods="something")
 
     assert model.state == "producing"
 
 
 def test_should_check_if_is_in_status(campaign_machine):
     model = MyModel()
-    machine = campaign_machine(model)
+    flow = campaign_machine(model)
 
-    assert machine.draft.is_active
-    assert not machine.producing.is_active
-    assert not machine.closed.is_active
+    assert flow.draft.is_active
+    assert not flow.producing.is_active
+    assert not flow.closed.is_active
 
-    machine.produce()
+    flow.produce()
 
-    assert not machine.draft.is_active
-    assert machine.producing.is_active
-    assert not machine.closed.is_active
+    assert not flow.draft.is_active
+    assert flow.producing.is_active
+    assert not flow.closed.is_active
 
-    machine.deliver()
+    flow.deliver()
 
-    assert not machine.draft.is_active
-    assert not machine.producing.is_active
-    assert machine.closed.is_active
+    assert not flow.draft.is_active
+    assert not flow.producing.is_active
+    assert flow.closed.is_active
 
 
 def test_defined_value_must_be_assigned_to_models(campaign_machine_with_values):
     model = MyModel()
-    machine = campaign_machine_with_values(model)
+    flow = campaign_machine_with_values(model)
 
     assert model.state == 1
-    machine.produce()
+    flow.produce()
     assert model.state == 2
-    machine.deliver()
+    flow.deliver()
     assert model.state == 3
 
 
 def test_state_machine_without_model(campaign_machine):
-    machine = campaign_machine()
-    assert machine.draft.is_active
-    assert not machine.producing.is_active
-    assert not machine.closed.is_active
+    flow = campaign_machine()
+    assert flow.draft.is_active
+    assert not flow.producing.is_active
+    assert not flow.closed.is_active
 
-    machine.produce()
+    flow.produce()
 
-    assert not machine.draft.is_active
-    assert machine.producing.is_active
-    assert not machine.closed.is_active
+    assert not flow.draft.is_active
+    assert flow.producing.is_active
+    assert not flow.closed.is_active
 
 
 @pytest.mark.parametrize(
@@ -305,9 +305,9 @@ def test_state_machine_without_model(campaign_machine):
 )
 def test_state_machine_with_a_start_value(request, model, machine_name, start_value):
     machine_cls = request.getfixturevalue(machine_name)
-    machine = machine_cls(model, start_value=start_value)
-    assert not machine.draft.is_active
-    assert machine.producing.is_active
+    flow = machine_cls(model, start_value=start_value)
+    assert not flow.draft.is_active
+    assert flow.producing.is_active
     assert not model or model.state == start_value
 
 
@@ -329,17 +329,17 @@ def test_state_machine_with_a_invalid_start_value(request, model, machine_name, 
 def test_state_machine_with_a_invalid_model_state_value(request, campaign_machine):
     machine_cls = campaign_machine
     model = MyModel(state="tapioca")
-    sm = machine_cls(model)
+    workflow = machine_cls(model)
 
     with pytest.raises(
         exceptions.InvalidStateValue, match="'tapioca' is not a valid state value."
     ):
-        assert sm.current_state == sm.draft
+        assert workflow.current_state == workflow.draft
 
 
 def test_should_not_create_instance_of_abstract_machine():
     class EmptyMachine(Workflow):
-        "An empty machine"
+        "An empty flow"
 
         pass
 
@@ -359,7 +359,7 @@ def test_should_not_create_instance_of_machine_without_transitions():
     with pytest.raises(exceptions.InvalidDefinition):
 
         class NoTransitionsMachine(Workflow):
-            "A machine without transitions"
+            "A flow without transitions"
 
             initial = State(initial=True)
 
@@ -372,7 +372,7 @@ def test_should_not_create_disconnected_machine():
     with pytest.raises(exceptions.InvalidDefinition, match=expected):
 
         class BrokenTrafficLightMachine(Workflow):
-            "A broken traffic light machine"
+            "A broken traffic light flow"
 
             green = State(initial=True)
             yellow = State()
@@ -389,7 +389,7 @@ def test_should_not_create_big_disconnected_machine():
     with pytest.raises(exceptions.InvalidDefinition, match=expected):
 
         class BrokenTrafficLightMachine(Workflow):
-            "A broken traffic light machine"
+            "A broken traffic light flow"
 
             green = State(initial=True)
             yellow = State()
@@ -420,16 +420,16 @@ def test_state_value_is_correct():
 
 def test_final_states(campaign_machine_with_final_state):
     model = MyModel()
-    machine = campaign_machine_with_final_state(model)
-    final_states = machine.final_states
+    flow = campaign_machine_with_final_state(model)
+    final_states = flow.final_states
     assert len(final_states) == 1
     assert final_states[0].name == "Closed"
 
 
 def test_should_not_override_states_properties(campaign_machine):
-    machine = campaign_machine()
+    flow = campaign_machine()
     with pytest.raises(exceptions.WorkflowError) as e:
-        machine.draft = "something else"
+        flow.draft = "something else"
 
     assert "State overriding is not allowed. Trying to add 'something else' to draft" in str(e)
 
@@ -446,21 +446,21 @@ class TestWarnings:
 
         model = Model()
 
-        sm = campaign_machine_with_final_state(model)
+        workflow = campaign_machine_with_final_state(model)
         with pytest.warns(
             UserWarning, match="Attribute 'produce' already exists on <tests.test.*"
         ):
-            sm.bind_events_to(model)
+            workflow.bind_events_to(model)
 
         assert model.produce() == "producing from 'Model'"
-        assert sm.current_state_value == "draft"
+        assert workflow.current_state_value == "draft"
 
-        assert sm.produce() is None
-        assert sm.current_state_value == "producing"
+        assert workflow.produce() is None
+        assert workflow.current_state_value == "producing"
 
         # event trigger bound to the model
         model.deliver()
-        assert sm.current_state_value == "closed"
+        assert workflow.current_state_value == "closed"
 
     def test_should_warn_if_thereis_a_trap_state(self, capsys):
         with pytest.warns(

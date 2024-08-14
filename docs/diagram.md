@@ -67,11 +67,11 @@ The current {ref}`state` is also highlighted:
 
 >>> from tests.examples.order_control_machine import OrderControl
 
->>> machine = OrderControl()
+>>> flow = OrderControl()
 
->>> graph = DotGraphMachine(machine)  # also accepts instances
+>>> graph = DotGraphMachine(flow)  # also accepts instances
 
->>> machine.receive_payment(10)
+>>> flow.receive_payment(10)
 [10]
 
 >>> graph().write_png("docs/images/order_control_machine_processing.png")
@@ -86,7 +86,7 @@ The current {ref}`state` is also highlighted:
 A handy shortcut to have the graph representation:
 
 ```py
->>> machine._graph()
+>>> flow._graph()
 <pydot.core.Dot ...
 
 ```
@@ -127,7 +127,7 @@ complete list.
 Machines instances are automatically displayed as a diagram when used on JupyterLab cells:
 
 
-![Approval machine on JupyterLab](images/lab_approval_machine_accepted.png)
+![Approval flow on JupyterLab](images/lab_approval_machine_accepted.png)
 
 
 ## Don't want to install Graphviz

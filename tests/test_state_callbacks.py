@@ -14,7 +14,7 @@ def traffic_light_machine(event_mock):  # noqa: C901
     from workflow import Workflow
 
     class TrafficLightMachineStateEvents(Workflow):
-        "A traffic light machine"
+        "A traffic light flow"
 
         green = State(initial=True)
         yellow = State()
@@ -51,30 +51,30 @@ def traffic_light_machine(event_mock):  # noqa: C901
 
 class TestStateCallbacks:
     def test_should_call_on_enter_generic_state(self, event_mock, traffic_light_machine):
-        machine = traffic_light_machine()
-        machine.cycle()
+        flow = traffic_light_machine()
+        flow.cycle()
         assert event_mock.on_enter_state.call_args_list == [
-            mock.call(machine.green),
-            mock.call(machine.yellow),
+            mock.call(flow.green),
+            mock.call(flow.yellow),
         ]
 
     def test_should_call_on_exit_generic_state(self, event_mock, traffic_light_machine):
-        machine = traffic_light_machine()
-        machine.cycle()
-        event_mock.on_exit_state.assert_called_once_with(machine.green)
+        flow = traffic_light_machine()
+        flow.cycle()
+        event_mock.on_exit_state.assert_called_once_with(flow.green)
 
     def test_should_call_on_enter_of_specific_state(self, event_mock, traffic_light_machine):
-        machine = traffic_light_machine()
-        machine.cycle()
-        event_mock.on_enter_yellow.assert_called_once_with(machine)
+        flow = traffic_light_machine()
+        flow.cycle()
+        event_mock.on_enter_yellow.assert_called_once_with(flow)
 
     def test_should_call_on_exit_of_specific_state(self, event_mock, traffic_light_machine):
-        machine = traffic_light_machine()
-        machine.cycle()
-        event_mock.on_exit_green.assert_called_once_with(machine)
+        flow = traffic_light_machine()
+        flow.cycle()
+        event_mock.on_exit_green.assert_called_once_with(flow)
 
     def test_should_be_on_the_previous_state_when_exiting(self, event_mock, traffic_light_machine):
-        machine = traffic_light_machine()
+        flow = traffic_light_machine()
 
         def assert_is_green_from_state(s):
             assert s.value == "green"
@@ -85,10 +85,10 @@ class TestStateCallbacks:
         event_mock.on_exit_state.side_effect = assert_is_green_from_state
         event_mock.on_exit_green.side_effect = assert_is_green
 
-        machine.cycle()
+        flow.cycle()
 
     def test_should_be_on_the_next_state_when_entering(self, event_mock, traffic_light_machine):
-        machine = traffic_light_machine()
+        flow = traffic_light_machine()
 
         def assert_is_yellow_from_state(s):
             assert s.value == "yellow"
@@ -99,4 +99,4 @@ class TestStateCallbacks:
         event_mock.on_enter_state.side_effect = assert_is_yellow_from_state
         event_mock.on_enter_yellow.side_effect = assert_is_yellow
 
-        machine.cycle()
+        flow.cycle()

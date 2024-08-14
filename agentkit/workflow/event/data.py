@@ -4,14 +4,14 @@ from typing import TYPE_CHECKING
 from typing import Any
 
 if TYPE_CHECKING:
-    from .state import State
-    from .workflow import Workflow
-    from .transition import Transition
+    from agentkit import Workflow
+    from agentkit import State
+    from agentkit import Transition
 
 
 @dataclass
 class TriggerData:
-    machine: "Workflow"
+    flow: "Workflow"
 
     event: str
     """The Event that was triggered."""
@@ -26,7 +26,7 @@ class TriggerData:
     """All keyword arguments provided on the :ref:`Event`."""
 
     def __post_init__(self):
-        self.model = self.machine.model
+        self.model = self.flow.model
 
 
 @dataclass
@@ -54,7 +54,7 @@ class EventData:
         self.state = self.transition.source
         self.source = self.transition.source
         self.target = self.transition.target
-        self.machine = self.trigger_data.machine
+        self.flow = self.trigger_data.flow
 
     @property
     def event(self):
@@ -68,7 +68,7 @@ class EventData:
     def extended_kwargs(self):
         kwargs = self.trigger_data.kwargs.copy()
         kwargs["event_data"] = self
-        kwargs["machine"] = self.trigger_data.machine
+        kwargs["flow"] = self.trigger_data.flow
         kwargs["event"] = self.trigger_data.event
         kwargs["model"] = self.trigger_data.model
         kwargs["transition"] = self.transition

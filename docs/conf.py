@@ -66,7 +66,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "Python State Machine"
+project = "Agentkit Workflow"
 copyright = "2024, Fernando Macedo"
 
 # The version info for the project you're documenting, acts as replacement

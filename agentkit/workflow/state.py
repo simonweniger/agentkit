@@ -17,13 +17,13 @@ if TYPE_CHECKING:
 
 class State:
     """
-    A State in a :ref:`Workflow` describes a particular behavior of the machine.
-    When we say that a machine is “in” a state, it means that the machine behaves
+    A State in a :ref:`Workflow` describes a particular behavior of the flow.
+    When we say that a flow is “in” a state, it means that the flow behaves
     in the way that state describes.
 
     Args:
         name: A human-readable representation of the state. Default is derived
-            from the name of the variable assigned to the state machine class.
+            from the name of the variable assigned to the state flow class.
             The name is derived from the id using this logic::
 
                 name = id.replace("_", " ").capitalize()
@@ -33,7 +33,7 @@ class State:
             value.
         initial: Set ``True`` if the ``State`` is the initial one. There must be one and only
             one initial state in a workflow. Defaults to ``False``.
-        final: Set ``True`` if represents a final state. A machine can have
+        final: Set ``True`` if represents a final state. A flow can have
             optionally many final states. Final states have no :ref:`transition` starting from It.
             Defaults to ``False``.
         enter: One or more callbacks assigned to be executed when the state is entered.
@@ -44,7 +44,7 @@ class State:
     State is a core component on how this library implements an expressive API to declare
     Workflows.
 
-    >>> from workflow import State
+    >>> from agentkit import State
 
     Given a few states...
 
@@ -138,19 +138,19 @@ class State:
     def __str__(self):
         return self.name
 
-    def __get__(self, machine, owner):
-        if machine is None:
+    def __get__(self, flow, owner):
+        if flow is None:
             return self
-        return self.for_instance(machine=machine, cache=machine._states_for_instance)
+        return self.for_instance(flow=flow, cache=flow._states_for_instance)
 
     def __set__(self, instance, value):
         raise WorkflowError(
             _("State overriding is not allowed. Trying to add '{}' to {}").format(value, self.id)
         )
 
-    def for_instance(self, machine: "Workflow", cache: Dict["State", "State"]) -> "State":
+    def for_instance(self, flow: "Workflow", cache: Dict["State", "State"]) -> "State":
         if self not in cache:
-            cache[self] = InstanceState(self, machine)
+            cache[self] = InstanceState(self, flow)
 
         return cache[self]
 
@@ -213,10 +213,10 @@ class InstanceState(State):
     def __init__(
         self,
         state: State,
-        machine: "Workflow",
+        flow: "Workflow",
     ):
         self._state = ref(state)
-        self._machine = ref(machine)
+        self._machine = ref(flow)
 
     @property
     def name(self):

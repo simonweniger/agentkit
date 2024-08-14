@@ -17,8 +17,8 @@ class States:
 
     >>> states_def = [('open', {'initial': True}), ('closed', {'final': True})]
 
-    >>> from workflow import Workflow
-    >>> class SM(Workflow):
+    >>> from agentkit import Workflow
+    >>> class WF(Workflow):
     ...
     ...     states = States({
     ...         name: State(**params) for name, params in states_def
@@ -28,9 +28,9 @@ class States:
 
     And states can be used as usual.
 
-    >>> sm = SM()
-    >>> sm.send("close")
-    >>> sm.current_state.id
+    >>> workflow = WF()
+    >>> workflow.send("close")
+    >>> workflow.current_state.id
     'closed'
 
     """
@@ -92,7 +92,7 @@ class States:
 
         A :ref:`Workflow` that uses this enum can be declared as follows:
 
-        >>> from workflow import Workflow
+        >>> from agentkit import Workflow
         >>> class ApprovalMachine(Workflow):
         ...
         ...     _ = States.from_enum(Status, initial=Status.pending, final=Status.completed)
@@ -107,24 +107,24 @@ class States:
             :ref:`Workflow`, you're all set. You can use any name for this variable. In this
             example, we used ``_`` to show that the name doesn't matter. The metaclass will inspect
             the variable of type :ref:`States (class)` and automatically assign the inner
-            :ref:`State` instances to the state machine.
+            :ref:`State` instances to the state flow.
 
 
         Everything else is similar, the ``Enum`` is only used to declare the :ref:`State`
         instances.
 
-        >>> sm = ApprovalMachine()
+        >>> workflow = ApprovalMachine()
 
-        >>> sm.pending.is_active
+        >>> workflow.pending.is_active
         True
 
-        >>> sm.send("finish")
+        >>> workflow.send("finish")
         Completed!
 
-        >>> sm.completed.is_active
+        >>> workflow.completed.is_active
         True
 
-        >>> sm.current_state_value
+        >>> workflow.current_state_value
         2
 
         If you need to use the enum instance as the state value, you can set the
@@ -139,9 +139,9 @@ class States:
             On the next major release, the ``use_enum_instance=True`` will be the default.
 
         Args:
-            enum_type: An enumeration containing the states of the machine.
-            initial: The initial state of the machine.
-            final: A set of final states of the machine.
+            enum_type: An enumeration containing the states of the flow.
+            initial: The initial state of the flow.
+            final: A set of final states of the flow.
             use_enum_instance: If ``True``, the value of the state will be the enum item instance,
                 otherwise the enum item value.
 

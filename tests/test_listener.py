@@ -29,12 +29,12 @@ class TestObserver:
             def on_enter_state(self, target, event):
                 print(f"{self.name} enter: {target.id} from {event}")
 
-        sm = campaign_machine()
+        workflow = campaign_machine()
 
-        sm.add_listener(LogObserver("Frodo"))
+        workflow.add_listener(LogObserver("Frodo"))
 
-        sm.add_job()
-        sm.produce()
+        workflow.add_job()
+        workflow.produce()
 
         captured = capsys.readouterr()
         assert captured.out == EXPECTED_LOG_ADD
@@ -50,10 +50,10 @@ class TestObserver:
             def on_enter_state(self, target, event):
                 print(f"{self.name} enter: {target.id} from {event}")
 
-        sm = campaign_machine(listeners=[LogObserver("Frodo")])
+        workflow = campaign_machine(listeners=[LogObserver("Frodo")])
 
-        sm.add_job()
-        sm.produce()
+        workflow.add_job()
+        workflow.produce()
 
         captured = capsys.readouterr()
         assert captured.out == EXPECTED_LOG_CREATION
@@ -69,15 +69,15 @@ class TestObserver:
             def on_enter_state(self, target, event):
                 print(f"{self.name} enter: {target.id} from {event}")
 
-        sm = campaign_machine()
+        workflow = campaign_machine()
 
         with pytest.warns(
             DeprecationWarning, match="Method `add_observer` has been renamed to `add_listener`."
         ):
-            sm.add_observer(LogObserver("Frodo"))
+            workflow.add_observer(LogObserver("Frodo"))
 
-        sm.add_job()
-        sm.produce()
+        workflow.add_job()
+        workflow.produce()
 
         captured = capsys.readouterr()
         assert captured.out == EXPECTED_LOG_ADD

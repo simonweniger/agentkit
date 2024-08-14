@@ -19,7 +19,7 @@ from agentkit.workflow.dispatcher import Listeners
 from agentkit.workflow.engines.async_ import AsyncEngine
 from agentkit.workflow.engines.sync import SyncEngine
 from agentkit.workflow.event import Event
-from agentkit.workflow.event_data import TriggerData
+from agentkit.workflow.event import TriggerData
 from agentkit.workflow.exceptions import InvalidDefinition
 from agentkit.workflow.exceptions import InvalidStateValue
 from agentkit.workflow.exceptions import TransitionNotAllowed
@@ -50,7 +50,7 @@ class Workflow(metaclass=WorkflowMetaclass):
 
         allow_event_without_transition: If ``False`` when an event does not result in a transition,
             an exception ``TransitionNotAllowed`` will be raised.
-            If ``True`` the state machine allows triggering events that may not lead to a state
+            If ``True`` the state flow allows triggering events that may not lead to a state
             :ref:`transition`, including tolerance to unknown :ref:`event` triggers.
             Default: ``False``.
 
@@ -65,8 +65,8 @@ class Workflow(metaclass=WorkflowMetaclass):
     Example::
 
         try:
-            sm.send("an-inexistent-event")
-        except sm.TransitionNotAllowed:
+            workflow.send("an-inexistent-event")
+        except workflow.TransitionNotAllowed:
             pass
     """
 
@@ -96,11 +96,11 @@ class Workflow(metaclass=WorkflowMetaclass):
         self._register_callbacks(listeners or [])
 
         # Activate the initial state, this only works if the outer scope is sync code.
-        # for async code, the user should manually call `await sm.activate_initial_state()`
-        # after state machine creation.
+        # for async code, the user should manually call `await workflow.activate_initial_state()`
+        # after state flow creation.
         if self.current_state_value is None:
             trigger_data = TriggerData(
-                machine=self,
+                flow=self,
                 event="__initial__",
             )
             self._put_nonblocking(trigger_data)
@@ -164,7 +164,7 @@ class Workflow(metaclass=WorkflowMetaclass):
             raise InvalidStateValue(current_state_value) from err
 
     def bind_events_to(self, *targets):
-        """Bind the state machine events to the target objects."""
+        """Bind the state flow events to the target objects."""
 
         for event in self.events:
             trigger = getattr(self, event.name)
@@ -274,7 +274,7 @@ class Workflow(metaclass=WorkflowMetaclass):
 
         try:
             state: State = self.states_map[self.current_state_value].for_instance(
-                machine=self,
+                flow=self,
                 cache=self._states_for_instance,
             )
             return state
@@ -285,7 +285,7 @@ class Workflow(metaclass=WorkflowMetaclass):
                     _(
                         "There's no current state set. In async code, "
                         "did you activate the initial state? "
-                        "(e.g., `await sm.activate_initial_state()`)"
+                        "(e.g., `await workflow.activate_initial_state()`)"
                     ),
                 ) from err
             raise InvalidStateValue(self.current_state_value) from err
@@ -308,7 +308,7 @@ class Workflow(metaclass=WorkflowMetaclass):
         self._external_queue.append(trigger_data)
 
     def send(self, event: str, *args, **kwargs):
-        """Send an :ref:`Event` to the state machine.
+        """Send an :ref:`Event` to the state flow.
 
         .. seealso::
 
@@ -321,7 +321,7 @@ class Workflow(metaclass=WorkflowMetaclass):
         return run_async_from_sync(result)
 
     def _async_send(self, event: str, *args, **kwargs):
-        """Send an :ref:`Event` to the state machine.
+        """Send an :ref:`Event` to the state flow.
 
         .. seealso::
 

@@ -1,4 +1,4 @@
-* Python State Machine version:
+* Agentkit Workflow version:
 * Python version:
 * Operating System:
 

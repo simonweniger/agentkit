@@ -127,12 +127,12 @@ class TestChainedTransition:
     def test_should_allow_chaining_transitions_using_actions(
         self, chained_after_sm_class, rtc, expected_calls
     ):
-        sm = chained_after_sm_class(rtc=rtc)
-        sm.t1(value=42)
+        workflow = chained_after_sm_class(rtc=rtc)
+        workflow.t1(value=42)
 
-        assert sm.c.is_active
+        assert workflow.c.is_active
 
-        assert sm.spy.call_args_list == expected_calls
+        assert workflow.spy.call_args_list == expected_calls
 
     @pytest.mark.parametrize(
         ("rtc", "expected"),
@@ -166,14 +166,14 @@ class TestChainedTransition:
         ],
     )
     def test_should_preserve_event_order(self, chained_on_sm_class, rtc, expected):
-        sm = chained_on_sm_class(rtc=rtc)
+        workflow = chained_on_sm_class(rtc=rtc)
 
         if inspect.isclass(expected) and issubclass(expected, Exception):
             with pytest.raises(expected):
-                sm.send("t1")
+                workflow.send("t1")
         else:
-            assert sm.send("t1") == ["t1", [None, None, None]]
-            assert sm.spy.call_args_list == expected
+            assert workflow.send("t1") == ["t1", [None, None, None]]
+            assert workflow.spy.call_args_list == expected
 
 
 class TestAsyncEngineRTC:
@@ -256,7 +256,7 @@ class TestAsyncEngineRTC:
             async def after_transition(self, event: str, source: State, target: State):
                 self.spy("after_transition", event=event, source=source.id, target=target.id)
 
-        sm = ChainedSM()
+        workflow = ChainedSM()
 
-        assert sm.send("t1") == ["t1", [None, None, None]]
-        assert sm.spy.call_args_list == expected
+        assert workflow.send("t1") == ["t1", [None, None, None]]
+        assert workflow.spy.call_args_list == expected

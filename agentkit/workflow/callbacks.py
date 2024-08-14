@@ -14,9 +14,9 @@ from typing import Iterable
 from typing import List
 from typing import Type
 
-from .exceptions import AttrNotFound
-from .i18n import _
-from .utils import ensure_iterable
+from agentkit.workflow.exceptions import AttrNotFound
+from agentkit.utils.i18n import _
+from agentkit.utils.workflow import ensure_iterable
 
 
 class CallbackPriority(IntEnum):

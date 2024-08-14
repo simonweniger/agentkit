@@ -1,5 +1,5 @@
 """
-Air Conditioner machine
+Air Conditioner flow
 =======================
 
 A Workflow that exercises reading from a stream of events.
@@ -54,12 +54,12 @@ class AirConditioner(Workflow):
 
 async def main():
     sensor = sensor_temperature_reader(123456)
-    print("Will create AirConditioner machine")
-    sm = AirConditioner()
+    print("Will create AirConditioner flow")
+    workflow = AirConditioner()
 
     generator = (("sensor_updated", next(sensor)) for _ in range(20))
     for event, temperature in generator:
-        await sm.send(event, temperature=temperature)
+        await workflow.send(event, temperature=temperature)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ from workflow import Workflow
 
 def test_assign_events_on_transitions():
     class TrafficLightMachine(Workflow):
-        "A traffic light machine"
+        "A traffic light flow"
 
         green = State(initial=True)
         yellow = State()
@@ -21,8 +21,8 @@ def test_assign_events_on_transitions():
                 f"{event_data.transition.target.id}"
             )
 
-    sm = TrafficLightMachine()
+    workflow = TrafficLightMachine()
 
-    assert sm.send("cycle") == "Running cycle from green to yellow"
-    assert sm.send("cycle") == "Running cycle from yellow to red"
-    assert sm.send("cycle") == "Running cycle from red to green"
+    assert workflow.send("cycle") == "Running cycle from green to yellow"
+    assert workflow.send("cycle") == "Running cycle from yellow to red"
+    assert workflow.send("cycle") == "Running cycle from red to green"

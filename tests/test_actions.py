@@ -11,12 +11,12 @@ class TestActions:
         import tests.examples.order_control_rich_model_machine  # noqa
 
     def test_should_should_compute_callbacks_meta_list(self, campaign_machine):
-        sm = campaign_machine()
-        assert list(sm.draft.enter) == [
+        workflow = campaign_machine()
+        assert list(workflow.draft.enter) == [
             CallbackSpec("on_enter_state", CallbackGroup.ENTER, is_convention=True),
             CallbackSpec("on_enter_draft", CallbackGroup.ENTER, is_convention=True),
         ]
-        assert list(sm.draft.exit) == [
+        assert list(workflow.draft.exit) == [
             CallbackSpec("on_exit_state", CallbackGroup.EXIT, is_convention=True),
             CallbackSpec("on_exit_draft", CallbackGroup.EXIT, is_convention=True),
         ]

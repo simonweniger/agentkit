@@ -23,7 +23,7 @@ def campaign_machine():
     from workflow import Workflow
 
     class CampaignMachine(Workflow):
-        "A workflow machine"
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State("Being produced")
@@ -43,7 +43,7 @@ def campaign_machine_with_validator():
     from workflow import Workflow
 
     class CampaignMachine(Workflow):
-        "A workflow machine"
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State("Being produced")
@@ -67,7 +67,7 @@ def campaign_machine_with_final_state():
     from workflow import Workflow
 
     class CampaignMachine(Workflow):
-        "A workflow machine"
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State("Being produced")
@@ -87,7 +87,7 @@ def campaign_machine_with_values():
     from workflow import Workflow
 
     class CampaignMachineWithKeys(Workflow):
-        "A workflow machine"
+        "A workflow flow"
 
         draft = State(initial=True, value=1)
         producing = State("Being produced", value=2)
@@ -147,7 +147,7 @@ def reverse_traffic_light_machine():
     from workflow import Workflow
 
     class ReverseTrafficLightMachine(Workflow):
-        "A traffic light machine"
+        "A traffic light flow"
 
         green = State(initial=True)
         yellow = State()
@@ -165,7 +165,7 @@ def approval_machine(current_time):  # noqa: C901
     from workflow import Workflow
 
     class ApprovalMachine(Workflow):
-        "A workflow machine"
+        "A workflow flow"
 
         requested = State(initial=True)
         accepted = State()

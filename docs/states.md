@@ -18,7 +18,7 @@ How to define and attach [](actions.md) to {ref}`States`.
 A {ref}`Workflow` should have one and only one `initial` {ref}`state`.
 
 
-The initial {ref}`state` is entered when the machine starts and the corresponding entering
+The initial {ref}`state` is entered when the flow starts and the corresponding entering
 state {ref}`actions` are called if defined.
 
 ## State Transitions
@@ -31,7 +31,7 @@ If any states are unreachable from the initial state, an `InvalidDefinition` exc
 >>> from workflow import Workflow, State
 
 >>> class TrafficLightMachine(Workflow):
-...     "A workflow machine"
+...     "A workflow flow"
 ...     red = State('Red', initial=True, value=1)
 ...     green = State('Green', value=2)
 ...     orange = State('Orange', value=3)
@@ -55,7 +55,7 @@ This will currently issue a warning, but can be turned into an exception by sett
 >>> from workflow import Workflow, State
 
 >>> class TrafficLightMachine(Workflow, strict_states=True):
-...     "A workflow machine"
+...     "A workflow flow"
 ...     red = State('Red', initial=True, value=1)
 ...     green = State('Green', value=2)
 ...     orange = State('Orange', value=3)
@@ -84,7 +84,7 @@ Transitions from these states are not allowed and will raise exceptions.
 >>> from workflow import Workflow, State
 
 >>> class CampaignMachine(Workflow):
-...     "A workflow machine"
+...     "A workflow flow"
 ...     draft = State('Draft', initial=True, value=1)
 ...     producing = State('Being produced', value=2)
 ...     closed = State('Closed', final=True, value=3)
@@ -106,7 +106,7 @@ This will currently issue a warning, but can be turned into an exception by sett
 
 ```py
 >>> class CampaignMachine(Workflow, strict_states=True):
-...     "A workflow machine"
+...     "A workflow flow"
 ...     draft = State('Draft', initial=True, value=1)
 ...     producing = State('Being produced', value=2)
 ...     abandoned = State('Abandoned', value=3)
@@ -130,7 +130,7 @@ You can query a list of all final states from your workflow.
 
 ```py
 >>> class CampaignMachine(Workflow):
-...     "A workflow machine"
+...     "A workflow flow"
 ...     draft = State('Draft', initial=True, value=1)
 ...     producing = State('Being produced', value=2)
 ...     closed = State('Closed', final=True, value=3)
@@ -139,12 +139,12 @@ You can query a list of all final states from your workflow.
 ...     produce = draft.to(producing)
 ...     deliver = producing.to(closed)
 
->>> machine = CampaignMachine()
+>>> flow = CampaignMachine()
 
->>> machine.final_states
+>>> flow.final_states
 [State('Closed', id='closed', value=3, initial=False, final=True)]
 
->>> machine.current_state in machine.final_states
+>>> flow.current_state in flow.final_states
 False
 
 ```

@@ -27,7 +27,7 @@ from workflow import Workflow
 
 
 class TrafficLightMachine(Workflow):
-    "A traffic light machine"
+    "A traffic light flow"
 
     green = State(initial=True)
     yellow = State()
@@ -56,15 +56,15 @@ class TrafficLightMachine(Workflow):
 # %%
 # Run a transition
 
-sm = TrafficLightMachine()
-sm.send("cycle")
+workflow = TrafficLightMachine()
+workflow.send("cycle")
 
 
 # %%
 
 
 class TrafficLightIsolatedTransitions(Workflow):
-    "A traffic light machine"
+    "A traffic light flow"
 
     green = State(initial=True)
     yellow = State()

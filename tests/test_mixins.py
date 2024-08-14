@@ -1,6 +1,6 @@
 import pytest
 
-from workflow.mixins import MachineMixin
+from agentkit.mixins import MachineMixin
 from tests.models import MyModel
 
 
@@ -19,5 +19,5 @@ def test_mixin_should_raise_exception_if_machine_class_does_not_exist():
     class MyModelWithoutMachineName(MachineMixin):
         pass
 
-    with pytest.raises(ValueError, match="None is not a valid state machine name"):
+    with pytest.raises(ValueError, match="None is not a valid state flow name"):
         MyModelWithoutMachineName()

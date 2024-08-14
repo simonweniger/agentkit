@@ -1,12 +1,12 @@
 from inspect import isawaitable
 from typing import TYPE_CHECKING
 
-from workflow.utils import run_async_from_sync
+from agentkit.utils.workflow import run_async_from_sync
 
-from .event_data import TriggerData
+from agentkit.workflow.event import TriggerData
 
 if TYPE_CHECKING:
-    from .workflow import Workflow
+    from agentkit import Workflow
 
 
 class Event:
@@ -16,19 +16,19 @@ class Event:
     def __repr__(self):
         return f"{type(self).__name__}({self.name!r})"
 
-    def trigger(self, machine: "Workflow", *args, **kwargs):
+    def trigger(self, flow: "Workflow", *args, **kwargs):
         trigger_data = TriggerData(
-            machine=machine,
+            flow=flow,
             event=self.name,
             args=args,
             kwargs=kwargs,
         )
-        machine._put_nonblocking(trigger_data)
-        return machine._processing_loop()
+        flow._put_nonblocking(trigger_data)
+        return flow._processing_loop()
 
 
 def trigger_event_factory(event_instance: Event):
-    """Build a method that sends specific `event` to the machine"""
+    """Build a method that sends specific `event` to the flow"""
 
     def trigger_event(self, *args, **kwargs):
         result = event_instance.trigger(self, *args, **kwargs)

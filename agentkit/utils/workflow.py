@@ -4,7 +4,7 @@ import threading
 #TODO: Move to the utils folder
 
 _cached_loop = threading.local()
-"""Loop that will be used when the SM is running in a synchronous context. One loop per thread."""
+"""Loop that will be used when the WF is running in a synchronous context. One loop per thread."""
 
 
 def qualname(cls):

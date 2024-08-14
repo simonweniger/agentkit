@@ -3,7 +3,7 @@
 Action is the way a {ref}`Workflow` can cause things to happen in the
 outside world, and indeed they are the main reason why they exist at all.
 
-The main point of introducing a state machine is for the
+The main point of introducing a state flow is for the
 actions to be invoked at the right times, depending on the sequence of events
 and the state of the {ref}`conditions`.
 
@@ -56,10 +56,10 @@ The following example can get you an overview of the "generic" callbacks availab
 ...         print(f"After '{event}', on the '{state.id}' state.")
 
 
->>> sm = ExampleWorkflow()  # On initialization, the machine run a special event `__initial__`
+>>> workflow = ExampleWorkflow()  # On initialization, the flow run a special event `__initial__`
 Entering 'initial' state from '__initial__' event.
 
->>> sm.loop()
+>>> workflow.loop()
 Before 'loop', on the 'initial' state.
 Exiting 'initial' state from 'loop' event.
 On 'loop', on the 'initial' state.
@@ -67,7 +67,7 @@ Entering 'initial' state from 'loop' event.
 After 'loop', on the 'initial' state.
 ['before_transition_return', 'on_transition_return']
 
->>> sm.go()
+>>> workflow.go()
 Before 'go', on the 'initial' state.
 Exiting 'initial' state from 'go' event.
 On 'go', on the 'initial' state.
@@ -284,9 +284,9 @@ Workflow is in the right state.
 So, you can use the event-oriented approach:
 
 ```py
->>> sm = ExampleWorkflow()
+>>> workflow = ExampleWorkflow()
 
->>> sm.send("loop")
+>>> workflow.send("loop")
 On loop
 42
 
@@ -386,9 +386,9 @@ defined explicitly. The following provides an example:
 ...         return "On loop"
 ...
 
->>> sm = ExampleWorkflow()
+>>> workflow = ExampleWorkflow()
 
->>> sm.loop()
+>>> workflow.loop()
 ['Before loop', None, 'On loop']
 
 ```
@@ -427,10 +427,10 @@ For your convenience, all these parameters are available for you on any callback
 : The {ref}`Event` that was triggered.
 
 `source`
-: The {ref}`State` the state machine was in when the {ref}`Event` started.
+: The {ref}`State` the state flow was in when the {ref}`Event` started.
 
 `state`
-: The current {ref}`State` of the state machine.
+: The current {ref}`State` of the state flow.
 
 `target`
 : The destination {ref}`State` of the transition.

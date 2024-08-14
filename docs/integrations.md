@@ -20,7 +20,7 @@ code, if you put state machines on modules named as mentioned above inside insta
 Django Apps, these {ref}`Workflow` classes will be automatically
 imported and registered.
 
-This is only an advice, nothing stops you do declare your state machine alongside your models.
+This is only an advice, nothing stops you do declare your state flow alongside your models.
 ```
 
 
@@ -31,13 +31,13 @@ Given this Workflow:
 ```py
 # campaign/statemachines.py
 
-from workflow import Workflow
-from workflow import State
-from workflow.mixins import MachineMixin
+from agentkit import Workflow
+from agentkit import State
+from agentkit.mixins import MachineMixin
 
 
 class CampaignMachineWithKeys(Workflow):
-    "A workflow machine"
+    "A workflow flow"
     draft = State('Draft', initial=True, value=1)
     producing = State('Being produced', value=2)
     closed = State('Closed', value=3)
@@ -58,7 +58,7 @@ from django.db import models
 
 class Campaign(models.Model, MachineMixin):
     state_machine_name = 'campaign.statemachines.CampaignMachineWithKeys'
-    state_machine_attr = 'sm'
+    state_machine_attr = 'workflow'
     state_field_name = 'step'
 
     name = models.CharField(max_length=30)

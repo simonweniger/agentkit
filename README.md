@@ -2,7 +2,7 @@
 
 Simple but powerful framework to build reliable agentic AI systems. Based on a[finite-state machines](https://en.wikipedia.org/wiki/Finite-state_machine).
 
-Welcome to Agentkit, an intuitive and powerful framework to build reliable agentic systems.Powered by a state machine and designed for a great developer experience. We provide a _pythonic_ and expressive API for implementing state based autonomous ai agents with support for all kinds of models.
+Welcome to Agentkit, an intuitive and powerful framework to build reliable agentic systems.Powered by a state flow and designed for a great developer experience. We provide a _pythonic_ and expressive API for implementing state based autonomous ai agents with support for all kinds of models.
 
 ## Features
 
@@ -10,16 +10,16 @@ Welcome to Agentkit, an intuitive and powerful framework to build reliable agent
 - ⚙️ **Actions and handlers**: Attach actions and handlers to states, events, and transitions to control behavior dynamically.
 - 🛡️ **Conditional transitions**: Implement **Guards** and **Validators** to conditionally control transitions, ensuring they only occur when specific conditions are met.
 - 🚀 **Full async support**: Enjoy full asynchronous support. Await events, and dispatch callbacks asynchronously for seamless integration with async codebases.
-- 🔄 **Full sync support**: Use the same state machine from synchronous codebases without any modifications.
-- 🎨 **Declarative and simple API**: Utilize a clean, elegant, and readable API to define your state machine, making it easy to maintain and understand.
+- 🔄 **Full sync support**: Use the same state flow from synchronous codebases without any modifications.
+- 🎨 **Declarative and simple API**: Utilize a clean, elegant, and readable API to define your state flow, making it easy to maintain and understand.
 - 👀 **Observer pattern support**: Register external and generic objects to watch events and register callbacks.
-- 🔍 **Decoupled design**: Separate concerns with a decoupled "state machine" and "model" design, promoting cleaner architecture and easier maintenance.
+- 🔍 **Decoupled design**: Separate concerns with a decoupled "state flow" and "model" design, promoting cleaner architecture and easier maintenance.
 - ✅ **Correctness guarantees**: Ensured correctness with validations at class definition time:
   - Ensures exactly one `initial` state.
   - Disallows transitions from `final` states.
   - Requires ongoing transitions for all non-final states.
   - Guarantees all non-final states have at least one path to a final state if final states are declared.
-  - Validates the state machine graph representation has a single component.
+  - Validates the state flow graph representation has a single component.
 - 📦 **Flexible event dispatching**: Dispatch events with any extra data, making it available to all callbacks, including actions and guards.
 - 🔧 **Dependency injection**: Needed parameters are injected into callbacks.
 - 📊 **Graphical representation**: Generate and output graphical representations of state machines. Create diagrams from the command line, at runtime, or even in Jupyter notebooks.
@@ -30,7 +30,7 @@ Welcome to Agentkit, an intuitive and powerful framework to build reliable agent
 
 ## Installing
 
-To install Python State Machine, run this command in your terminal:
+To install Agentkit Workflow, run this command in your terminal:
 
 ```shell
   pip install agentkit
@@ -46,13 +46,13 @@ our docs for more details.
 
 ## First example
 
-Define your state machine:
+Define your state flow:
 
 ```py
   >>> from workflow import Workflow, State
 
   >>> class TrafficLightMachine(Workflow):
-  ...     "A traffic light machine"
+  ...     "A traffic light flow"
   ...     green = State(initial=True)
   ...     yellow = State()
   ...     red = State()
@@ -78,15 +78,15 @@ Define your state machine:
 You can now create an instance:
 
 ```py
->>> sm = TrafficLightMachine()
+>>> workflow = TrafficLightMachine()
 
 ```
 
-This state machine can be represented graphically as follows:
+This state flow can be represented graphically as follows:
 
 ```py
 >>> img_path = "docs/images/readme_trafficlightmachine.png"
->>> sm._graph().write_png(img_path)
+>>> workflow._graph().write_png(img_path)
 
 ```
 
@@ -96,21 +96,21 @@ Where on the `TrafficLightMachine`, we've defined `green`, `yellow`, and `red` a
 one event called `cycle`, which is bound to the transitions from `green` to `yellow`, `yellow` to `red`,
 and `red` to `green`. We also have defined three callbacks by name convention, `before_cycle`, `on_enter_red`, and `on_exit_red`.
 
-Then start sending events to your new state machine:
+Then start sending events to your new state flow:
 
 ```py
->>> sm.send("cycle")
+>>> workflow.send("cycle")
 'Running cycle from green to yellow'
 
 ```
 
-**That's it.** This is all an external object needs to know about your state machine: How to send events.
+**That's it.** This is all an external object needs to know about your state flow: How to send events.
 Ideally, all states, transitions, and actions should be kept internally and not checked externally to avoid unnecessary coupling.
 
-But if your use case needs, you can inspect state machine properties, like the current state:
+But if your use case needs, you can inspect state flow properties, like the current state:
 
 ```py
->>> sm.current_state.id
+>>> workflow.current_state.id
 'yellow'
 
 ```
@@ -118,7 +118,7 @@ But if your use case needs, you can inspect state machine properties, like the c
 Or get a complete state representation for debugging purposes:
 
 ```py
->>> sm.current_state
+>>> workflow.current_state
 State('Yellow', id='yellow', value='yellow', initial=False, final=False)
 
 ```
@@ -126,10 +126,10 @@ State('Yellow', id='yellow', value='yellow', initial=False, final=False)
 The `State` instance can also be checked by equality:
 
 ```py
->>> sm.current_state == TrafficLightMachine.yellow
+>>> workflow.current_state == TrafficLightMachine.yellow
 True
 
->>> sm.current_state == sm.yellow
+>>> workflow.current_state == workflow.yellow
 True
 
 ```
@@ -137,13 +137,13 @@ True
 Or you can check if a state is active at any time:
 
 ```py
->>> sm.green.is_active
+>>> workflow.green.is_active
 False
 
->>> sm.yellow.is_active
+>>> workflow.yellow.is_active
 True
 
->>> sm.red.is_active
+>>> workflow.red.is_active
 False
 
 ```
@@ -151,7 +151,7 @@ False
 Easily iterate over all states:
 
 ```py
->>> [s.id for s in sm.states]
+>>> [s.id for s in workflow.states]
 ['green', 'red', 'yellow']
 
 ```
@@ -159,7 +159,7 @@ Easily iterate over all states:
 Or over events:
 
 ```py
->>> [t.name for t in sm.events]
+>>> [t.name for t in workflow.events]
 ['cycle']
 
 ```
@@ -167,7 +167,7 @@ Or over events:
 Call an event by its name:
 
 ```py
->>> sm.cycle()
+>>> workflow.cycle()
 Don't move.
 'Running cycle from yellow to red'
 
@@ -176,11 +176,11 @@ Don't move.
 Or send an event with the event name:
 
 ```py
->>> sm.send('cycle')
+>>> workflow.send('cycle')
 Go ahead!
 'Running cycle from red to green'
 
->>> sm.green.is_active
+>>> workflow.green.is_active
 True
 
 ```
@@ -204,7 +204,7 @@ or without a `message` parameter.
 If we pass a `message` parameter, it will be used on the `before_cycle` action:
 
 ```py
->>> sm.send("cycle", message="Please, now slowdown.")
+>>> workflow.send("cycle", message="Please, now slowdown.")
 'Running cycle from green to yellow. Please, now slowdown.'
 
 ```
@@ -213,7 +213,7 @@ By default, events with transitions that cannot run from the current state or un
 raise a `TransitionNotAllowed` exception:
 
 ```py
->>> sm.send("go")
+>>> workflow.send("go")
 Traceback (most recent call last):
 workflow.exceptions.TransitionNotAllowed: Can't go when in Yellow.
 
@@ -222,7 +222,7 @@ workflow.exceptions.TransitionNotAllowed: Can't go when in Yellow.
 Keeping the same state as expected:
 
 ```py
->>> sm.yellow.is_active
+>>> workflow.yellow.is_active
 True
 
 ```
@@ -231,7 +231,7 @@ A human-readable name is automatically derived from the `State.id`, which is use
 and in diagrams:
 
 ```py
->>> sm.current_state.name
+>>> workflow.current_state.name
 'Yellow'
 
 ```
@@ -252,10 +252,10 @@ There's no change on the public API of the library to work on async codebases.
 ...         return 42
 
 >>> async def run_sm():
-...     sm = AsyncWorkflow()
-...     result = await sm.advance()
+...     workflow = AsyncWorkflow()
+...     result = await workflow.advance()
 ...     print(f"Result is {result}")
-...     print(sm.current_state)
+...     print(workflow.current_state)
 
 >>> asyncio.run(run_sm())
 Result is 42
@@ -265,7 +265,7 @@ Final
 
 ## A more useful example
 
-A simple didactic state machine for controlling an `Order`:
+A simple didactic state flow for controlling an `Order`:
 
 ```py
 >>> class OrderControl(Workflow):
@@ -307,7 +307,7 @@ A simple didactic state machine for controlling an `Order`:
 
 ```
 
-You can use this machine as follows.
+You can use this flow as follows.
 
 ```py
 >>> control = OrderControl()

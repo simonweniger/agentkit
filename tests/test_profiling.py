@@ -47,8 +47,8 @@ def create_order():
     assert order.state_machine.waiting_for_payment.is_active
 
 
-def add_to_order(sm, amount):
-    sm.add_to_order(amount)
+def add_to_order(workflow, amount):
+    workflow.add_to_order(amount)
 
 
 @pytest.mark.slow()

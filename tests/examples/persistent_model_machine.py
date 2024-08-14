@@ -10,10 +10,10 @@ format.
 Original `issue <https://github.com/fgmacedo/python-workflow/issues/358>`_.
 
 
-Resource management state machine
+Resource management state flow
 ---------------------------------
 
-Given a simple on/off machine for resource management.
+Given a simple on/off flow for resource management.
 
 """
 
@@ -114,27 +114,27 @@ state_file = tempfile.TemporaryFile(mode="r+")
 # Let's create instances and test the persistence.
 
 model = FilePersistentModel(file=state_file)
-sm = ResourceManagement(model=model)
+workflow = ResourceManagement(model=model)
 
-print(f"Initial state: {sm.current_state.id}")
+print(f"Initial state: {workflow.current_state.id}")
 
-sm.send("turn_on")
+workflow.send("turn_on")
 
-print(f"State after transition: {sm.current_state.id}")
+print(f"State after transition: {workflow.current_state.id}")
 
 # %%
 # Remove the instances from memory.
 
-del sm
+del workflow
 del model
 
 # %%
 # Restore the previous state from disk.
 
 model = FilePersistentModel(file=state_file)
-sm = ResourceManagement(model=model)
+workflow = ResourceManagement(model=model)
 
-print(f"State restored from file system: {sm.current_state.id}")
+print(f"State restored from file system: {workflow.current_state.id}")
 
 # %%
 # Closing the file (the temporary file will be removed).

@@ -8,13 +8,13 @@ from typing import Iterable
 from typing import Set
 from typing import Tuple
 
-from .callbacks import SPECS_ALL
-from .callbacks import SpecReference
-from .signature import SignatureAdapter
+from agentkit.workflow.callbacks import SPECS_ALL
+from agentkit.workflow.callbacks import SpecReference
+from agentkit.workflow.signature import SignatureAdapter
 
 if TYPE_CHECKING:
-    from .callbacks import CallbackSpec
-    from .callbacks import CallbackSpecList
+    from agentkit.workflow.callbacks import CallbackSpec
+    from agentkit.workflow.callbacks import CallbackSpecList
 
 
 @dataclass
@@ -148,7 +148,7 @@ def attr_method(attribute, obj, resolver_id) -> Callable:
 
 def event_method(attribute, func, resolver_id) -> Callable:
     def method(*args, **kwargs):
-        kwargs.pop("machine", None)
+        kwargs.pop("flow", None)
         return func(*args, **kwargs)
 
     method.unique_key = f"{attribute}@{resolver_id}"  # type: ignore[attr-defined]

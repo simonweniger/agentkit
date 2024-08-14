@@ -1,4 +1,4 @@
-from .utils import ensure_iterable
+from agentkit.utils.workflow import ensure_iterable
 
 
 class Events:

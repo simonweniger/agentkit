@@ -70,7 +70,7 @@ def create_pydantic_model_from_func_v0(
     keyword_only_params = {param: kwonlydefaults.get(param, Any) for param in kwonlyargs}
 
     """ Create a dictionary for all arguments with their annotations and defaults
-    e.g. 
+    e.g.
     {
         'name': ('str', 'Default Name'),
         'age': ('int', 0),
@@ -169,13 +169,6 @@ def create_pydantic_model_from_func(
     # Remove ignored params
     if ignored_params:
         params = {key: value for key, value in params.items() if key not in ignored_params}
-
-    # (Deprecated) Convert annotations to pydantic models if needed
-    # if supporting_annotation_models:
-    #     models_dict = {model.__name__: model for model in supporting_annotation_models}
-    #     for name, (annotation, default) in params.items():
-    #         annotation = models_dict.get(annotation, annotation)
-    #         params[name] = (annotation, default)
 
     if config:
         return create_model(

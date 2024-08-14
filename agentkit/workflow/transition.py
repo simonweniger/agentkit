@@ -2,7 +2,7 @@ from agentkit.workflow.callbacks import CallbackGroup
 from agentkit.workflow.callbacks import CallbackPriority
 from agentkit.workflow.callbacks import CallbackSpecList
 from agentkit.workflow.event import same_event_cond_builder
-from agentkit.workflow.events import Events
+from agentkit.workflow.event import Events
 from agentkit.workflow.exceptions import InvalidDefinition
 
 

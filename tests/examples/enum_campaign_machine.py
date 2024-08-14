@@ -1,5 +1,5 @@
 """
-Enum campaign machine
+Enum campaign flow
 =====================
 
 A :ref:`Workflow` that demonstrates declaring :ref:`States from Enum types` as source for
@@ -20,7 +20,7 @@ class CampaignStatus(Enum):
 
 
 class CampaignMachine(Workflow):
-    "A workflow machine"
+    "A workflow flow"
 
     states = States.from_enum(
         CampaignStatus,
@@ -35,7 +35,7 @@ class CampaignMachine(Workflow):
 
 
 # %%
-# Asserting campaign machine declaration
+# Asserting campaign flow declaration
 
 assert CampaignMachine.DRAFT.initial
 assert not CampaignMachine.DRAFT.final
@@ -48,13 +48,13 @@ assert CampaignMachine.CLOSED.final
 
 
 # %%
-# Testing our campaign machine
+# Testing our campaign flow
 
-sm = CampaignMachine()
-res = sm.send("produce")
+workflow = CampaignMachine()
+res = workflow.send("produce")
 
-assert sm.DRAFT.is_active is False
-assert sm.PRODUCING.is_active is True
-assert sm.CLOSED.is_active is False
-assert sm.current_state == sm.PRODUCING
-assert sm.current_state_value == CampaignStatus.PRODUCING
+assert workflow.DRAFT.is_active is False
+assert workflow.PRODUCING.is_active is True
+assert workflow.CLOSED.is_active is False
+assert workflow.current_state == workflow.PRODUCING
+assert workflow.current_state_value == CampaignStatus.PRODUCING

@@ -6,7 +6,7 @@ from workflow import Workflow
 
 @pytest.fixture()
 def sm_class():
-    class SM(Workflow):
+    class WF(Workflow):
         pending = State(initial=True)
         waiting_approval = State()
         approved = State(final=True)
@@ -14,7 +14,7 @@ def sm_class():
         start = pending.to(waiting_approval)
         approve = waiting_approval.to(approved)
 
-    return SM
+    return WF
 
 
 class TestState:
@@ -24,18 +24,18 @@ class TestState:
         assert sm_class.approved.name == "Approved"
 
     def test_state_from_instance_is_hashable(self, sm_class):
-        sm = sm_class()
-        states_set = {sm.pending, sm.waiting_approval, sm.approved, sm.approved}
-        assert states_set == {sm.pending, sm.waiting_approval, sm.approved}
+        workflow = sm_class()
+        states_set = {workflow.pending, workflow.waiting_approval, workflow.approved, workflow.approved}
+        assert states_set == {workflow.pending, workflow.waiting_approval, workflow.approved}
 
     def test_state_knows_if_its_initial(self, sm_class):
-        sm = sm_class()
-        assert sm.pending.initial
-        assert not sm.waiting_approval.initial
-        assert not sm.approved.initial
+        workflow = sm_class()
+        assert workflow.pending.initial
+        assert not workflow.waiting_approval.initial
+        assert not workflow.approved.initial
 
     def test_state_knows_if_its_final(self, sm_class):
-        sm = sm_class()
-        assert not sm.pending.final
-        assert not sm.waiting_approval.final
-        assert sm.approved.final
+        workflow = sm_class()
+        assert not workflow.pending.final
+        assert not workflow.waiting_approval.final
+        assert workflow.approved.final

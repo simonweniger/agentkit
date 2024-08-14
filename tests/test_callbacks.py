@@ -216,16 +216,16 @@ class TestCallbacksAsDecorator:
             def refuse_call(self, reason):
                 self.spy("refuse_call", reason)
 
-        sm = MiniHeroJourneyMachine()
-        sm.adventure_called(request="The darkness is coming")
-        assert sm.spy.call_args_list == [
+        workflow = MiniHeroJourneyMachine()
+        workflow.adventure_called(request="The darkness is coming")
+        assert workflow.spy.call_args_list == [
             mock.call("enter_ordinary_world"),
             mock.call("call_to_adventure", "The darkness is coming"),
         ]
 
-        sm = MiniHeroJourneyMachine()
-        sm.refuse_call(reason="Not prepared yet")
-        assert sm.spy.call_args_list == [
+        workflow = MiniHeroJourneyMachine()
+        workflow.refuse_call(reason="Not prepared yet")
+        assert workflow.spy.call_args_list == [
             mock.call("enter_ordinary_world"),
             mock.call("refuse_call", "Not prepared yet"),
         ]

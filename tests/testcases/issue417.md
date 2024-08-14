@@ -60,8 +60,8 @@ Just to be sure, we've added a lot of variations.
 
 >>> def test_machine(counter):
 ...     model = Model(counter)
-...     sm = ExampleWorkflow(model, counter)
-...     sm.start()
+...     workflow = ExampleWorkflow(model, counter)
+...     workflow.start()
 
 ```
 
@@ -103,8 +103,8 @@ Should raise an exception if the property is not found on the correct objects:
 ...
 
 >>> def test_machine():
-...     sm = ExampleWorkflow()
-...     sm.start()
+...     workflow = ExampleWorkflow()
+...     workflow.start()
 
 ```
 

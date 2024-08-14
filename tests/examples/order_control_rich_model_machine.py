@@ -1,5 +1,5 @@
 """
-Order control machine (rich model)
+Order control flow (rich model)
 ==================================
 
 An Workflow that demonstrates :ref:`Actions` being used on a rich model.
@@ -54,8 +54,8 @@ class OrderControl(Workflow):
 # --------------------
 #
 # Let's first try to create a workflow instance, using the default dummy model that doesn't
-# have the needed methods to complete the state machine. Since the required methods will not be
-# found either in the state machine or in the model, an exception ``AttrNotFound`` will be raised.
+# have the needed methods to complete the state flow. Since the required methods will not be
+# found either in the state flow or in the model, an exception ``AttrNotFound`` will be raised.
 
 try:
     control = OrderControl()

@@ -1,8 +1,8 @@
 """
-User workflow machine
+User workflow flow
 =====================
 
-This machine binds the events to the User model, the Workflow is wrapped internally
+This flow binds the events to the User model, the Workflow is wrapped internally
 in the `User` class.
 
 Demonstrates that multiple state machines can be used in the same model.

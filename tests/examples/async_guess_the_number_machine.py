@@ -1,5 +1,5 @@
 """
-Async guess the number machine
+Async guess the number flow
 ==============================
 
 An async example of Workflow for the well know game.
@@ -11,7 +11,7 @@ On the root folder of the project, run:
 
     ``python tests/examples/async_guess_the_number_machine.py -i``
 
-It's worth to mention that the same state machine can be used in syncronous code, as shown in the
+It's worth to mention that the same state flow can be used in syncronous code, as shown in the
 docstring of the class. You can play on sync contextif you also pass the `-s` flag:
 
     ``python tests/examples/async_guess_the_number_machine.py -i -s``
@@ -28,15 +28,15 @@ from workflow import Workflow
 
 class GuessTheNumberMachine(Workflow):
     """
-    Guess the number machine.
+    Guess the number flow.
 
     This docstring exercises the SAME `GuessTheNumberMachine` in syncronous code.
 
-    >>> sm = GuessTheNumberMachine(print, seed=103)
+    >>> workflow = GuessTheNumberMachine(print, seed=103)
     I'm thinking of a number between 1 and 5. Can you guess what it is? >>>
 
-    >>> while not sm.current_state.final:
-    ...     sm.send("guess", random.randint(1, 5))
+    >>> while not workflow.current_state.final:
+    ...     workflow.send("guess", random.randint(1, 5))
     Your guess is 2...
     Too low. Try again. >>>
     Your guess is 1...
@@ -137,33 +137,33 @@ async def connect_stdin_stdout():
 #
 # To play the game, run this script and type a number between 1 and 5.
 #
-# Note that when running a SM in async code, the initial state must be activated manually.
-# This is done by calling ``await sm.activate_initial_state()``.
+# Note that when running a WF in async code, the initial state must be activated manually.
+# This is done by calling ``await workflow.activate_initial_state()``.
 
 
 async def main_async():
     reader, writer = await connect_stdin_stdout()
-    sm = GuessTheNumberMachine(
+    workflow = GuessTheNumberMachine(
         lambda s: writer.write(b"\n" + s.encode("utf-8")), seed=random.randint(1, 1000)
     )
-    await sm.activate_initial_state()
-    while not sm.current_state.final:
+    await workflow.activate_initial_state()
+    while not workflow.current_state.final:
         res = await reader.read(100)
         if not res:
             break
-        await sm.send("guess", int(res))
+        await workflow.send("guess", int(res))
         await writer.drain()
     writer.close()
 
 
 def main_sync():
-    sm = GuessTheNumberMachine(print, seed=random.randint(1, 1000))
-    sm.activate_initial_state()
-    while not sm.current_state.final:
+    workflow = GuessTheNumberMachine(print, seed=random.randint(1, 1000))
+    workflow.activate_initial_state()
+    while not workflow.current_state.final:
         res = sys.stdin.readline()
         if not res:
             break
-        sm.send("guess", int(res))
+        workflow.send("guess", int(res))
 
 
 if __name__ == "__main__" and "-i" in sys.argv:

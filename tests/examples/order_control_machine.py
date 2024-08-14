@@ -1,5 +1,5 @@
 """
-Order control machine
+Order control flow
 ---------------------
 
 An Workflow that demonstrates :ref:`Guards` being used to control the state flow.

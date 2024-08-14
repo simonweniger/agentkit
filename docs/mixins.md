@@ -14,15 +14,15 @@ Your {ref}`domain models` can be inherited from a custom mixin to auto-instantia
 
 ### Mixins example
 
-Given a state machine definition:
+Given a state flow definition:
 
 ```py
->>> from workflow import Workflow, State
+>>> from agentkit import Workflow, State
 
->>> from workflow.mixins import MachineMixin
+>>> from agentkit.mixins import MachineMixin
 
 >>> class CampaignMachineWithKeys(Workflow):
-...     "A workflow machine"
+...     "A workflow flow"
 ...     draft = State('Draft', initial=True, value=1)
 ...     producing = State('Being produced', value=2)
 ...     closed = State('Closed', value=3, final=True)
@@ -42,7 +42,7 @@ class.
 ``` py
 >>> class Workflow(MachineMixin):
 ...     state_machine_name = '__main__.CampaignMachineWithKeys'
-...     state_machine_attr = 'sm'
+...     state_machine_attr = 'workflow'
 ...     state_field_name = 'workflow_step'
 ...     bind_events_as_methods = True
 ...
@@ -57,25 +57,25 @@ assigned using the `state_machine_attr` name. Also, the `current_state` is store
 ``` py
 >>> model = Workflow()
 
->>> isinstance(model.sm, CampaignMachineWithKeys)
+>>> isinstance(model.workflow, CampaignMachineWithKeys)
 True
 
 >>> model.workflow_step
 1
 
->>> model.sm.current_state == model.sm.draft
+>>> model.workflow.current_state == model.workflow.draft
 True
 
 >>> model.produce()  # `bind_events_as_methods = True` adds triggers to events in the mixin instance
 >>> model.workflow_step
 2
 
->>> model.sm.cancel()  # You can still call the SM directly
+>>> model.workflow.cancel()  # You can still call the WF directly
 
 >>> model.workflow_step
 4
 
->>> model.sm.current_state == model.sm.cancelled
+>>> model.workflow.current_state == model.workflow.cancelled
 True
 
 ```

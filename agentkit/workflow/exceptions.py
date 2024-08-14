@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from .i18n import _
+from agentkit.utils.i18n import _
 
 if TYPE_CHECKING:
     from .state import State
@@ -11,7 +11,7 @@ class WorkflowError(Exception):
 
 
 class InvalidDefinition(WorkflowError):
-    "The state machine has a definition error"
+    "The state flow has a definition error"
 
 
 class InvalidStateValue(InvalidDefinition):

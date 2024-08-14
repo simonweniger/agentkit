@@ -67,7 +67,7 @@ We support native coroutine callbacks using asyncio, enabling seamless integrati
 
 ```{seealso}
 See {ref}`sphx_glr_auto_examples_air_conditioner_machine.py` for an example of
-async code with a state machine.
+async code with a state flow.
 ```
 
 
@@ -83,10 +83,10 @@ async code with a state machine.
 ...         return 42
 
 >>> async def run_sm():
-...     sm = AsyncWorkflow()
-...     result = await sm.advance()
+...     workflow = AsyncWorkflow()
+...     result = await workflow.advance()
 ...     print(f"Result is {result}")
-...     print(sm.current_state)
+...     print(workflow.current_state)
 
 >>> asyncio.run(run_sm())
 Result is 42
@@ -96,18 +96,18 @@ Final
 
 ## Sync codebase with async callbacks
 
-The same state machine with async callbacks can be executed in a synchronous codebase,
+The same state flow with async callbacks can be executed in a synchronous codebase,
 even if the calling context don't have an asyncio loop.
 
-If needed, the state machine will create a loop using `asyncio.new_event_loop()` and callbacks will be awaited using `loop.run_until_complete()`.
+If needed, the state flow will create a loop using `asyncio.new_event_loop()` and callbacks will be awaited using `loop.run_until_complete()`.
 
 
 ```py
->>> sm = AsyncWorkflow()
->>> result = sm.advance()
+>>> workflow = AsyncWorkflow()
+>>> result = workflow.advance()
 >>> print(f"Result is {result}")
 Result is 42
->>> print(sm.current_state)
+>>> print(workflow.current_state)
 Final
 
 ```
@@ -117,7 +117,7 @@ Final
 ## Initial State Activation for Async Code
 
 
-If **on async code** you perform checks against the `current_state`, like a loop `while sm.current_state.is_final:`, then you must manually
+If **on async code** you perform checks against the `current_state`, like a loop `while workflow.current_state.is_final:`, then you must manually
 await for the  [activate initial state](workflow.Workflow.activate_initial_state) to be able to check the current state.
 
 ```{hint}
@@ -130,13 +130,13 @@ You get an error checking the current state before the initial state activation:
 
 ```py
 >>> async def initialize_sm():
-...     sm = AsyncWorkflow()
-...     print(sm.current_state)
+...     workflow = AsyncWorkflow()
+...     print(workflow.current_state)
 
 >>> asyncio.run(initialize_sm())
 Traceback (most recent call last):
 ...
-InvalidStateValue: There's no current state set. In async code, did you activate the initial state? (e.g., `await sm.activate_initial_state()`)
+InvalidStateValue: There's no current state set. In async code, did you activate the initial state? (e.g., `await workflow.activate_initial_state()`)
 
 ```
 
@@ -145,9 +145,9 @@ You can activate the initial state explicitly:
 
 ```py
 >>> async def initialize_sm():
-...     sm = AsyncWorkflow()
-...     await sm.activate_initial_state()
-...     print(sm.current_state)
+...     workflow = AsyncWorkflow()
+...     await workflow.activate_initial_state()
+...     print(workflow.current_state)
 
 >>> asyncio.run(initialize_sm())
 Initial
@@ -159,9 +159,9 @@ before the event is handled:
 
 ```py
 >>> async def initialize_sm():
-...     sm = AsyncWorkflow()
-...     await sm.keep()  # first event activates the initial state before the event is handled
-...     print(sm.current_state)
+...     workflow = AsyncWorkflow()
+...     await workflow.keep()  # first event activates the initial state before the event is handled
+...     print(workflow.current_state)
 
 >>> asyncio.run(initialize_sm())
 Initial

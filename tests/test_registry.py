@@ -17,7 +17,7 @@ def test_should_register_a_state_machine(caplog, django_autodiscover_modules):
     from workflow import registry
 
     class CampaignMachine(Workflow):
-        "A workflow machine"
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State()

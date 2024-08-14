@@ -5,7 +5,7 @@ from urllib.request import urlopen
 
 import pydot
 
-from ..workflow import Workflow
+from agentkit.workflow.workflow import Workflow
 
 
 class DotGraphMachine:
@@ -29,15 +29,15 @@ class DotGraphMachine:
     transition_font_size = "9"
     """Transition font size in points"""
 
-    def __init__(self, machine):
-        self.machine = machine
+    def __init__(self, flow):
+        self.flow = flow
 
     def _get_graph(self):
-        machine = self.machine
+        flow = self.flow
         return pydot.Dot(
             "list",
             graph_type="digraph",
-            label=machine.name,
+            label=flow.name,
             fontname=self.font_name,
             fontsize=self.state_font_size,
             rankdir=self.graph_rankdir,
@@ -59,7 +59,7 @@ class DotGraphMachine:
     def _initial_edge(self):
         return pydot.Edge(
             "i",
-            self.machine.initial_state.id,
+            self.flow.initial_state.id,
             label="",
             color="blue",
             fontname=self.font_name,
@@ -67,14 +67,14 @@ class DotGraphMachine:
         )
 
     def _actions_getter(self):
-        if isinstance(self.machine, Workflow):
+        if isinstance(self.flow, Workflow):
 
             def getter(grouper):
-                return self.machine._get_callbacks(grouper.key)
+                return self.flow._get_callbacks(grouper.key)
         else:
 
             def getter(grouper):
-                all_names = set(dir(self.machine))
+                all_names = set(dir(self.flow))
                 return ", ".join(
                     str(c) for c in grouper if not c.is_convention or c.func in all_names
                 )
@@ -116,7 +116,7 @@ class DotGraphMachine:
             fontsize=self.state_font_size,
             peripheries=2 if state.final else 1,
         )
-        if state == self.machine.current_state:
+        if state == self.flow.current_state:
             node.set_penwidth(self.state_active_penwidth)
             node.set_fillcolor(self.state_active_fillcolor)
         else:
@@ -141,7 +141,7 @@ class DotGraphMachine:
         graph.add_node(self._initial_node())
         graph.add_edge(self._initial_edge())
 
-        for state in self.machine.states:
+        for state in self.flow.states:
             graph.add_node(self._state_as_node(state))
             for transition in state.transitions:
                 if transition.internal:
@@ -154,17 +154,17 @@ class DotGraphMachine:
         return self.get_graph()
 
 
-def quickchart_write_svg(sm: Workflow, path: str):
+def quickchart_write_svg(workflow: Workflow, path: str):
     """
     If the default dependency of GraphViz installed locally doesn't work for you. As an option,
     you can generate the image online from the output of the `dot` language,
     using one of the many services available.
 
-    To get the **dot** representation of your state machine is as easy as follows:
+    To get the **dot** representation of your state flow is as easy as follows:
 
     >>> from tests.examples.order_control_machine import OrderControl
-    >>> sm = OrderControl()
-    >>> print(sm._graph().to_string())
+    >>> workflow = OrderControl()
+    >>> print(workflow._graph().to_string())
     digraph list {
     fontname=Arial;
     fontsize=10;
@@ -183,10 +183,10 @@ def quickchart_write_svg(sm: Workflow, path: str):
 
         Please read https://quickchart.io/documentation/faq/ for more information.
 
-    >>> quickchart_write_svg(sm, "docs/images/oc_machine_processing.svg")  # doctest: +SKIP
+    >>> quickchart_write_svg(workflow, "docs/images/oc_machine_processing.svg")  # doctest: +SKIP
 
     """
-    dot_representation = sm._graph().to_string()
+    dot_representation = workflow._graph().to_string()
 
     url = f"https://quickchart.io/graphviz?graph={quote(dot_representation)}"
 

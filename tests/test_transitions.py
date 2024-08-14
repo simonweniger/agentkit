@@ -19,29 +19,29 @@ def test_transition_representation(campaign_machine):
 
 
 def test_list_machine_events(classic_traffic_light_machine):
-    machine = classic_traffic_light_machine()
-    transitions = [t.name for t in machine.events]
+    flow = classic_traffic_light_machine()
+    transitions = [t.name for t in flow.events]
     assert transitions == ["go", "slowdown", "stop"]
 
 
 def test_list_state_transitions(classic_traffic_light_machine):
-    machine = classic_traffic_light_machine()
-    events = [t.event for t in machine.green.transitions]
+    flow = classic_traffic_light_machine()
+    events = [t.event for t in flow.green.transitions]
     assert events == ["slowdown"]
 
 
 def test_transition_should_accept_decorator_syntax(traffic_light_machine):
-    machine = traffic_light_machine()
-    assert machine.current_state == machine.green
+    flow = traffic_light_machine()
+    assert flow.current_state == flow.green
 
 
 def test_transition_as_decorator_should_call_method_before_activating_state(
     traffic_light_machine, capsys
 ):
-    machine = traffic_light_machine()
-    assert machine.current_state == machine.green
-    machine.cycle(1, 2, number=3, text="x")
-    assert machine.current_state == machine.yellow
+    flow = traffic_light_machine()
+    assert flow.current_state == flow.green
+    flow.cycle(1, 2, number=3, text="x")
+    assert flow.current_state == flow.yellow
 
     captured = capsys.readouterr()
     assert captured.out == "Running cycle from green to yellow\n"
@@ -56,11 +56,11 @@ def test_transition_as_decorator_should_call_method_before_activating_state(
 )
 def test_cycle_transitions(request, machine_name):
     machine_class = request.getfixturevalue(machine_name)
-    machine = machine_class()
+    flow = machine_class()
     expected_states = ["green", "yellow", "red"] * 2
     for expected_state in expected_states:
-        assert machine.current_state.id == expected_state
-        machine.cycle()
+        assert flow.current_state.id == expected_state
+        flow.cycle()
 
 
 def test_transition_call_can_only_be_used_as_decorator():
@@ -101,21 +101,21 @@ def transition_callback_machine(request):
                 return "accepted"
 
     else:
-        raise ValueError("machine not defined")
+        raise ValueError("flow not defined")
 
     return ApprovalMachine
 
 
 def test_statemachine_transition_callback(transition_callback_machine):
     model = MyModel(state="requested", calls=[])
-    machine = transition_callback_machine(model)
-    assert machine.validate() == "accepted"
+    flow = transition_callback_machine(model)
+    assert flow.validate() == "accepted"
     assert model.calls == ["on_validate"]
 
 
 def test_can_run_combined_transitions():
     class CampaignMachine(Workflow):
-        "A workflow machine"
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State()
@@ -124,11 +124,11 @@ def test_can_run_combined_transitions():
         abort = draft.to(closed) | producing.to(closed) | closed.to(closed)
         produce = draft.to(producing)
 
-    machine = CampaignMachine()
+    flow = CampaignMachine()
 
-    machine.abort()
+    flow.abort()
 
-    assert machine.closed.is_active
+    assert flow.closed.is_active
 
 
 def test_can_detect_stuck_states():
@@ -138,7 +138,7 @@ def test_can_detect_stuck_states():
     ):
 
         class CampaignMachine(Workflow, strict_states=True):
-            "A workflow machine"
+            "A workflow flow"
 
             draft = State(initial=True)
             producing = State()
@@ -157,7 +157,7 @@ def test_can_detect_unreachable_final_states():
     ):
 
         class CampaignMachine(Workflow, strict_states=True):
-            "A workflow machine"
+            "A workflow flow"
 
             draft = State(initial=True)
             producing = State()
@@ -171,7 +171,7 @@ def test_can_detect_unreachable_final_states():
 
 def test_transitions_to_the_same_estate_as_itself():
     class CampaignMachine(Workflow):
-        "A workflow machine"
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State()
@@ -181,11 +181,11 @@ def test_transitions_to_the_same_estate_as_itself():
         abort = draft.to(closed) | producing.to(closed) | closed.to.itself()
         produce = draft.to(producing)
 
-    machine = CampaignMachine()
+    flow = CampaignMachine()
 
-    machine.update()
+    flow.update()
 
-    assert machine.draft.is_active
+    assert flow.draft.is_active
 
 
 class TestReverseTransition:
@@ -198,12 +198,12 @@ class TestReverseTransition:
         ],
     )
     def test_reverse_transition(self, reverse_traffic_light_machine, initial_state):
-        machine = reverse_traffic_light_machine(start_value=initial_state)
-        assert machine.current_state.id == initial_state
+        flow = reverse_traffic_light_machine(start_value=initial_state)
+        assert flow.current_state.id == initial_state
 
-        machine.stop()
+        flow.stop()
 
-        assert machine.red.is_active
+        assert flow.red.is_active
 
 
 def test_should_transition_with_a_dict_as_return():
@@ -228,9 +228,9 @@ def test_should_transition_with_a_dict_as_return():
         def on_accept(self):
             return expected_result
 
-    machine = ApprovalMachine()
+    flow = ApprovalMachine()
 
-    result = machine.send("accept")
+    result = flow.send("accept")
     assert result == expected_result
 
 
@@ -261,11 +261,11 @@ class TestInternalTransition:
             def on_enter_initial(self):
                 calls.append("on_enter_initial")
 
-        sm = TestWorkflow()
-        sm.activate_initial_state()
+        workflow = TestWorkflow()
+        workflow.activate_initial_state()
 
         calls.clear()
-        sm.loop()
+        workflow.loop()
         assert calls == expected_calls
 
     def test_should_not_allow_internal_transitions_from_distinct_states(self):
@@ -282,17 +282,17 @@ class TestInternalTransition:
 
 class TestAllowEventWithoutTransition:
     def test_send_unknown_event(self, classic_traffic_light_machine):
-        sm = classic_traffic_light_machine(allow_event_without_transition=True)
-        sm.activate_initial_state()  # no-op on sync engine
+        workflow = classic_traffic_light_machine(allow_event_without_transition=True)
+        workflow.activate_initial_state()  # no-op on sync engine
 
-        assert sm.green.is_active
-        sm.send("unknow_event")
-        assert sm.green.is_active
+        assert workflow.green.is_active
+        workflow.send("unknow_event")
+        assert workflow.green.is_active
 
     def test_send_not_valid_for_the_current_state_event(self, classic_traffic_light_machine):
-        sm = classic_traffic_light_machine(allow_event_without_transition=True)
-        sm.activate_initial_state()  # no-op on sync engine
+        workflow = classic_traffic_light_machine(allow_event_without_transition=True)
+        workflow.activate_initial_state()  # no-op on sync engine
 
-        assert sm.green.is_active
-        sm.stop()
-        assert sm.green.is_active
+        assert workflow.green.is_active
+        workflow.stop()
+        assert workflow.green.is_active
