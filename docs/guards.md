@@ -20,9 +20,9 @@ This feature is also known as a **Conditional Transition**.
 
 A conditional transition occurs only if specific conditions or criteria are met. In addition to checking if there is a transition handling the event in the current state, you can register callbacks that are evaluated based on other factors or inputs at runtime.
 
-When a transition is conditional, it includes a condition (also known as a _guard_) that must be satisfied for the transition to take place. If the condition is not met, the transition does not occur, and the state machine remains in its current state or follows an alternative path.
+When a transition is conditional, it includes a condition (also known as a _guard_) that must be satisfied for the transition to take place. If the condition is not met, the transition does not occur, and the state flow remains in its current state or follows an alternative path.
 
-This feature allows for multiple transitions on the same {ref}`event`, with each {ref}`transition` checked in the order they are declared. A condition acts like a predicate (a function that evaluates to true/false) and is checked when a {ref}`statemachine` handles an {ref}`event` with a transition from the current state bound to this event. The first transition that meets the conditions (if any) is executed. If none of the transitions meet the conditions, the state machine either raises an exception or does nothing (see the `allow_event_without_transition` parameter of {ref}`StateMachine`).
+This feature allows for multiple transitions on the same {ref}`event`, with each {ref}`transition` checked in the order they are declared. A condition acts like a predicate (a function that evaluates to true/false) and is checked when a {ref}`workflow` handles an {ref}`event` with a transition from the current state bound to this event. The first transition that meets the conditions (if any) is executed. If none of the transitions meet the conditions, the state flow either raises an exception or does nothing (see the `allow_event_without_transition` parameter of {ref}`Workflow`).
 
 When {ref}`transitions` have guards, it is possible to define two or more transitions for the same {ref}`event` from the same {ref}`state`. When the {ref}`event` occurs, the guarded transitions are checked one by one, and the first transition whose guard is true will be executed, while the others will be ignored.
 
@@ -83,7 +83,7 @@ Consider this example:
 
 ```py
 
-class InvoiceStateMachine(StateMachine):
+class InvoiceWorkflow(Workflow):
     unpaid = State(initial=True)
     paid = State()
     failed = State()

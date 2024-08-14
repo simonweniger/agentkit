@@ -2,16 +2,16 @@
 Async without external loop
 ===========================
 
-Demonstrates that the state machine can have async callbacks even if the calling context
+Demonstrates that the state flow can have async callbacks even if the calling context
 is synchronous.
 
 """
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class AsyncStateMachine(StateMachine):
+class AsyncWorkflow(Workflow):
     initial = State("Initial", initial=True)
     processing = State()
     final = State("Final", final=True)
@@ -32,13 +32,13 @@ class AsyncStateMachine(StateMachine):
 
 
 def sync_main():
-    sm = AsyncStateMachine()
-    result = sm.start()
+    workflow = AsyncWorkflow()
+    result = workflow.start()
     print(f"Start result is {result}")
-    result = sm.send("finish")
+    result = workflow.send("finish")
     print(f"Finish result is {result}")
-    print(sm.current_state)
-    assert sm.current_state == sm.final
+    print(workflow.current_state)
+    assert workflow.current_state == workflow.final
 
 
 if __name__ == "__main__":

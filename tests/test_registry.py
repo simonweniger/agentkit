@@ -7,17 +7,17 @@ import pytest
 def django_autodiscover_modules():
     auto_discover_modules = mock.MagicMock()
 
-    with mock.patch("statemachine.registry.autodiscover_modules", new=auto_discover_modules):
+    with mock.patch("workflow.registry.autodiscover_modules", new=auto_discover_modules):
         yield auto_discover_modules
 
 
 def test_should_register_a_state_machine(caplog, django_autodiscover_modules):
-    from statemachine import State
-    from statemachine import StateMachine
-    from statemachine import registry
+    from workflow import State
+    from workflow import Workflow
+    from workflow import registry
 
-    class CampaignMachine(StateMachine):
-        "A workflow machine"
+    class CampaignMachine(Workflow):
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State()
@@ -33,10 +33,10 @@ def test_should_register_a_state_machine(caplog, django_autodiscover_modules):
 
 
 def test_load_modules_should_call_autodiscover_modules(django_autodiscover_modules):
-    from statemachine.registry import load_modules
+    from workflow.registry import load_modules
 
     # given
-    modules = ["a", "c", "statemachine", "statemachines"]
+    modules = ["a", "c", "workflow", "statemachines"]
 
     # when
     load_modules(modules)

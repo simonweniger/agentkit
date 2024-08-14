@@ -1,45 +1,45 @@
 import threading
 import time
 
-from statemachine.state import State
-from statemachine.statemachine import StateMachine
+from workflow.state import State
+from workflow.workflow import Workflow
 
 
 def test_machine_should_allow_multi_thread_event_changes():
     """
-    Test for https://github.com/fgmacedo/python-statemachine/issues/443
+    Test for https://github.com/fgmacedo/python-workflow/issues/443
     """
 
-    class CampaignMachine(StateMachine):
-        "A workflow machine"
+    class CampaignMachine(Workflow):
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State()
         closed = State(final=True)
         add_job = draft.to(producing) | producing.to(closed)
 
-    machine = CampaignMachine()
+    flow = CampaignMachine()
 
     def off_thread_change_state():
         time.sleep(0.01)
-        machine.add_job()
+        flow.add_job()
 
     thread = threading.Thread(target=off_thread_change_state)
     thread.start()
     thread.join()
-    assert machine.current_state.id == "producing"
+    assert flow.current_state.id == "producing"
 
 
 def test_regression_443():
     """
-    Test for https://github.com/fgmacedo/python-statemachine/issues/443
+    Test for https://github.com/fgmacedo/python-workflow/issues/443
     """
     time_collecting = 0.2
     time_to_send = 0.125
     time_sampling_current_state = 0.05
 
-    class TrafficLightMachine(StateMachine):
-        "A traffic light machine"
+    class TrafficLightMachine(Workflow):
+        "A traffic light flow"
 
         green = State(initial=True)
         yellow = State()
@@ -77,14 +77,14 @@ def test_regression_443():
 
 def test_regression_443_with_modifications():
     """
-    Test for https://github.com/fgmacedo/python-statemachine/issues/443
+    Test for https://github.com/fgmacedo/python-workflow/issues/443
     """
     time_collecting = 0.2
     time_to_send = 0.125
     time_sampling_current_state = 0.05
 
-    class TrafficLightMachine(StateMachine):
-        "A traffic light machine"
+    class TrafficLightMachine(Workflow):
+        "A traffic light flow"
 
         green = State(initial=True)
         yellow = State()
@@ -129,14 +129,14 @@ def test_regression_443_with_modifications():
 
 async def test_regression_443_with_modifications_for_async_engine():  # noqa: C901
     """
-    Test for https://github.com/fgmacedo/python-statemachine/issues/443
+    Test for https://github.com/fgmacedo/python-workflow/issues/443
     """
     time_collecting = 0.2
     time_to_send = 0.125
     time_sampling_current_state = 0.05
 
-    class TrafficLightMachine(StateMachine):
-        "A traffic light machine"
+    class TrafficLightMachine(Workflow):
+        "A traffic light flow"
 
         green = State(initial=True)
         yellow = State()

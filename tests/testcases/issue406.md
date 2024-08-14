@@ -1,15 +1,15 @@
 ### Issue 406
 
-A StateMachine that exercises the example given on issue
+A Workflow that exercises the example given on issue
 #[406](https://github.com/fgmacedo/python-statemachine/issues/406).
 
 In this example, the event callback must be registered only once.
 
 ```py
->>> from statemachine import State
->>> from statemachine import StateMachine
+>>> from workflow import State
+>>> from workflow import Workflow
 
->>> class ExampleStateMachine(StateMachine, strict_states=False):
+>>> class ExampleWorkflow(Workflow, strict_states=False):
 ...     Created = State(initial=True)
 ...     Inited = State(final=True)
 ...
@@ -24,8 +24,8 @@ In this example, the event callback must be registered only once.
 ...         print("on init")
 
 >>> def test_sm():
-...     sm = ExampleStateMachine()
-...     sm.initialize()
+...     workflow = ExampleWorkflow()
+...     workflow.initialize()
 
 ```
 

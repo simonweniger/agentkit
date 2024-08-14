@@ -2,11 +2,11 @@ import weakref
 
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class OrderControl(StateMachine):
+class OrderControl(Workflow):
     waiting_for_payment = State(initial=True)
     processing = State()
     shipping = State()
@@ -47,8 +47,8 @@ def create_order():
     assert order.state_machine.waiting_for_payment.is_active
 
 
-def add_to_order(sm, amount):
-    sm.add_to_order(amount)
+def add_to_order(workflow, amount):
+    workflow.add_to_order(amount)
 
 
 @pytest.mark.slow()

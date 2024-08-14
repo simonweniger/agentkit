@@ -1,9 +1,9 @@
 # Actions
 
-Action is the way a {ref}`StateMachine` can cause things to happen in the
+Action is the way a {ref}`Workflow` can cause things to happen in the
 outside world, and indeed they are the main reason why they exist at all.
 
-The main point of introducing a state machine is for the
+The main point of introducing a state flow is for the
 actions to be invoked at the right times, depending on the sequence of events
 and the state of the {ref}`conditions`.
 
@@ -11,7 +11,7 @@ Actions are most commonly performed on entry or exit of a state, although
 it is possible to add them before/after a transition.
 
 There are several action callbacks that you can define to interact with a
-StateMachine in execution.
+Workflow in execution.
 
 There are callbacks that you can specify that are generic and will be called
 when something changes and are not bounded to a specific state or event:
@@ -29,9 +29,9 @@ when something changes and are not bounded to a specific state or event:
 The following example can get you an overview of the "generic" callbacks available:
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     initial = State(initial=True)
 ...     final = State(final=True)
 ...
@@ -56,10 +56,10 @@ The following example can get you an overview of the "generic" callbacks availab
 ...         print(f"After '{event}', on the '{state.id}' state.")
 
 
->>> sm = ExampleStateMachine()  # On initialization, the machine run a special event `__initial__`
+>>> workflow = ExampleWorkflow()  # On initialization, the flow run a special event `__initial__`
 Entering 'initial' state from '__initial__' event.
 
->>> sm.loop()
+>>> workflow.loop()
 Before 'loop', on the 'initial' state.
 Exiting 'initial' state from 'loop' event.
 On 'loop', on the 'initial' state.
@@ -67,7 +67,7 @@ Entering 'initial' state from 'loop' event.
 After 'loop', on the 'initial' state.
 ['before_transition_return', 'on_transition_return']
 
->>> sm.go()
+>>> workflow.go()
 Before 'go', on the 'initial' state.
 Exiting 'initial' state from 'go' event.
 On 'go', on the 'initial' state.
@@ -89,7 +89,7 @@ For each defined {ref}`state`, you can declare `enter` and `exit` callbacks.
 
 ### Bind state actions by naming convention
 
-Callbacks by naming convention will be searched on the StateMachine and on the
+Callbacks by naming convention will be searched on the Workflow and on the
 model, using the patterns:
 
 - `on_enter_<state.id>()`
@@ -98,9 +98,9 @@ model, using the patterns:
 
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     initial = State(initial=True)
 ...
 ...     loop = initial.to.itself()
@@ -118,9 +118,9 @@ model, using the patterns:
 Use the `enter` or `exit` params available on the `State` constructor.
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     initial = State(initial=True, enter="entering_initial", exit="leaving_initial")
 ...
 ...     loop = initial.to.itself()
@@ -143,9 +143,9 @@ It's also possible to use an event name as action.
 
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     initial = State(initial=True)
 ...
 ...     loop = initial.to.itself()
@@ -168,7 +168,7 @@ For each {ref}`event`, you can register `before`, `on`, and `after` callbacks.
 
 The action will be registered for every {ref}`transition` associated with the event.
 
-Callbacks by naming convention will be searched on the StateMachine and the model,
+Callbacks by naming convention will be searched on the Workflow and the model,
 using the patterns:
 
 - `before_<event>()`
@@ -179,9 +179,9 @@ using the patterns:
 
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     initial = State(initial=True)
 ...
 ...     loop = initial.to.itself()
@@ -201,9 +201,9 @@ using the patterns:
 ### Bind transition actions using params
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     initial = State(initial=True)
 ...
 ...     loop = initial.to.itself(before="just_before", on="its_happening", after="loop_completed")
@@ -231,9 +231,9 @@ The action will be registered for every {ref}`transition` in the list associated
 
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     initial = State(initial=True)
 ...
 ...     loop = initial.to.itself()
@@ -265,9 +265,9 @@ The action will be registered for every {ref}`transition` in the list associated
 You can also declare an event while also adding a callback:
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     initial = State(initial=True)
 ...
 ...     @initial.to.itself()
@@ -277,16 +277,16 @@ You can also declare an event while also adding a callback:
 
 ```
 
-Note that with this syntax, the resulting `loop` that is present on the `ExampleStateMachine.loop`
+Note that with this syntax, the resulting `loop` that is present on the `ExampleWorkflow.loop`
 namespace is not a simple method, but an {ref}`event` trigger. So it only executes if the
-StateMachine is in the right state.
+Workflow is in the right state.
 
 So, you can use the event-oriented approach:
 
 ```py
->>> sm = ExampleStateMachine()
+>>> workflow = ExampleWorkflow()
 
->>> sm.send("loop")
+>>> workflow.send("loop")
 On loop
 42
 
@@ -371,7 +371,7 @@ Note that `None` will be used if the action callback does not return anything, b
 defined explicitly. The following provides an example:
 
 ```py
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     initial = State(initial=True)
 ...
 ...     loop = initial.to.itself()
@@ -386,9 +386,9 @@ defined explicitly. The following provides an example:
 ...         return "On loop"
 ...
 
->>> sm = ExampleStateMachine()
+>>> workflow = ExampleWorkflow()
 
->>> sm.loop()
+>>> workflow.loop()
 ['Before loop', None, 'On loop']
 
 ```
@@ -401,7 +401,7 @@ For {ref}`RTC model`, only the main event will get its value list, while the cha
 (dynamic dispatch)=
 ## Dependency injection
 
-{ref}`statemachine` implements a dependency injection mechanism on all available {ref}`Actions` and
+{ref}`workflow` implements a dependency injection mechanism on all available {ref}`Actions` and
 {ref}`Conditions` that automatically inspects and matches the expected callback params with those available by the library in conjunction with any values informed when calling an event using `*args` and `**kwargs`.
 
 The library ensures that your method signatures match the expected arguments.
@@ -427,10 +427,10 @@ For your convenience, all these parameters are available for you on any callback
 : The {ref}`Event` that was triggered.
 
 `source`
-: The {ref}`State` the state machine was in when the {ref}`Event` started.
+: The {ref}`State` the state flow was in when the {ref}`Event` started.
 
 `state`
-: The current {ref}`State` of the state machine.
+: The current {ref}`State` of the state flow.
 
 `target`
 : The destination {ref}`State` of the transition.

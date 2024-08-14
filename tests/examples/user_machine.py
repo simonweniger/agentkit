@@ -1,8 +1,8 @@
 """
-User workflow machine
+User workflow flow
 =====================
 
-This machine binds the events to the User model, the StateMachine is wrapped internally
+This flow binds the events to the User model, the Workflow is wrapped internally
 in the `User` class.
 
 Demonstrates that multiple state machines can be used in the same model.
@@ -14,9 +14,9 @@ And that logic can be reused with listeners.
 from dataclasses import dataclass
 from enum import Enum
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine.states import States
+from workflow import State
+from workflow import Workflow
+from workflow.states import States
 
 
 class UserStatus(str, Enum):
@@ -62,7 +62,7 @@ class MachineChangeListenter:
         print(f"Entering {state} from {event}")
 
 
-class UserStatusMachine(StateMachine):
+class UserStatusMachine(Workflow):
     _states = States.from_enum(
         UserStatus,
         initial=UserStatus.signup_incomplete,
@@ -90,7 +90,7 @@ class UserStatusMachine(StateMachine):
         self.model.verified = True
 
 
-class UserExperienceMachine(StateMachine):
+class UserExperienceMachine(Workflow):
     _states = States.from_enum(
         UserExperience,
         initial=UserExperience.basic,

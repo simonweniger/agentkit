@@ -1,10 +1,10 @@
 
 # States
 
-{ref}`State`, as the name says, holds the representation of a state in a {ref}`StateMachine`.
+{ref}`State`, as the name says, holds the representation of a state in a {ref}`Workflow`.
 
 ```{eval-rst}
-.. autoclass:: statemachine.state.State
+.. autoclass:: workflow.state.State
     :noindex:
 ```
 
@@ -15,10 +15,10 @@ How to define and attach [](actions.md) to {ref}`States`.
 
 ## Initial state
 
-A {ref}`StateMachine` should have one and only one `initial` {ref}`state`.
+A {ref}`Workflow` should have one and only one `initial` {ref}`state`.
 
 
-The initial {ref}`state` is entered when the machine starts and the corresponding entering
+The initial {ref}`state` is entered when the flow starts and the corresponding entering
 state {ref}`actions` are called if defined.
 
 ## State Transitions
@@ -28,10 +28,10 @@ All states should have at least one transition to and from another state.
 If any states are unreachable from the initial state, an `InvalidDefinition` exception will be thrown.
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class TrafficLightMachine(StateMachine):
-...     "A workflow machine"
+>>> class TrafficLightMachine(Workflow):
+...     "A workflow flow"
 ...     red = State('Red', initial=True, value=1)
 ...     green = State('Green', value=2)
 ...     orange = State('Orange', value=3)
@@ -41,21 +41,21 @@ If any states are unreachable from the initial state, an `InvalidDefinition` exc
 ...     blink = hazard.to.itself()
 Traceback (most recent call last):
 ...
-InvalidDefinition: There are unreachable states. The statemachine graph should have a single component. Disconnected states: ['hazard']
+InvalidDefinition: There are unreachable states. The workflow graph should have a single component. Disconnected states: ['hazard']
 ```
 
-`StateMachine` will also check that all non-final states have an outgoing transition, and warn you if any states would result in
-the statemachine becoming trapped in a non-final state with no further transitions possible.
+`Workflow` will also check that all non-final states have an outgoing transition, and warn you if any states would result in
+the workflow becoming trapped in a non-final state with no further transitions possible.
 
 ```{note}
 This will currently issue a warning, but can be turned into an exception by setting `strict_states=True` on the class.
 ```
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class TrafficLightMachine(StateMachine, strict_states=True):
-...     "A workflow machine"
+>>> class TrafficLightMachine(Workflow, strict_states=True):
+...     "A workflow flow"
 ...     red = State('Red', initial=True, value=1)
 ...     green = State('Green', value=2)
 ...     orange = State('Orange', value=3)
@@ -81,10 +81,10 @@ You can explicitly set final states.
 Transitions from these states are not allowed and will raise exceptions.
 
 ```py
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
->>> class CampaignMachine(StateMachine):
-...     "A workflow machine"
+>>> class CampaignMachine(Workflow):
+...     "A workflow flow"
 ...     draft = State('Draft', initial=True, value=1)
 ...     producing = State('Being produced', value=2)
 ...     closed = State('Closed', final=True, value=3)
@@ -98,15 +98,15 @@ InvalidDefinition: Cannot declare transitions from final state. Invalid state(s)
 
 ```
 
-If you mark any states as final, `StateMachine` will check that all non-final states have a path to reach at least one final state.
+If you mark any states as final, `Workflow` will check that all non-final states have a path to reach at least one final state.
 
 ```{note}
 This will currently issue a warning, but can be turned into an exception by setting `strict_states=True` on the class.
 ```
 
 ```py
->>> class CampaignMachine(StateMachine, strict_states=True):
-...     "A workflow machine"
+>>> class CampaignMachine(Workflow, strict_states=True):
+...     "A workflow flow"
 ...     draft = State('Draft', initial=True, value=1)
 ...     producing = State('Being produced', value=2)
 ...     abandoned = State('Abandoned', value=3)
@@ -126,11 +126,11 @@ InvalidDefinition: All non-final states should have at least one path to a final
 `strict_states=True` will become the default behaviour in future versions.
 ```
 
-You can query a list of all final states from your statemachine.
+You can query a list of all final states from your workflow.
 
 ```py
->>> class CampaignMachine(StateMachine):
-...     "A workflow machine"
+>>> class CampaignMachine(Workflow):
+...     "A workflow flow"
 ...     draft = State('Draft', initial=True, value=1)
 ...     producing = State('Being produced', value=2)
 ...     closed = State('Closed', final=True, value=3)
@@ -139,12 +139,12 @@ You can query a list of all final states from your statemachine.
 ...     produce = draft.to(producing)
 ...     deliver = producing.to(closed)
 
->>> machine = CampaignMachine()
+>>> flow = CampaignMachine()
 
->>> machine.final_states
+>>> flow.final_states
 [State('Closed', id='closed', value=3, initial=False, final=True)]
 
->>> machine.current_state in machine.final_states
+>>> flow.current_state in flow.final_states
 False
 
 ```
@@ -157,7 +157,7 @@ For this, use {ref}`States (class)` to convert your `Enum` type to a list of {re
 
 
 ```{eval-rst}
-.. automethod:: statemachine.states.States.from_enum
+.. automethod:: workflow.states.States.from_enum
   :noindex:
 ```
 

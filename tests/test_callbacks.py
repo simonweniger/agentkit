@@ -2,15 +2,15 @@ from unittest import mock
 
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine.callbacks import CallbackGroup
-from statemachine.callbacks import CallbacksExecutor
-from statemachine.callbacks import CallbackSpec
-from statemachine.callbacks import CallbackSpecList
-from statemachine.callbacks import CallbacksRegistry
-from statemachine.dispatcher import resolver_factory_from_objects
-from statemachine.exceptions import InvalidDefinition
+from workflow import State
+from workflow import Workflow
+from workflow.callbacks import CallbackGroup
+from workflow.callbacks import CallbacksExecutor
+from workflow.callbacks import CallbackSpec
+from workflow.callbacks import CallbackSpecList
+from workflow.callbacks import CallbacksRegistry
+from workflow.dispatcher import resolver_factory_from_objects
+from workflow.exceptions import InvalidDefinition
 
 
 @pytest.fixture()
@@ -18,7 +18,7 @@ def ObjectWithCallbacks():
     class ObjectWithCallbacks:
         def __init__(self):
             super().__init__()
-            self.name = "statemachine"
+            self.name = "workflow"
             self.callbacks = CallbackSpecList().add(
                 ["life_meaning", "name", "a_method"],
                 group=CallbackGroup.ON,
@@ -154,7 +154,7 @@ class TestCallbacksMachinery:
         x = ObjectWithCallbacks()
         assert x.registry[CallbackGroup.ON.build_key(x.callbacks)].call(xablau=True) == [
             42,
-            "statemachine",
+            "workflow",
             ((), {"xablau": True}),
         ]
 
@@ -177,7 +177,7 @@ class TestCallbacksAsDecorator:
             hero="Gandalf", race="Maia"
         ) == [
             42,
-            "statemachine",
+            "workflow",
             ((), {"hero": "Gandalf", "race": "Maia"}),
             "gandalf",
             "MAIA",
@@ -186,7 +186,7 @@ class TestCallbacksAsDecorator:
         assert race_uppercase("Hobbit") == "HOBBIT"
 
     def test_decorate_unbounded_machine_methods(self):
-        class MiniHeroJourneyMachine(StateMachine, strict_states=False):
+        class MiniHeroJourneyMachine(Workflow, strict_states=False):
             ordinary_world = State(initial=True)
             call_to_adventure = State(final=True)
             refusal_of_call = State(final=True)
@@ -216,16 +216,16 @@ class TestCallbacksAsDecorator:
             def refuse_call(self, reason):
                 self.spy("refuse_call", reason)
 
-        sm = MiniHeroJourneyMachine()
-        sm.adventure_called(request="The darkness is coming")
-        assert sm.spy.call_args_list == [
+        workflow = MiniHeroJourneyMachine()
+        workflow.adventure_called(request="The darkness is coming")
+        assert workflow.spy.call_args_list == [
             mock.call("enter_ordinary_world"),
             mock.call("call_to_adventure", "The darkness is coming"),
         ]
 
-        sm = MiniHeroJourneyMachine()
-        sm.refuse_call(reason="Not prepared yet")
-        assert sm.spy.call_args_list == [
+        workflow = MiniHeroJourneyMachine()
+        workflow.refuse_call(reason="Not prepared yet")
+        assert workflow.spy.call_args_list == [
             mock.call("enter_ordinary_world"),
             mock.call("refuse_call", "Not prepared yet"),
         ]

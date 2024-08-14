@@ -3,7 +3,7 @@ from functools import partial
 
 import pytest
 
-from statemachine.signature import SignatureAdapter
+from workflow.signature import SignatureAdapter
 
 
 def single_positional_param(a):

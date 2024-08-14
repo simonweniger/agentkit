@@ -2,10 +2,10 @@
 (observers)=
 # Listeners
 
-Listeners are a way to generically add behavior to a state machine without
+Listeners are a way to generically add behavior to a state flow without
 changing its internal implementation.
 
-One possible use case is to add a listener that prints a log message when the SM runs a
+One possible use case is to add a listener that prints a log message when the WF runs a
 transition or enters a new state.
 
 Giving the {ref}`sphx_glr_auto_examples_traffic_light_machine.py` as example:
@@ -25,10 +25,10 @@ Giving the {ref}`sphx_glr_auto_examples_traffic_light_machine.py` as example:
 ...         print(f"{self.name} enter: {target.id} from {event}")
 
 
->>> sm = TrafficLightMachine(listeners=[LogListener("Paulista Avenue")])
+>>> workflow = TrafficLightMachine(listeners=[LogListener("Paulista Avenue")])
 Paulista Avenue enter: green from __initial__
 
->>> sm.cycle()
+>>> workflow.cycle()
 Running cycle from green to yellow
 Paulista Avenue enter: yellow from cycle
 Paulista Avenue after: green--(cycle)-->yellow
@@ -37,7 +37,7 @@ Paulista Avenue after: green--(cycle)-->yellow
 
 ## Adding listeners to an instance
 
-Attach listeners to an already running state machine instance using `add_listener`.
+Attach listeners to an already running state flow instance using `add_listener`.
 
 Exploring our example, imagine that you can implement the LED panel as a listener, that
 reacts to state changes and turn on/off automatically.
@@ -62,22 +62,22 @@ reacts to state changes and turn on/off automatically.
 Adding a listener for each traffic light indicator
 
 ```
->>> sm.add_listener(LedPanel("green"), LedPanel("yellow"), LedPanel("red"))  # doctest: +ELLIPSIS
+>>> workflow.add_listener(LedPanel("green"), LedPanel("yellow"), LedPanel("red"))  # doctest: +ELLIPSIS
 TrafficLightMachine...
 
 ```
 
-Now each "LED panel" reacts to changes in state from the state machine:
+Now each "LED panel" reacts to changes in state from the state flow:
 
 ```py
->>> sm.cycle()
+>>> workflow.cycle()
 Running cycle from yellow to red
 yellow turning off
 Paulista Avenue enter: red from cycle
 red turning on
 Paulista Avenue after: yellow--(cycle)-->red
 
->>> sm.cycle()
+>>> workflow.cycle()
 Running cycle from red to green
 red turning off
 Paulista Avenue enter: green from cycle
@@ -88,7 +88,7 @@ Paulista Avenue after: red--(cycle)-->green
 
 
 ```{hint}
-The `StateMachine` itself is registered as a listener, so by using `listeners` an
+The `Workflow` itself is registered as a listener, so by using `listeners` an
 external object can have the same level of functionalities provided to the built-in class.
 ```
 

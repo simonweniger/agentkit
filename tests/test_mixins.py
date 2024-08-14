@@ -1,6 +1,6 @@
 import pytest
 
-from statemachine.mixins import MachineMixin
+from agentkit.mixins import MachineMixin
 from tests.models import MyModel
 
 
@@ -10,14 +10,14 @@ class MyMixedModel(MyModel, MachineMixin):
 
 def test_mixin_should_instantiate_a_machine(campaign_machine):
     model = MyMixedModel(state="draft")
-    assert isinstance(model.statemachine, campaign_machine)
+    assert isinstance(model.workflow, campaign_machine)
     assert model.state == "draft"
-    assert model.statemachine.current_state == model.statemachine.draft
+    assert model.workflow.current_state == model.workflow.draft
 
 
 def test_mixin_should_raise_exception_if_machine_class_does_not_exist():
     class MyModelWithoutMachineName(MachineMixin):
         pass
 
-    with pytest.raises(ValueError, match="None is not a valid state machine name"):
+    with pytest.raises(ValueError, match="None is not a valid state flow name"):
         MyModelWithoutMachineName()

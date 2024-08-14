@@ -1,8 +1,8 @@
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine import exceptions
+from workflow import State
+from workflow import Workflow
+from workflow import exceptions
 
 
 class Request:
@@ -19,37 +19,37 @@ def test_transition_should_choose_final_state_on_multiple_possibilities(
 ):
     # given
     model = Request()
-    machine = approval_machine(model)
+    flow = approval_machine(model)
 
     model._is_ok = False
 
     # when
-    assert machine.validate() == model
+    assert flow.validate() == model
 
     # then
     assert model.rejected_at == current_time
-    assert machine.rejected.is_active
+    assert flow.rejected.is_active
 
     # given
     model._is_ok = True
 
     # when
-    assert machine.retry() == model
+    assert flow.retry() == model
 
     # then
     assert model.rejected_at is None
-    assert machine.requested.is_active
+    assert flow.requested.is_active
 
     # when
-    assert machine.validate() == model
+    assert flow.validate() == model
 
     # then
     assert model.accepted_at == current_time
-    assert machine.accepted.is_active
+    assert flow.accepted.is_active
 
 
 def test_transition_to_first_that_executes_if_multiple_targets():
-    class ApprovalMachine(StateMachine):
+    class ApprovalMachine(Workflow):
         "A workflow"
 
         requested = State(initial=True)
@@ -58,17 +58,17 @@ def test_transition_to_first_that_executes_if_multiple_targets():
 
         validate = requested.to(accepted, rejected)
 
-    machine = ApprovalMachine()
+    flow = ApprovalMachine()
 
-    machine.validate()
-    assert machine.accepted.is_active
+    flow.validate()
+    assert flow.accepted.is_active
 
 
 def test_do_not_transition_if_multiple_targets_with_guard():
     def never_will_pass(event_data):
         return False
 
-    class ApprovalMachine(StateMachine):
+    class ApprovalMachine(Workflow):
         "A workflow"
 
         requested = State(initial=True)
@@ -88,15 +88,15 @@ def test_do_not_transition_if_multiple_targets_with_guard():
         def this_also_never_will_pass(self, event_data):
             return False
 
-    machine = ApprovalMachine()
+    flow = ApprovalMachine()
 
     with pytest.raises(exceptions.TransitionNotAllowed):
-        machine.validate()
-    assert machine.requested.is_active
+        flow.validate()
+    assert flow.requested.is_active
 
 
 def test_check_invalid_reference_to_conditions():
-    class ApprovalMachine(StateMachine):
+    class ApprovalMachine(Workflow):
         "A workflow"
 
         requested = State(initial=True)
@@ -110,7 +110,7 @@ def test_check_invalid_reference_to_conditions():
 
 
 def test_should_change_to_returned_state_on_multiple_target_with_combined_transitions():
-    class ApprovalMachine(StateMachine):
+    class ApprovalMachine(Workflow):
         "A workflow"
 
         requested = State(initial=True)
@@ -129,50 +129,50 @@ def test_should_change_to_returned_state_on_multiple_target_with_combined_transi
 
     # given
     model = Request()
-    machine = ApprovalMachine(model)
+    flow = ApprovalMachine(model)
 
     model._is_ok = False
 
     # when
-    assert machine.validate() is None
+    assert flow.validate() is None
     # then
-    assert machine.rejected.is_active
+    assert flow.rejected.is_active
 
     # given
-    assert machine.retry() is None
-    assert machine.requested.is_active
+    assert flow.retry() is None
+    assert flow.requested.is_active
     model._is_ok = True
 
     # when
-    assert machine.validate() is None
+    assert flow.validate() is None
     # then
-    assert machine.accepted.is_active
+    assert flow.accepted.is_active
 
     # when
-    assert machine.validate() == "congrats!"
+    assert flow.validate() == "congrats!"
     # then
-    assert machine.completed.is_active
+    assert flow.completed.is_active
 
     with pytest.raises(exceptions.TransitionNotAllowed, match="Can't validate when in Completed."):
-        assert machine.validate()
+        assert flow.validate()
 
 
 def test_transition_on_execute_should_be_called_with_run_syntax(approval_machine, current_time):
     # given
     model = Request()
-    machine = approval_machine(model)
+    flow = approval_machine(model)
 
     model._is_ok = True
 
     # when
-    assert machine.send("validate") == model
+    assert flow.send("validate") == model
     # then
     assert model.accepted_at == current_time
-    assert machine.accepted.is_active
+    assert flow.accepted.is_active
 
 
 def test_multiple_values_returned_with_multiple_targets():
-    class ApprovalMachine(StateMachine):
+    class ApprovalMachine(Workflow):
         "A workflow"
 
         requested = State(initial=True)
@@ -183,9 +183,9 @@ def test_multiple_values_returned_with_multiple_targets():
         def validate(self):
             return 1, 2
 
-    machine = ApprovalMachine()
+    flow = ApprovalMachine()
 
-    assert machine.validate() == (
+    assert flow.validate() == (
         1,
         2,
     )
@@ -199,7 +199,7 @@ def test_multiple_values_returned_with_multiple_targets():
     ],
 )
 def test_multiple_targets_using_or_starting_from_same_origin(payment_failed, expected_state):
-    class InvoiceStateMachine(StateMachine):
+    class InvoiceWorkflow(Workflow):
         unpaid = State(initial=True)
         paid = State(final=True)
         failed = State()
@@ -209,7 +209,7 @@ def test_multiple_targets_using_or_starting_from_same_origin(payment_failed, exp
         def payment_success(self, event_data):
             return payment_failed
 
-    invoice_fsm = InvoiceStateMachine()
+    invoice_fsm = InvoiceWorkflow()
     invoice_fsm.pay()
     assert invoice_fsm.current_state.id == expected_state
 

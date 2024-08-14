@@ -1,9 +1,9 @@
 # API
 
-## StateMachine
+## Workflow
 
 ```{eval-rst}
-.. autoclass:: statemachine.statemachine.StateMachine
+.. autoclass:: workflow.workflow.Workflow
     :members:
     :undoc-members:
 ```
@@ -16,14 +16,14 @@
 
 
 ```{eval-rst}
-.. autoclass:: statemachine.state.State
+.. autoclass:: workflow.state.State
     :members:
 ```
 
 ## States (class)
 
 ```{eval-rst}
-.. autoclass:: statemachine.states.States
+.. autoclass:: workflow.states.States
     :noindex:
     :members:
 ```
@@ -35,14 +35,14 @@
 ```
 
 ```{eval-rst}
-.. autoclass:: statemachine.transition.Transition
+.. autoclass:: workflow.transition.Transition
     :members:
 ```
 
 ## TransitionList
 
 ```{eval-rst}
-.. autoclass:: statemachine.transition_list.TransitionList
+.. autoclass:: workflow.transition_list.TransitionList
     :members:
 ```
 
@@ -54,7 +54,7 @@
 
 
 ```{eval-rst}
-.. autoclass:: statemachine.model.Model
+.. autoclass:: workflow.model.Model
     :members:
 ```
 
@@ -62,13 +62,13 @@
 
 
 ```{eval-rst}
-.. autoclass:: statemachine.event_data.TriggerData
+.. autoclass:: workflow.event_data.TriggerData
     :members:
 ```
 
 ## EventData
 
 ```{eval-rst}
-.. autoclass:: statemachine.event_data.EventData
+.. autoclass:: workflow.event_data.EventData
     :members:
 ```

@@ -19,11 +19,11 @@ def current_time():
 @pytest.fixture()
 def campaign_machine():
     "Define a new class for each test"
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class CampaignMachine(StateMachine):
-        "A workflow machine"
+    class CampaignMachine(Workflow):
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State("Being produced")
@@ -39,11 +39,11 @@ def campaign_machine():
 @pytest.fixture()
 def campaign_machine_with_validator():
     "Define a new class for each test"
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class CampaignMachine(StateMachine):
-        "A workflow machine"
+    class CampaignMachine(Workflow):
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State("Being produced")
@@ -63,11 +63,11 @@ def campaign_machine_with_validator():
 @pytest.fixture()
 def campaign_machine_with_final_state():
     "Define a new class for each test"
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class CampaignMachine(StateMachine):
-        "A workflow machine"
+    class CampaignMachine(Workflow):
+        "A workflow flow"
 
         draft = State(initial=True)
         producing = State("Being produced")
@@ -83,11 +83,11 @@ def campaign_machine_with_final_state():
 @pytest.fixture()
 def campaign_machine_with_values():
     "Define a new class for each test"
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class CampaignMachineWithKeys(StateMachine):
-        "A workflow machine"
+    class CampaignMachineWithKeys(Workflow):
+        "A workflow flow"
 
         draft = State(initial=True, value=1)
         producing = State("Being produced", value=2)
@@ -123,10 +123,10 @@ def AllActionsMachine():
 
 @pytest.fixture()
 def classic_traffic_light_machine(engine):
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class TrafficLightMachine(StateMachine):
+    class TrafficLightMachine(Workflow):
         green = State(initial=True)
         yellow = State()
         red = State()
@@ -143,11 +143,11 @@ def classic_traffic_light_machine(engine):
 
 @pytest.fixture()
 def reverse_traffic_light_machine():
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class ReverseTrafficLightMachine(StateMachine):
-        "A traffic light machine"
+    class ReverseTrafficLightMachine(Workflow):
+        "A traffic light flow"
 
         green = State(initial=True)
         yellow = State()
@@ -161,11 +161,11 @@ def reverse_traffic_light_machine():
 
 @pytest.fixture()
 def approval_machine(current_time):  # noqa: C901
-    from statemachine import State
-    from statemachine import StateMachine
+    from workflow import State
+    from workflow import Workflow
 
-    class ApprovalMachine(StateMachine):
-        "A workflow machine"
+    class ApprovalMachine(Workflow):
+        "A workflow flow"
 
         requested = State(initial=True)
         accepted = State()
@@ -204,8 +204,8 @@ def approval_machine(current_time):  # noqa: C901
 
 @pytest.fixture(params=["sync", "async"])
 def engine(request):
-    from statemachine.engines.async_ import AsyncEngine
-    from statemachine.engines.sync import SyncEngine
+    from workflow.engines.async_ import AsyncEngine
+    from workflow.engines.sync import SyncEngine
 
     if request.param == "sync":
         return SyncEngine

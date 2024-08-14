@@ -1,20 +1,20 @@
 """
-Guess the number machine
+Guess the number flow
 ========================
 
-An StateMachine for the well know game.
+An Workflow for the well know game.
 
-Well leave the machine imagine a number and also play the game. Why not?
+Well leave the flow imagine a number and also play the game. Why not?
 
 """
 
 import random
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class GuessTheNumberMachine(StateMachine):
+class GuessTheNumberMachine(Workflow):
     start = State(initial=True)
     low = State()
     high = State()
@@ -80,44 +80,44 @@ class GuessTheNumberMachine(StateMachine):
 # -------
 #
 
-sm = GuessTheNumberMachine(seed=103)
+workflow = GuessTheNumberMachine(seed=103)
 
 # %%
 
-sm.guess(random.randint(1, 5))
+workflow.guess(random.randint(1, 5))
 
 # %%
 
-sm
+workflow
 
 # %%
 
-sm.guess(random.randint(1, 5))
+workflow.guess(random.randint(1, 5))
 
 # %%
 
-sm.guess(random.randint(1, 5))
+workflow.guess(random.randint(1, 5))
 
 
-sm
-
-# %%
+workflow
 
 # %%
 
-sm.guess(random.randint(1, 5))
+# %%
+
+workflow.guess(random.randint(1, 5))
 
 # %%
 
-sm.guess(random.randint(1, 5))
+workflow.guess(random.randint(1, 5))
 
 # %%
 
-sm
+workflow
 
 # %%
 
 try:
-    sm.guess(random.randint(1, 5))
+    workflow.guess(random.randint(1, 5))
 except Exception as e:
     print(e)

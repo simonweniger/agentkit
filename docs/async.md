@@ -4,7 +4,7 @@
 Support for async code was added!
 ```
 
-The {ref}`StateMachine` fully supports asynchronous code. You can write async {ref}`actions`, {ref}`guards`, and {ref}`event` triggers, while maintaining the same external API for both synchronous and asynchronous codebases.
+The {ref}`Workflow` fully supports asynchronous code. You can write async {ref}`actions`, {ref}`guards`, and {ref}`event` triggers, while maintaining the same external API for both synchronous and asynchronous codebases.
 
 This is achieved through a new concept called "engine," an internal strategy pattern abstraction that manages transitions and callbacks.
 
@@ -67,12 +67,12 @@ We support native coroutine callbacks using asyncio, enabling seamless integrati
 
 ```{seealso}
 See {ref}`sphx_glr_auto_examples_air_conditioner_machine.py` for an example of
-async code with a state machine.
+async code with a state flow.
 ```
 
 
 ```py
->>> class AsyncStateMachine(StateMachine):
+>>> class AsyncWorkflow(Workflow):
 ...     initial = State('Initial', initial=True)
 ...     final = State('Final', final=True)
 ...
@@ -83,10 +83,10 @@ async code with a state machine.
 ...         return 42
 
 >>> async def run_sm():
-...     sm = AsyncStateMachine()
-...     result = await sm.advance()
+...     workflow = AsyncWorkflow()
+...     result = await workflow.advance()
 ...     print(f"Result is {result}")
-...     print(sm.current_state)
+...     print(workflow.current_state)
 
 >>> asyncio.run(run_sm())
 Result is 42
@@ -96,18 +96,18 @@ Final
 
 ## Sync codebase with async callbacks
 
-The same state machine with async callbacks can be executed in a synchronous codebase,
+The same state flow with async callbacks can be executed in a synchronous codebase,
 even if the calling context don't have an asyncio loop.
 
-If needed, the state machine will create a loop using `asyncio.new_event_loop()` and callbacks will be awaited using `loop.run_until_complete()`.
+If needed, the state flow will create a loop using `asyncio.new_event_loop()` and callbacks will be awaited using `loop.run_until_complete()`.
 
 
 ```py
->>> sm = AsyncStateMachine()
->>> result = sm.advance()
+>>> workflow = AsyncWorkflow()
+>>> result = workflow.advance()
 >>> print(f"Result is {result}")
 Result is 42
->>> print(sm.current_state)
+>>> print(workflow.current_state)
 Final
 
 ```
@@ -117,8 +117,8 @@ Final
 ## Initial State Activation for Async Code
 
 
-If **on async code** you perform checks against the `current_state`, like a loop `while sm.current_state.is_final:`, then you must manually
-await for the  [activate initial state](statemachine.StateMachine.activate_initial_state) to be able to check the current state.
+If **on async code** you perform checks against the `current_state`, like a loop `while workflow.current_state.is_final:`, then you must manually
+await for the  [activate initial state](workflow.Workflow.activate_initial_state) to be able to check the current state.
 
 ```{hint}
 This manual initial state activation on async is because Python don't allow awaiting at class initalization time and the initial state activation may contain async callbacks that must be awaited.
@@ -130,13 +130,13 @@ You get an error checking the current state before the initial state activation:
 
 ```py
 >>> async def initialize_sm():
-...     sm = AsyncStateMachine()
-...     print(sm.current_state)
+...     workflow = AsyncWorkflow()
+...     print(workflow.current_state)
 
 >>> asyncio.run(initialize_sm())
 Traceback (most recent call last):
 ...
-InvalidStateValue: There's no current state set. In async code, did you activate the initial state? (e.g., `await sm.activate_initial_state()`)
+InvalidStateValue: There's no current state set. In async code, did you activate the initial state? (e.g., `await workflow.activate_initial_state()`)
 
 ```
 
@@ -145,9 +145,9 @@ You can activate the initial state explicitly:
 
 ```py
 >>> async def initialize_sm():
-...     sm = AsyncStateMachine()
-...     await sm.activate_initial_state()
-...     print(sm.current_state)
+...     workflow = AsyncWorkflow()
+...     await workflow.activate_initial_state()
+...     print(workflow.current_state)
 
 >>> asyncio.run(initialize_sm())
 Initial
@@ -159,9 +159,9 @@ before the event is handled:
 
 ```py
 >>> async def initialize_sm():
-...     sm = AsyncStateMachine()
-...     await sm.keep()  # first event activates the initial state before the event is handled
-...     print(sm.current_state)
+...     workflow = AsyncWorkflow()
+...     await workflow.keep()  # first event activates the initial state before the event is handled
+...     print(workflow.current_state)
 
 >>> asyncio.run(initialize_sm())
 Initial

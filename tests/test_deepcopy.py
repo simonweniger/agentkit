@@ -3,15 +3,15 @@ from copy import deepcopy
 
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine.exceptions import TransitionNotAllowed
+from workflow import State
+from workflow import Workflow
+from workflow.exceptions import TransitionNotAllowed
 
 logger = logging.getLogger(__name__)
 DEBUG = logging.DEBUG
 
 
-class MySM(StateMachine):
+class MySM(Workflow):
     draft = State("Draft", initial=True, value="draft")
     published = State("Published", value="published", final=True)
 
@@ -49,9 +49,9 @@ class MyModel:
 
 
 def test_deepcopy():
-    sm = MySM(MyModel("main_model"))
+    workflow = MySM(MyModel("main_model"))
 
-    sm2 = deepcopy(sm)
+    sm2 = deepcopy(workflow)
 
     with pytest.raises(TransitionNotAllowed):
         sm2.send("publish")
@@ -73,26 +73,26 @@ def test_deepcopy_with_listeners(caplog):
 
     caplog.set_level(logging.DEBUG, logger="tests")
 
-    def assertions(sm, _reference):
+    def assertions(workflow, _reference):
         caplog.clear()
-        if not sm._listeners:
+        if not workflow._listeners:
             pytest.fail("did not found any observer")
 
-        for listener in sm._listeners:
+        for listener in workflow._listeners:
             listener.let_me_be_visible = False
 
         with pytest.raises(TransitionNotAllowed):
-            sm.send("publish")
+            workflow.send("publish")
 
-        sm.model.let_me_be_visible = True
+        workflow.model.let_me_be_visible = True
 
-        for listener in sm._listeners:
+        for listener in workflow._listeners:
             with pytest.raises(TransitionNotAllowed):
-                sm.send("publish")
+                workflow.send("publish")
 
             listener.let_me_be_visible = True
 
-        sm.send("publish")
+        workflow.send("publish")
 
         assert caplog.record_tuples == [
             ("tests.test_deepcopy", DEBUG, "MySM let_me_be_visible: True"),

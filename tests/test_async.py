@@ -2,14 +2,14 @@ import re
 
 import pytest
 
-from statemachine import State
-from statemachine import StateMachine
-from statemachine.exceptions import InvalidStateValue
+from workflow import State
+from workflow import Workflow
+from workflow.exceptions import InvalidStateValue
 
 
 @pytest.fixture()
 def async_order_control_machine():  # noqa: C901
-    class OrderControl(StateMachine):
+    class OrderControl(Workflow):
         waiting_for_payment = State(initial=True)
         processing = State()
         shipping = State()
@@ -49,73 +49,73 @@ def async_order_control_machine():  # noqa: C901
 
 
 async def test_async_order_control_machine(async_order_control_machine):
-    sm = async_order_control_machine()
+    workflow = async_order_control_machine()
 
-    assert await sm.add_to_order(3) == 3
-    assert await sm.add_to_order(7) == 10
+    assert await workflow.add_to_order(3) == 3
+    assert await workflow.add_to_order(7) == 10
 
-    assert await sm.receive_payment(4) == [4]
-    assert sm.waiting_for_payment.is_active
+    assert await workflow.receive_payment(4) == [4]
+    assert workflow.waiting_for_payment.is_active
 
-    with pytest.raises(sm.TransitionNotAllowed):
-        await sm.process_order()
+    with pytest.raises(workflow.TransitionNotAllowed):
+        await workflow.process_order()
 
-    assert sm.waiting_for_payment.is_active
+    assert workflow.waiting_for_payment.is_active
 
-    assert await sm.receive_payment(6) == [4, 6]
-    await sm.process_order()
+    assert await workflow.receive_payment(6) == [4, 6]
+    await workflow.process_order()
 
-    await sm.ship_order()
-    assert sm.order_total == 10
-    assert sm.payments == [4, 6]
-    assert sm.completed.is_active
+    await workflow.ship_order()
+    assert workflow.order_total == 10
+    assert workflow.payments == [4, 6]
+    assert workflow.completed.is_active
 
 
 def test_async_state_from_sync_context(async_order_control_machine):
-    """Test that an async state machine can be used from a synchronous context"""
+    """Test that an async state flow can be used from a synchronous context"""
 
-    sm = async_order_control_machine()
+    workflow = async_order_control_machine()
 
-    assert sm.add_to_order(3) == 3
-    assert sm.add_to_order(7) == 10
+    assert workflow.add_to_order(3) == 3
+    assert workflow.add_to_order(7) == 10
 
-    assert sm.receive_payment(4) == [4]
-    assert sm.waiting_for_payment.is_active
+    assert workflow.receive_payment(4) == [4]
+    assert workflow.waiting_for_payment.is_active
 
-    with pytest.raises(sm.TransitionNotAllowed):
-        sm.process_order()
+    with pytest.raises(workflow.TransitionNotAllowed):
+        workflow.process_order()
 
-    assert sm.waiting_for_payment.is_active
+    assert workflow.waiting_for_payment.is_active
 
-    assert sm.send("receive_payment", 6) == [4, 6]  # test the sync version of the `.send()` method
-    sm.send("process_order")  # test the sync version of the `.send()` method
+    assert workflow.send("receive_payment", 6) == [4, 6]  # test the sync version of the `.send()` method
+    workflow.send("process_order")  # test the sync version of the `.send()` method
 
-    sm.ship_order()
-    assert sm.order_total == 10
-    assert sm.payments == [4, 6]
-    assert sm.completed.is_active
+    workflow.ship_order()
+    assert workflow.order_total == 10
+    assert workflow.payments == [4, 6]
+    assert workflow.completed.is_active
 
 
 async def test_async_state_should_be_initialized(async_order_control_machine):
-    """Test that the state machine is initialized before any event is triggered
+    """Test that the state flow is initialized before any event is triggered
 
     Given how async works on python, there's no built-in way to activate the initial state that
-    may depend on async code from the StateMachine.__init__ method.
+    may depend on async code from the Workflow.__init__ method.
 
     We do a `_ensure_is_initialized()` check before each event, but to check the current state
-    just before the state machine is created, the user must await the activation of the initial
+    just before the state flow is created, the user must await the activation of the initial
     state explicitly.
     """
 
-    sm = async_order_control_machine()
+    workflow = async_order_control_machine()
     with pytest.raises(
         InvalidStateValue,
         match=re.escape(
             r"There's no current state set. In async code, "
-            r"did you activate the initial state? (e.g., `await sm.activate_initial_state()`)"
+            r"did you activate the initial state? (e.g., `await workflow.activate_initial_state()`)"
         ),
     ):
-        assert sm.current_state == sm.waiting_for_payment
+        assert workflow.current_state == workflow.waiting_for_payment
 
-    await sm.activate_initial_state()
-    assert sm.current_state == sm.waiting_for_payment
+    await workflow.activate_initial_state()
+    assert workflow.current_state == workflow.waiting_for_payment

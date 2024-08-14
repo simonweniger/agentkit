@@ -33,8 +33,8 @@ and "help wanted" is open to whoever wants to implement it.
 
 ### Write Documentation
 
-Python State Machine could always use more documentation, whether as part of the
-official Python State Machine docs, in docstrings, or even on the web in blog posts,
+Agentkit Workflow could always use more documentation, whether as part of the
+official Agentkit Workflow docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 ### Add a translation
@@ -43,21 +43,21 @@ articles, and such.
 Extract a `Portable Object Template` (`POT`) file:
 
 ```shell
-pybabel extract statemachine -o statemachine/locale/statemachine.pot
+pybabel extract workflow -o workflow/locale/workflow.pot
 ```
 
-Then, copy the template as a `.po` file into the target locale folder. For example, if you're adding support for Brazilian Portuguese language, the code is `pt_BR`, and the file path should be `statemachine/locale/pt_BR/LC_MESSAGES/statemachine.po`:
+Then, copy the template as a `.po` file into the target locale folder. For example, if you're adding support for Brazilian Portuguese language, the code is `pt_BR`, and the file path should be `workflow/locale/pt_BR/LC_MESSAGES/workflow.po`:
 
 ```shell
-cp statemachine/locale/statemachine.pot statemachine/locale/pt_BR/LC_MESSAGES/statemachine.po
+cp workflow/locale/workflow.pot workflow/locale/pt_BR/LC_MESSAGES/workflow.po
 ```
 
-Then open the `statemachine.po` and translate.
+Then open the `workflow.po` and translate.
 
 After translation, to get the new language working locally, you need to compile the `.po` files into `.mo`  (binary format). Run:
 
 ```shell
-pybabel compile -d statemachine/locale/ -D statemachine
+pybabel compile -d workflow/locale/ -D workflow
 ```
 
 
@@ -91,7 +91,7 @@ Ready to contribute? Here's how to set up `python-statemachine` for local develo
 
 1. Fork the `python-statemachine` repository on GitHub.
 
-1. Clone the forked repository to your local machine by running::
+1. Clone the forked repository to your local flow by running::
 
         git clone https://github.com/YOUR-USERNAME/python-statemachine.git.
 

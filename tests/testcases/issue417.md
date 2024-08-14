@@ -1,14 +1,14 @@
 ### Issue 417
 
-A StateMachine that exercises the derived example given on issue
+A Workflow that exercises the derived example given on issue
 #[417](https://github.com/fgmacedo/python-statemachine/issues/417).
 
 In this example, the condition callback must be registered using a method by reference, not by it's name.
 Just to be sure, we've added a lot of variations.
 
 ```py
->>> from statemachine import State
->>> from statemachine import StateMachine
+>>> from workflow import State
+>>> from workflow import Workflow
 
 >>> class Model:
 ...     def __init__(self, counter: int = 0):
@@ -26,7 +26,7 @@ Just to be sure, we've added a lot of variations.
 ...     def can_be_started_as_property_str_on_model(self) -> bool:
 ...         return self.counter > 2
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     created = State(initial=True)
 ...     started = State(final=True)
 ...
@@ -60,8 +60,8 @@ Just to be sure, we've added a lot of variations.
 
 >>> def test_machine(counter):
 ...     model = Model(counter)
-...     sm = ExampleStateMachine(model, counter)
-...     sm.start()
+...     workflow = ExampleWorkflow(model, counter)
+...     workflow.start()
 
 ```
 
@@ -71,7 +71,7 @@ Expected output:
 >>> test_machine(0)
 Traceback (most recent call last):
 ...
-statemachine.exceptions.TransitionNotAllowed: Can't start when in Created.
+workflow.exceptions.TransitionNotAllowed: Can't start when in Created.
 
 >>> test_machine(3)
 started
@@ -92,7 +92,7 @@ Should raise an exception if the property is not found on the correct objects:
 
 
 
->>> class ExampleStateMachine(StateMachine):
+>>> class ExampleWorkflow(Workflow):
 ...     created = State(initial=True)
 ...     started = State(final=True)
 ...
@@ -103,8 +103,8 @@ Should raise an exception if the property is not found on the correct objects:
 ...
 
 >>> def test_machine():
-...     sm = ExampleStateMachine()
-...     sm.start()
+...     workflow = ExampleWorkflow()
+...     workflow.start()
 
 ```
 
@@ -114,5 +114,5 @@ Expected output:
 >>> test_machine()
 Traceback (most recent call last):
 ...
-statemachine.exceptions.InvalidDefinition: Error on transition start from Created to Started when resolving callbacks: Did not found name ... from model or statemachine
+workflow.exceptions.InvalidDefinition: Error on transition start from Created to Started when resolving callbacks: Did not found name ... from model or workflow
 ```

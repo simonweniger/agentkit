@@ -2,7 +2,7 @@
 
 ## Development Lead
 
-* [Fernando Macedo](mailto:fgmacedo@gmail.com)
+* [Simon Weniger](mailto:hello@simonweniger.com)
 
 ## Contributors
 

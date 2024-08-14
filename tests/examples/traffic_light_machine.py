@@ -1,12 +1,12 @@
 """
 
 ---------------------
-Traffic light machine
+Traffic light flow
 ---------------------
 
-This example demonstrates how to create a traffic light machine using the `statemachine` library.
+This example demonstrates how to create a traffic light flow using the `workflow` library.
 
-The state machine will run in a dedicated thread and will cycle through the states.
+The state flow will run in a dedicated thread and will cycle through the states.
 
 """
 
@@ -14,12 +14,12 @@ import time
 from threading import Event as ThreadingEvent
 from threading import Thread
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class TrafficLightMachine(StateMachine):
-    "A traffic light machine"
+class TrafficLightMachine(Workflow):
+    "A traffic light flow"
 
     green = State(initial=True)
     yellow = State()
@@ -36,14 +36,14 @@ class TrafficLightMachine(StateMachine):
 
 
 class Supervisor:
-    def __init__(self, sm: StateMachine, sm_event: str):
-        self.sm = sm
+    def __init__(self, workflow: Workflow, sm_event: str):
+        self.workflow = workflow
         self.sm_event = sm_event
         self.stop_event = ThreadingEvent()
 
     def run(self):
         while not self.stop_event.is_set():
-            self.sm.send(self.sm_event)
+            self.workflow.send(self.sm_event)
             self.stop_event.wait(0.1)
 
     def stop(self):

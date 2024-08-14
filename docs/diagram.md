@@ -1,6 +1,6 @@
 # Diagrams
 
-You can generate diagrams from your {ref}`StateMachine`.
+You can generate diagrams from your {ref}`Workflow`.
 
 ```{note}
 This functionality depends on [pydot](https://github.com/pydot/pydot), it means that you need to
@@ -33,7 +33,7 @@ Graphviz. For example, on Debian-based systems (such as Ubuntu), you can use the
 
 
 ```py
->>> from statemachine.contrib.diagram import DotGraphMachine
+>>> from workflow.contrib.diagram import DotGraphMachine
 
 >>> from tests.examples.order_control_machine import OrderControl
 
@@ -63,15 +63,15 @@ The current {ref}`state` is also highlighted:
 
 ``` py
 
->>> from statemachine.contrib.diagram import DotGraphMachine
+>>> from workflow.contrib.diagram import DotGraphMachine
 
 >>> from tests.examples.order_control_machine import OrderControl
 
->>> machine = OrderControl()
+>>> flow = OrderControl()
 
->>> graph = DotGraphMachine(machine)  # also accepts instances
+>>> graph = DotGraphMachine(flow)  # also accepts instances
 
->>> machine.receive_payment(10)
+>>> flow.receive_payment(10)
 [10]
 
 >>> graph().write_png("docs/images/order_control_machine_processing.png")
@@ -86,23 +86,23 @@ The current {ref}`state` is also highlighted:
 A handy shortcut to have the graph representation:
 
 ```py
->>> machine._graph()
+>>> flow._graph()
 <pydot.core.Dot ...
 
 ```
 
 ## Generate from the command line
 
-You can also generate a diagram from the command line using the `statemachine.contrib.diagram` as a module.
+You can also generate a diagram from the command line using the `workflow.contrib.diagram` as a module.
 
 ```bash
-❯ python -m statemachine.contrib.diagram --help
+❯ python -m workflow.contrib.diagram --help
 usage: diagram.py [OPTION] <classpath> <out>
 
-Generate diagrams for StateMachine classes.
+Generate diagrams for Workflow classes.
 
 positional arguments:
-  classpath   A fully-qualified dotted path to the StateMachine class.
+  classpath   A fully-qualified dotted path to the Workflow class.
   out         File to generate the image using extension as the output format.
 
 optional arguments:
@@ -112,7 +112,7 @@ optional arguments:
 Example:
 
 ```bash
-python -m statemachine.contrib.diagram tests.examples.traffic_light_machine.TrafficLightMachine m.png
+python -m workflow.contrib.diagram tests.examples.traffic_light_machine.TrafficLightMachine m.png
 ```
 
 ```{note}
@@ -127,14 +127,14 @@ complete list.
 Machines instances are automatically displayed as a diagram when used on JupyterLab cells:
 
 
-![Approval machine on JupyterLab](images/lab_approval_machine_accepted.png)
+![Approval flow on JupyterLab](images/lab_approval_machine_accepted.png)
 
 
 ## Don't want to install Graphviz
 
 
 ```{eval-rst}
-.. autofunction:: statemachine.contrib.diagram.quickchart_write_svg
+.. autofunction:: workflow.contrib.diagram.quickchart_write_svg
 ```
 
 ![OrderControl](images/oc_machine_processing.svg)

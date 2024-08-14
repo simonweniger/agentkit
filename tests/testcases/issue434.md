@@ -1,18 +1,18 @@
 ### Issue 434
 
-A StateMachine that exercises the example given on issue
+A Workflow that exercises the example given on issue
 #[434](https://github.com/fgmacedo/python-statemachine/issues/434).
 
 
 ```py
 >>> from time import sleep
->>> from statemachine import StateMachine, State
+>>> from workflow import Workflow, State
 
 >>> class Model:
 ...     def __init__(self, data: dict):
 ...         self.data = data
 
->>> class DataCheckerMachine(StateMachine):
+>>> class DataCheckerMachine(Workflow):
 ...     check_data = State(initial=True)
 ...     data_good = State(final=True)
 ...     data_bad = State(final=True)

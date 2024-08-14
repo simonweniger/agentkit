@@ -33,8 +33,8 @@ and "help wanted" is open to whoever wants to implement it.
 
 ### Write Documentation
 
-Python State Machine could always use more documentation, whether as part of the
-official Python State Machine docs, in docstrings, or even on the web in blog posts,
+Agentkit Workflow could always use more documentation, whether as part of the
+official Agentkit Workflow docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 ### Add a translation
@@ -89,7 +89,7 @@ Ready to contribute? Here's how to set up `python-statemachine` for local develo
 
 1. Fork the `python-statemachine` repository on GitHub.
 
-1. Clone the forked repository to your local machine by running::
+1. Clone the forked repository to your local flow by running::
 
 ```shell
         git clone https://github.com/YOUR-USERNAME/agentkit.git.

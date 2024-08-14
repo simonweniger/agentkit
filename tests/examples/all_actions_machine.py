@@ -1,18 +1,18 @@
 """
-All actions machine
+All actions flow
 ===================
 
-A StateMachine that exercises all possible :ref:`Actions` and :ref:`Guards`.
+A Workflow that exercises all possible :ref:`Actions` and :ref:`Guards`.
 
 """
 
 from unittest import mock
 
-from statemachine import State
-from statemachine import StateMachine
+from workflow import State
+from workflow import Workflow
 
 
-class AllActionsMachine(StateMachine):
+class AllActionsMachine(Workflow):
     initial = State(initial=True)
     final = State(final=True)
 
@@ -144,14 +144,14 @@ class AllActionsMachine(StateMachine):
 # Testing
 # -------
 
-machine = AllActionsMachine()
-spy = machine.spy
+flow = AllActionsMachine()
+spy = flow.spy
 
 
 # %%
 # Only before/on actions have their result collected.
 
-result = machine.go()
+result = flow.go()
 assert result == [
     "before_transition",
     "before_go_inline_1",
