@@ -1,11 +1,12 @@
-# agentkit 
+# agentkit
 
-agentkit is build with [Encore](https://encore.dev/) as a backend + [Next.js](https://nextjs.org/) as a BFF and Frontend. It's a great way to learn how to combine Encore's backend 
+agentkit is build with [Encore](https://encore.dev/) as a backend + [Next.js](https://nextjs.org/) as a BFF and Frontend. It's a great way to learn how to combine Encore's backend
 capabilities with a modern web framework — perfect for building a web app.
 
-## Prerequisites 
+## Prerequisites
 
 **Install Encore:**
+
 - **macOS:** `brew install encoredev/tap/encore`
 - **Linux:** `curl -L https://encore.dev/install.sh | bash`
 - **Windows:** `iwr https://encore.dev/install.ps1 | iex`
@@ -21,11 +22,13 @@ encore app create --example=ts/nextjs-starter
 ## Run app locally
 
 Start Encore by running this command from your application's root folder:
+
 ```bash
 encore run
 ```
 
 In another terminal window, start the Next.js frontend:
+
 ```bash
 npm run dev
 ```
@@ -104,7 +107,7 @@ global_cors: {
 }
 ```
 
-More information on CORS configuration can be found here: https://encore.dev/docs/develop/cors
+More information on CORS configuration can be found here: <https://encore.dev/docs/develop/cors>
 
 ## Learn More
 
