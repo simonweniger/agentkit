@@ -1,6 +1,6 @@
-# Next.js + Encore TS Web App Starter
+# agentkit 
 
-This is an [Encore](https://encore.dev/) + [Next.js](https://nextjs.org/) project starter. It's a great way to learn how to combine Encore's backend 
+agentkit is build with [Encore](https://encore.dev/) as a backend + [Next.js](https://nextjs.org/) as a BFF and Frontend. It's a great way to learn how to combine Encore's backend 
 capabilities with a modern web framework — perfect for building a web app.
 
 ## Prerequisites 
