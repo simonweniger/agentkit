@@ -1,5 +1,5 @@
 {
-	"id":   "agentkit-gh42",
+	"id": "agentkit-qyoi",
 	"lang": "typescript",
 	"build": {
 		"docker": {

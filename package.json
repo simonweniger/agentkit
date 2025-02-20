@@ -10,6 +10,8 @@
     "gen": "encore gen client --output=./app/lib/client.ts --env=local"
   },
   "dependencies": {
+    "drizzle-kit": "^0.30.4",
+    "drizzle-orm": "^0.39.1",
     "encore.dev": "^1.45.7",
     "next": "^15.0.2",
     "react": "^18",
